@@ -19,16 +19,15 @@ This creates a new python environment for the project and installs all packages.
 
 ### Creating the website locally
 
-To create the Streamlit website, run:
+To create the Streamlit website, activate the poetry shell using `poetry shell` if you haven't done so already and run:
 
 ```bash
-poetry shell
 streamlit run main.py
 ```
 
 The website should open in your default browser automatically.
 
-### Add a new dependency
+### Adding a new dependency
 
 To add a new dependency, run:
 
