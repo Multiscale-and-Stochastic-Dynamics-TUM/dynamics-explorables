@@ -9,6 +9,7 @@ packages = [{include = "dynamics_explorables"}]
 [tool.poetry.dependencies]
 python = ">=3.8,<3.9.7 || >3.9.7,<4.0"
 streamlit = "^1.15.1"
+matplotlib = "^3.6.2"
 
 
 [build-system]
