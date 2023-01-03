@@ -9,6 +9,13 @@ packages = [{include = "dynamics_explorables"}]
 [tool.poetry.dependencies]
 python = ">=3.8,<3.9.7 || >3.9.7,<4.0"
 streamlit = "^1.15.1"
+julia = "^0.6.0"
+scipy = "^1.9.3"
+plotly = "^5.11.0"
+pandas = "^1.5.2"
+pysqlite3 = "^0.5.0"
+ipywidgets = "7.*"
+matplotlib = "^3.6.2"
 
 
 [build-system]
