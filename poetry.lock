@@ -626,6 +626,22 @@ pyparsing = ">=2.2.1"
 python-dateutil = ">=2.7"
 
 [[package]]
+name = "mpld3"
+version = "0.5.9"
+description = "D3 Viewer for Matplotlib"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "mpld3-0.5.9-py3-none-any.whl", hash = "sha256:cecdd988b24f8d7c7f362b8f72bb91df1a24b1993dd02a958223918a31c31052"},
+    {file = "mpld3-0.5.9.tar.gz", hash = "sha256:d8d228b2911132fd0154e2a49543b7f97247f9851cfe468c6b616f452c676158"},
+]
+
+[package.dependencies]
+jinja2 = "*"
+matplotlib = "*"
+
+[[package]]
 name = "numpy"
 version = "1.23.5"
 description = "NumPy is the fundamental package for array computing with Python."
@@ -1318,4 +1334,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.9.7 || >3.9.7,<4.0"
-content-hash = "7af228dc6d90650de07e0e2905227cb002d4a7df7b641f007effd7235ee665d0"
+content-hash = "7f9e27c4303fc4c50b0f7965e013f1d997db811af2163c492a7d351fa840ae11"
