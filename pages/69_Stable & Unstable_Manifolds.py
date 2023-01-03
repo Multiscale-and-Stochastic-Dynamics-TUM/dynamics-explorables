@@ -15,13 +15,13 @@ st.title("Stable & Unstable Manifolds")
 fig_1, ax_1 = set_plot()
 lw = 2
 
-x_steps = np.linspace(-10,10,500)
-y_steps = np.linspace(-10,10,500)
+x_steps = np.linspace(-10,10,250)
+y_steps = np.linspace(-10,10,2)
 
 dt = 0
-time = st.radio("Time",("Direct","Reverce"))
+time_dir = st.radio("Time",("Direct","Reverce"))
 
-if time == 'Direct':
+if time_dir == 'Direct':
     dt = 0.01
 else:
     dt = -0.01
@@ -30,14 +30,14 @@ else:
 Es_p, = ax_1.plot(*ex1_5_Es(y_steps), linewidth= lw, label = "Stable Eigenspace/Manifold", color = "red")
 Eu_p, = ax_1.plot(*ex1_5_Eu(x_steps), linewidth= lw, label = "Unstable Eigenspace", color = "blue")
 #Ws_p, = ax_1.plot(*ex1_5_Ws(y_steps), linewidth= lw)
-Wu_p, = ax_1.plot(*ex1_5_Wu(y_steps), linewidth= lw, label = "Unstable Manifold", color = "blue")
+Wu_p, = ax_1.plot(*ex1_5_Wu(x_steps), linewidth= lw, label = "Unstable Manifold", color = "blue")
 
 #point = np.array([-2,-2])
 
 pts = {
     "On_Staple": ex1_5_Ws(4),
     "On_Unstable": ex1_5_Wu(-2),
-    "Neither": np.array([0.2,4])
+    "Neither": np.array([1,2.2])
 }
 
 pt_choice = st.radio("Point",(list(pts.keys())))
@@ -60,9 +60,12 @@ def start_pts():
     global point, point_p
     for i in range(100):
         point=iterate_pt(ex1_5, point, dt)
+        trajectory[0].append(point[0])
+        trajectory[1].append(point[1])
         point_p.set_data(point)
+        trajectory_p.set_data(trajectory)
         st_plot.pyplot(fig_1)
-        #time.sleep(0.0000005)
+        time.sleep(0.0005)
 
 st.button(label = "start", key="start_btn", on_click=start_pts, args=None, kwargs=None)
 
