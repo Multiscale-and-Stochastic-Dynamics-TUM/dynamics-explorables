@@ -7,6 +7,7 @@ import matplotlib as mpl
 import pandas as pd
 import time
 
+CAMERA = dict(eye=dict(x=1.5, y=-1.5, z=0.6))
 
 def lorenz_rhs(t, state, sigma, rho, beta):
     """The right hand-side of the Lorenz system."""
@@ -80,10 +81,9 @@ def plot_lorenz_3d(sigma=10.0, rho=28, beta=8.0 / 3):
         color="colors",
         color_discrete_sequence=colorcodes,
     )
-
-    camera = dict(eye=dict(x=1.5, y=-1.5, z=0.6))
+    
     fig.update_layout(
-        scene_camera=camera, scene=go.Scene(aspectmode="cube"), showlegend=False
+        scene_camera=CAMERA, scene=go.Scene(aspectmode="cube"), showlegend=False
     )
 
     return fig
@@ -111,3 +111,43 @@ with col1:
 with col2:
     fig = plot_lorenz_3d(sigma, rho, beta)
     st.plotly_chart(fig)
+
+    x_range = np.linspace(-30, 30, 40)
+    y_range = np.linspace(-30, 30, 40)
+    z_range = np.linspace(0, 60, 40)
+
+    X, Y, Z = np.meshgrid(x_range, y_range, z_range)
+    
+    custom = np.random.random(x_range.shape)
+
+    # elipsoid
+    values = sigma * X**2 + Y**2 + beta * (Z - 0.5 * (rho + sigma))**2
+
+    fig_surface = go.Figure()
+
+    isosurface=go.Isosurface(
+        x=X.flatten(),
+        y=Y.flatten(),
+        z=Z.flatten(),
+        value=values.flatten(),
+        isomin=0.25 * beta * (rho + sigma)**2,
+        isomax=0.25 * beta * (rho + sigma)**2,
+        surface_count=1,
+        opacity=0.9,
+        showscale=False,
+        caps=dict(x_show=False, y_show=False),
+        customdata = custom.flatten(),
+    )
+    fig_surface.add_traces(data = isosurface)
+
+    fig_surface.update_layout(
+        autosize=False,
+        width=500,
+        height=500,
+        margin=dict(l=65, r=50, b=65, t=90),
+        scene_camera = CAMERA,
+    )
+
+    st.plotly_chart(fig_surface)
+    
+st.write(isosurface)
