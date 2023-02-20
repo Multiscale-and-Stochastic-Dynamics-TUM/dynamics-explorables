@@ -1,9 +1,15 @@
 import numpy as np
 import matplotlib as mpt
+import pandas as pd
 
 def iterate_pt(f, x, dt=0.001):
     return x+f(x)*dt
 
+def array_to_line(x,y,label = None):
+    return pd.DataFrame(
+        list(zip([label]*len(x),x,y)),
+        columns=["Legend","x", "y"],
+    )
 
 def set_plot(type = "usual", xap = 'zero', yap = 'zero'):
     """
