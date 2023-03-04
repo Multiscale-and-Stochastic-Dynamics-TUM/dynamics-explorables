@@ -5,41 +5,6 @@ import pandas as pd
 def iterate_pt(f, x, dt=0.001):
     return x+f(x)*dt
 
-def array_to_line(x,y,label = None):
-    return pd.DataFrame(
-        list(zip([label]*len(x),x,y)),
-        columns=["Legend","x", "y"],
-    )
-
-def set_plot(type = "usual", xap = 'zero', yap = 'zero'):
-    """
-    xap - x axis position \n
-    yap - y axis position
-    """
-    fig, ax = mpt.pyplot.subplots()
-    ax.grid(True, which='both')
-    ax.spines['left'].set_position(yap)
-    ax.spines['right'].set_color('none')
-    ax.yaxis.tick_left()
-    ax.spines['top'].set_color('none')
-    ax.xaxis.tick_bottom()
-    
-    def usualt():
-        ax.spines['bottom'].set_position(xap)
-    def logt():
-        ax.set_yscale('log')
-    def no():
-        1
-    typer = {
-        'usual': usualt,
-        'log': logt,
-        'no': no
-            }
-    
-    typer[type]()
-    return fig, ax
-
-
 ###stable/unstable manifold example
 def ex1_5(x):
     return np.array([
