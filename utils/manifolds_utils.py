@@ -5,6 +5,14 @@ import pandas as pd
 def iterate_pt(f, x, dt=0.001):
     return x+f(x)*dt
 
+def create_trajectory(f, x_0, dt, n_it):
+    pt_trajectory = [x_0]
+    for i in range(n_it):
+            nx_point=iterate_pt(f, pt_trajectory[-1], dt)
+            pt_trajectory.append(nx_point)
+    pt_trajectory = np.array(pt_trajectory)
+    return pt_trajectory
+
 ###stable/unstable manifold example
 def ex1_5(x):
     return np.array([
@@ -13,10 +21,11 @@ def ex1_5(x):
         ])
 
 def ex1_5_lin_origin(x):
-    return np.array([
+    jac = np.array([
         [1,0],
         [0,-1]
     ])
+    return np.dot(jac,x)
 
 def ex1_5_Eu(x):
     return np.array([x,0*x])
