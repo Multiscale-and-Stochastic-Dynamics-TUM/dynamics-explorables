@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib as mpt
 import pandas as pd
 
+### Mostly for calculationg stuff
+
 def iterate_pt(f, x, dt=0.001):
     return x+f(x)*dt
 

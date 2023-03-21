@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 
 from utils.manifolds_utils import *
 
+### For creationg widgets and adding elements to demos?
+
 def mk_time_radio():
     time_modes = {
     "Forwards": 0.01,
@@ -71,13 +73,13 @@ def mk_figure():
     )
     return fig
 
-def add_Eu_to_fig(fig):
+def add_Eu_to_fig(fig, Eu = ex1_5_Eu):
     lin_steps = np.linspace(-10,10,2)
-    Eu = ex1_5_Eu(lin_steps)# "Unstable Eigenspace"
+    Eu_graph = Eu(lin_steps)# "Unstable Eigenspace"
     fig.add_trace(
         go.Scatter(
-            x = Eu[0],
-            y = Eu[1],
+            x = Eu_graph[0],
+            y = Eu_graph[1],
             name = "Unstable Eigenspace",
             mode="lines",
             line=go.scatter.Line(color="red"),
@@ -86,13 +88,13 @@ def add_Eu_to_fig(fig):
     return fig
     
 
-def add_Es_to_fig(fig, name = "Stable Eigenspace"):
+def add_Es_to_fig(fig, Es = ex1_5_Es, name = "Stable Eigenspace"):
     lin_steps = np.linspace(-10,10,2)
-    Es = ex1_5_Es(lin_steps)# "Stable Eigenspace/Manifold"
+    Es_graph = Es(lin_steps)# "Stable Eigenspace/Manifold"
     fig.add_trace(
         go.Scatter(
-            x = Es[0],
-            y = Es[1],
+            x = Es_graph[0],
+            y = Es_graph[1],
             name = name,
             mode="lines",
             line=go.scatter.Line(color="blue"),
@@ -100,13 +102,13 @@ def add_Es_to_fig(fig, name = "Stable Eigenspace"):
     )
     return fig
 
-def add_Wu_to_fig(fig):
-    x_steps = np.linspace(-10,10,250)
-    Wu = ex1_5_Wu(x_steps)# "Unstable Manifold"
+def add_Wu_to_fig(fig, Wu = ex1_5_Wu):
+    eigen_steps = np.linspace(-10,10,250)
+    Wu_graph = Wu(eigen_steps)# "Unstable Manifold"
     fig.add_trace(
         go.Scatter(
-            x = Wu[0],
-            y = Wu[1],
+            x = Wu_graph[0],
+            y = Wu_graph[1],
             name = "Unstable Manifold",
             mode="lines",
             line=go.scatter.Line(color="orange"),
@@ -127,7 +129,7 @@ def add_trajectory_to_fig(fig, pt_trajectory):
     return fig
 
 
-def add_animation_to_fig(fig, pt_trajectory, n_it=None):
+def add_animated_point_to_fig(fig, pt_trajectory, n_it=None):
     n_trace = len(fig.data)
     if not n_it:
         n_it = len(pt_trajectory)

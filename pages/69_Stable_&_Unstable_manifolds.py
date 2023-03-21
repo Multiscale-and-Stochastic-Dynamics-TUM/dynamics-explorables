@@ -80,6 +80,8 @@ with tab_manifolds:
         st.write(manifolds_example_text)
         st.latex(manifolds_example_equation)
 
+with tab_maps:
+    st.write(maps_text_intro)
 #####graph stuff#####
 fig = mk_figure()
 n_it = abs(int(T/dt))
@@ -100,7 +102,7 @@ point = state.selected_point
 pt_trajectory = create_trajectory(flow, point, dt, n_it)
 if state.interractables_states["show_trajectory"]:
     add_trajectory_to_fig(fig, pt_trajectory)
-add_animation_to_fig(fig, pt_trajectory)
+add_animated_point_to_fig(fig, pt_trajectory)
 
 with graph_space:
     plot_selected_point = streamlit_plotly_click_anywhere(fig)
@@ -110,14 +112,15 @@ if len(plot_selected_point)!=0:
     if np.sum(state.selected_point != plot_selected_point_transformed):
         state.selected_point = plot_selected_point_transformed
 
-        #This is fucking retarded TODO: change something to rerendering only parts of the components that matter, lookup st.emply, st.addrows etc
+        #This is fucking retarded TODO: change something to rerender only parts of the components that matter, lookup st.emply, st.addrows etc.
         st.experimental_rerun()
 
 ###TODO:
-### Show tragectories button
-### Change time input
-### Buttons for whowing elements
-### make a wrapper here to rerun when needed, with emptying containers   ; 
-### select_traces?
-### trace.visible
-### delete traces as list items
+### For optimisation:
+### make a wrapper here to rerun when needed, with emptying containers; 
+### select_traces ?
+### trace.visible ?
+### delete traces as list items ?
+
+### For Content:
+### Other examples?
