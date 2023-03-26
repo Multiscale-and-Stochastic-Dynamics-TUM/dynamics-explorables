@@ -1,6 +1,5 @@
 import numpy as np
 import streamlit as st
-from matplotlib import pyplot as plt
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
