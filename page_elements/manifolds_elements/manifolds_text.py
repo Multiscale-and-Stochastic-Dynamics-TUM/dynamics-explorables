@@ -70,14 +70,14 @@ For example look at the trajectories with $x_0$ in the eigenspaces and near them
 '''
 
 manifolds_text_1 = r'''
-The intuition about this local deformation gives us a hint that sets 
-with a property that tragectories within those sets $\textbf{\textit{converge forwards/backwards in time to the equilibrium point}}$
-exist in the phase space. They also can be represented as graphs, or ${\textit{manifolds}}$, over the respective eigenspaces of the linearised system.
+The intuition about this local deformation gives us a hint that there are two $\textit{unique}$ sets 
+with a property that tragectories within those sets ${\textit{converge forwards/backwards in time to the equilibrium point}}$ in the phase space.
+They also can be represented as graphs, or ${\textit{manifolds}}$, over and tangent to the respective eigenspaces of the linearised system.
 We will call them local stable, $W^s_{loc}(x_*)$, and unstable, $W^u_{loc}(x_*)$, manifolds. Their existance and uniqueness can be proven using Banach fixed-point theorem.
-The manifolds can be made $\textbf{\textit{invariant}}$ by extending them under the flow $\phi_t$ of a given dynamical system to their global counterparts, i.e
+The manifolds can be made ${\textit{invariant}}$ by extending them under the flow $\phi_t$ of a given dynamical system to their global counterparts, i.e
 '''
 manifolds_equation_extention = r'''
-W^{s,t}(x_*) = \bigcup_{t\in\Tau}\phi_t(W^{s,t}_{loc}(x_*)).
+W^{s,u}(x_*) = \bigcup_{t\in\Tau}\phi_t(W^{s,u}_{loc}(x_*)).
 '''
 manifolds_text_2 = r'''
 The button "Show Manifolds" visualises manifolds on the phase space.
@@ -85,12 +85,17 @@ See if the properties hold by checking the tragectories (make sure that you are 
 '''
 manifolds_example_text = r'''In particular the representation as graphs often helps to find the manifold 
 (or at least approximate it as a polinomial). In the case of the demo the stable manifold coincides with the stable eigenspace,
-but unstable manifold is s graph of $h(x) = \frac{1}{3}x^2$
+but unstable manifold is s graph of $h(x) = \frac{1}{3}x^2$:
 '''
 manifolds_example_equation = r'''
 W^s_{loc}(0) = E_s(0) = \big\{ (x,y)\in\mathbb{R}^2: x=0 \big\};\\
 
 W^u_{loc}(0) = \big\{ (x,y)\in\mathbb{R}^2: y = \frac{1}{3}x^2 \big\}
+'''
+
+manifolds_example_text_regularity = r'''
+One more important property of the stable and unstable manifolds is that they inherit regularity from the given system.
+For example if $f(x) \in C^k$ then $W^{s,u}_{loc}(0)\in C^k$. This even extends to analitisity: $f(x) \in C^\omega \Rightarrow W^{s,u}_{loc}(0)\in C^\omega$.
 '''
 
 #Besides the propetis above they also inherit some regularity from the system.

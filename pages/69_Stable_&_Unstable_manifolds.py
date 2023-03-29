@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.figure_factory as ff
 import time
 import streamlit.components.v1 as components
-from streamlit_plotly_events import plotly_events
-from streamlit_plotly_click_anywhere import streamlit_plotly_click_anywhere
+
+from streamlit_plotly_click_anywhere import clickable_chart
 
 from utils.manifolds_utils import *
 from page_elements.manifolds_elements.manifolds_text import *
@@ -45,7 +46,7 @@ with graph_container:
         state.interractables_states["show_eigenspaces"] = st.checkbox("Show Eigenspaces", value=False)
         state.interractables_states["show_manifolds"] = st.checkbox("Show Manifolds", value=False, disabled = state.interractables_states["if_linear"])
         state.interractables_states["show_trajectory"] = st.checkbox("Show Trajectory", value=False)
-        T = st.number_input("Duration", min_value=0.0, value = 1.5)
+        T = st.number_input("Duration", min_value=0.0, value = 2.0)
 
 tab_intro, tab_linear, tab_eigenspaces, tab_general, tab_manifolds, tab_maps, tab_other = st.tabs(["Introduction", "Linear System", "Eigenspaces", 
 "General System", "Manifolds", "A Word About Maps", "Other examples"])
@@ -79,9 +80,11 @@ with tab_manifolds:
     with st.expander("Example details"):
         st.write(manifolds_example_text)
         st.latex(manifolds_example_equation)
+    st.write(manifolds_example_text_regularity)
 
 with tab_maps:
     st.write(maps_text_intro)
+    
 #####graph stuff#####
 fig = mk_figure()
 n_it = abs(int(T/dt))
@@ -105,7 +108,7 @@ if state.interractables_states["show_trajectory"]:
 add_animated_point_to_fig(fig, pt_trajectory)
 
 with graph_space:
-    plot_selected_point = streamlit_plotly_click_anywhere(fig)
+    plot_selected_point = clickable_chart(fig)
 
 if len(plot_selected_point)!=0:
     plot_selected_point_transformed = np.array(plot_selected_point)
@@ -113,14 +116,19 @@ if len(plot_selected_point)!=0:
         state.selected_point = plot_selected_point_transformed
 
         #This is fucking retarded TODO: change something to rerender only parts of the components that matter, lookup st.emply, st.addrows etc.
+        #the code apparently also runs two times because of the update and then the rerun
         st.experimental_rerun()
 
 ###TODO:
+
 ### For optimisation:
 ### make a wrapper here to rerun when needed, with emptying containers; 
 ### select_traces ?
 ### trace.visible ?
 ### delete traces as list items ?
+
+### For code:
+### Chage the imports so that devs wouldn't be getting confused
 
 ### For Content:
 ### Other examples?

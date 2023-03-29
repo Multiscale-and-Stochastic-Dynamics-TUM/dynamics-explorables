@@ -26,7 +26,7 @@ def mk_flow_radio():
     return flow, if_linear
 
 def mk_figure():
-    layout = go.Layout(xaxis=dict(title="x",range=(-10, 10) ),yaxis=dict(title="y", range=(-10, 10)))
+    layout = go.Layout(xaxis=dict(title="x",range=(-10, 10) ),yaxis=dict(title="y", range=(-10, 10)), margin = {"l":20, "r":20, "t":20, "b":20})
     fig = go.Figure(layout = layout)
 
     play_button = {
@@ -36,7 +36,7 @@ def mk_figure():
                 "frame": {"duration": 0, "redraw": True},
                 "fromcurrent": True,
                 "transition": {
-                    "duration": 100,
+                    "duration": 1,
                     "easing": "quadratic-in-out",
                 },
             },
@@ -62,7 +62,7 @@ def mk_figure():
         updatemenus=[{
             "buttons": [play_button, pause_button],
             "direction": "left",
-            "pad": {"r": 10, "t": 87},
+            "pad": {"r": 20, "t": 20},
             "showactive": False,
             "type": "buttons",
             "x": 0.1,
@@ -160,11 +160,3 @@ def add_animated_point_to_fig(fig, pt_trajectory, n_it=None):
         ]
     )
     return fig, mv_point
-
-def checkbox_handler(container, fig, creator = None, args = None, kwargs = None):
-    container.empty()
-    add_Es_to_fig(fig)
-    add_Eu_to_fig(fig)
-    with container:
-        st.plotly_chart(fig)
-    return
