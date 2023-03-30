@@ -5,6 +5,74 @@ import plotly.graph_objects as go
 
 
 mesh_size = 50
+param_p_initial_value = -4.0
+
+state = st.session_state
+
+
+def get_xyz_hopf(mesh_size):
+    x = np.outer(np.linspace(-4, 4, mesh_size), np.ones(mesh_size))
+    y = x.copy().T
+    x = x.reshape(-1)
+    y = y.reshape(-1)
+    z = []
+
+    for indx in range(mesh_size ** 2):
+        x_val = x[indx]
+        y_val = y[indx]
+        z.append(x_val ** 2 + y_val ** 2)
+
+    return x, y, z
+
+
+def get_3D_hopf_stability_fig(param, mesh_size=50):
+    stable_line_style = dict(color='blue', width=5)
+    unstable_line_style = dict(color='blue', width=5, dash='dash')
+    
+    x, y, z = get_xyz_hopf(mesh_size)
+    
+    # create the 3d parabola
+    fig = go.Figure(data=[go.Mesh3d(x=x, y=y, z=z, opacity=0.5, color='blue')])
+
+    # create the plane at position
+    fig.add_trace(go.Mesh3d(x=x, y=y, z=param * np.ones_like(x), opacity=0.2, color='red'))
+
+    # add the stable and unstable lines
+    fig.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0],z=[0, 15], mode='lines', line=unstable_line_style))
+    fig.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0],z=[0, -15], mode='lines', line=stable_line_style))
+
+
+    if param > 0:
+        x_intersection = np.sqrt(param)*np.cos(np.linspace(0, 2*np.pi, 10000))
+        y_intersection = np.sqrt(param)*np.sin(np.linspace(0, 2*np.pi, 10000))
+        z_intersection = param * np.ones_like(x_intersection)
+        fig.add_trace(go.Scatter3d(x=x_intersection, y=y_intersection,z=z_intersection, mode='lines', line=dict(color='orange', width=10)))
+
+    else:
+        x_intersection = [0]
+        y_intersection = [0]
+        z_intersection = [param]
+        fig.add_trace(go.Scatter3d(x=x_intersection, y=y_intersection,z=z_intersection, mode='markers', marker=dict(color='orange', size=5)))
+
+    fig.update_layout(
+        scene = dict(xaxis = dict(nticks=4, range=[-5,5],),
+                     yaxis = dict(nticks=4, range=[-5,5],),
+                     zaxis = dict(nticks=4, range=[-5,5],),),
+        width=700,
+        margin=dict(r=20, l=10, b=10, t=10))
+
+    camera = dict(
+        up=dict(x=1, y=0, z=0),
+        center=dict(x=0, y=0, z=0),
+        eye=dict(x=0.5, y=2.5, z=1.0)
+    )
+
+    fig.update_layout(scene_camera=camera)
+    fig.update_layout(showlegend=False)
+    fig.update_layout(width = 700, height = 700)
+
+    return fig
+
 
 st.title("Hopf bifurcation")
 
@@ -43,7 +111,7 @@ y_2
 """)
 
 
-st.write(r"""That are called subcritical (with the + sign) and supercritical (with the - sign) Hopf bifurcations.""")
+st.write(r"""That are called subcritical (with the plus sign) and supercritical (with the minus sign) Hopf bifurcations.""")
 
 st.header("Supercritical Hopf bifurcation")
 
@@ -51,98 +119,32 @@ st.write(r"""Here we present the 3D stability diagram of the supercritical hopf 
 Try different values of the parameter $p$ and see how the beheaviour of the systems changes.""")
 
 
-param_p = st.slider(r"$\text{Value of the parameter } p$", min_value=-4.0, max_value=4.0, step=0.05, label_visibility='hidden')
+if 'param_p' not in state:
+    state.param_p = param_p_initial_value
 
-x = np.outer(np.linspace(-4, 4, mesh_size), np.ones(mesh_size))
-y = x.copy().T
+graph_container = st.container()
 
-x = x.reshape(-1)
-y = y.reshape(-1)
+state.param_p = st.slider(r"$\text{Value of the parameter } p$", min_value=-4.0, max_value=4.0, step=0.05)
 
-z = []
-
-for indx in range(mesh_size ** 2):
-    x_val = x[indx]
-    y_val = y[indx]
-    z.append(x_val ** 2 + y_val ** 2)
-        
-fig = go.Figure(data=[go.Mesh3d(x=x,
-                   y=y,
-                   z=z,
-                   opacity=0.5,
-                   color='blue'
-                  )])
-
-
-fig.add_trace(go.Mesh3d(x=x,
-                   y=y,
-                   z=param_p * np.ones_like(x),
-                   opacity=0.2,
-                   color='red'
-                  ))
-
-stable_line_style = dict(color='blue', width=5)
-unstable_line_style = dict(color='blue', width=5, dash='dash')
-
-fig.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0],z=[0, 15], mode='lines', 
-                      line=unstable_line_style))
-
-fig.add_trace(go.Scatter3d(x=[0, 0], y=[0, 0],z=[0, -15], mode='lines', 
-                      line=stable_line_style))
-
-
-if param_p > 0:
-    x_intersection = np.sqrt(param_p)*np.cos(np.linspace(0, 2*np.pi, 10000))
-    y_intersection = np.sqrt(param_p)*np.sin(np.linspace(0, 2*np.pi, 10000))
-    z_intersection = param_p * np.ones_like(x_intersection)
-    fig.add_trace(go.Scatter3d(x=x_intersection, y=y_intersection,z=z_intersection, mode='lines', 
-                      line=dict(color='orange', width=10)))
-
-else:
-    x_intersection = [0]
-    y_intersection = [0]
-    z_intersection = [param_p]
-    fig.add_trace(go.Scatter3d(x=x_intersection, y=y_intersection,z=z_intersection, mode='markers', 
-                      marker=dict(color='orange', size=5)))
-
-
-fig.update_layout(
-    scene = dict(
-        xaxis = dict(nticks=4, range=[-5,5],),
-                     yaxis = dict(nticks=4, range=[-5,5],),
-                     zaxis = dict(nticks=4, range=[-5,5],),),
-    width=700,
-    margin=dict(r=20, l=10, b=10, t=10))
-
-
-camera = dict(
-    up=dict(x=1, y=0, z=0),
-    center=dict(x=0, y=0, z=0),
-    eye=dict(x=0.5, y=2.5, z=1.0)
-)
-
-fig.update_layout(scene_camera=camera)
-fig.update_layout(showlegend=False)
-fig.update_layout(width = 700, height = 700) 
-
-st.plotly_chart(fig)
-
+with graph_container:
+    fig = get_3D_hopf_stability_fig(state.param_p)
+    st.plotly_chart(fig)
+    
 
 # plot of eigenvalues and 2D stability"
 
 st.write(r"""As you can see the eigenvalues cross the imaginary axes in $p=0$. Also the stability changes from one point for negative velues of$p$ 
 to a circle of radius $\sqrt{p}$ for positive values of $p$.""")
 
-Df = np.asarray([[param_p, -1], [1, param_p]])
-
+Df = np.asarray([[state.param_p, -1], [1, state.param_p]])
 lambda1, lambda2 = np.linalg.eig(Df)[0]
 
 theta=np.linspace(0, 5*np.pi, 2000)
-if param_p > 0:
-    r=0.05*np.sqrt(param_p)*theta
+if state.param_p > 0:
+    r=0.05*np.sqrt(state.param_p)*theta
 
 else:
-    r=0.05*np.sqrt(-param_p)*theta
+    r=0.05*np.sqrt(-state.param_p)*theta
 
 theta1 = np.linspace(0, np.pi, 2000)
 
@@ -162,11 +164,11 @@ fig.add_trace(go.Scatter(x=[lambda2.real], y=[lambda2.imag], mode='markers',
                          marker=dict(color='purple', size=10)), 
                          row=1, col=1)
 
-if param_p > 0:
-    fig.add_trace(go.Scatter(x=np.sqrt(param_p) * np.cos(theta1), y=np.sqrt(param_p)*np.sin(theta1),
+if state.param_p > 0:
+    fig.add_trace(go.Scatter(x=np.sqrt(state.param_p) * np.cos(theta1), y=np.sqrt(state.param_p)*np.sin(theta1),
                           mode='lines', 
                           line=dict(color='orange', width=3)), row=1, col=2)
-    fig.add_trace(go.Scatter(x=np.sqrt(param_p) * np.cos(theta1), y=-np.sqrt(param_p)*np.sin(theta1),
+    fig.add_trace(go.Scatter(x=np.sqrt(state.param_p) * np.cos(theta1), y=-np.sqrt(state.param_p)*np.sin(theta1),
                           mode='lines', 
                           line=dict(color='orange', width=3)), row=1, col=2)
 
