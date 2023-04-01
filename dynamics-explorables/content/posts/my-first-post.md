@@ -8,4 +8,6 @@ draft: false
 
 Here is some text. Let's try some Latex: 
 
-$$\dot{[AB]} = \frac{1}{2}[AB] + \frac{1}{2}p([ABA])$$
+$$ i \hbar \partial_t \ket{\phi} = \mathcal{H} \ket{\phi}$$
+
+and here is some inline Latex: $\pi = e = \hbar = c = 1$.
