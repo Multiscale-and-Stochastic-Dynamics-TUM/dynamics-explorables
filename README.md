@@ -1,8 +1,6 @@
 # Dynamics Explorables
 
-A website with explorable explanations of famous models in dynamical systems. 
-
-🚧 Under construction 🚧
+This branch contains our explorations of the Streamlit Python library as a basis framework for the website. We decided not to pursue this path further and instead switch to Javascript. To briefly summarize the reasoning, Streamlit does not work very well in situations when a plot needs to be updated multiple times per second. This makes it impossible to create smooth nice animations. 
 
 ## Development notes
 
