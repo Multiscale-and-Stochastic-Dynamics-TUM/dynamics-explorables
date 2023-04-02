@@ -8,31 +8,21 @@ A website with explorable explanations of famous models in dynamical systems.
 
 ### Installing all the things
 
-We use [Poetry](https://python-poetry.org/) to manage Python environments and dependencies. To install Poetry on Linux, Windows or macOS, go to the [documentation](https://python-poetry.org/docs/#installation). Then, run the following commands:
+The website is built using [Hugo](https://gohugo.io/), a fast static-site generator. You will need to install it if you want to build the project locally. For Debian systems, do 
 
- ```bash
- poetry shell
- poetry install
- ```
+```bash
+sudo apt install hugo
+```
 
-This creates a new python environment for the project and installs all packages. 
+For any other systems, refer to the official Hugo [installation guidelines](https://gohugo.io/installation/).
 
 ### Creating the website locally
 
-To create the Streamlit website, activate the poetry shell using `poetry shell` if you haven't done so already and run:
+To create the website, switch to the `dynamics-explorables` folder and start a Hugo server:
 
 ```bash
-streamlit run main.py
+cd dynamics-explorables
+hugo server
 ```
 
 The website should open in your default browser automatically.
-
-### Adding a new dependency
-
-To add a new dependency, run:
-
-```
-poetry add <package name>
-```
-
-and commit the `poetry.lock` and `pyproject.toml` files. 
