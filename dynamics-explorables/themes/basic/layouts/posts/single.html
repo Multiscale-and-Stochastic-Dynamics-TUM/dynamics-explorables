@@ -1,0 +1,26 @@
+{{ define "main" }}
+
+<div class="project-container">
+
+    <section class="project-list">
+        <h2>Posts</h2>
+
+        <ul>
+            {{ range (where .Site.RegularPages "Type" "in" "posts") }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{ end }}
+        </ul>
+    </section>
+    <section class="project">
+        <h2>{{ .Title }}</h2>
+
+        {{ .Content }}
+    </section>
+
+    {{- $options := dict "targetPath" "js/bundle.js" -}}
+    {{- $jsBundle := resources.Get "js/index.js" | js.Build -}}
+    <script src="{{ $jsBundle.RelPermalink }}"></script>
+
+</div>
+
+{{ end }}

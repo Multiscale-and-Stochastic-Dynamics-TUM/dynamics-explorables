@@ -1,4 +1,4 @@
 baseURL = 'https://dynamics_explorables.org/'
 languageCode = 'en-us'
 title = 'Dynamics Explorables'
-theme = 'ananke'
+theme = 'basic'
