@@ -1,0 +1,22 @@
+{
+  "comments": {
+    "dependencies": {
+      "esbuild": "project",
+      "plotly": "project"
+    },
+    "devDependencies": {}
+  },
+  "dependencies": {
+    "esbuild": "0.17.15",
+    "plotly.js-dist-min": "^2.20.0"
+  },
+  "description": "",
+  "main": "index.js",
+  "name": "dynamics-explorables",
+  "private": true,
+  "scripts": {
+    "build": "hugo --cleanDestinationDir",
+    "hugo-server": "hugo server --disableFastRender"
+  },
+  "version": "1.0.0"
+}

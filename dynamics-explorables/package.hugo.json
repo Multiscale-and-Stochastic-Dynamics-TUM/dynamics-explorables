@@ -1,0 +1,15 @@
+{
+  "name": "dynamics-explorables",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "hugo --cleanDestinationDir",
+    "hugo-server": "hugo server --disableFastRender"
+  },
+  "dependencies": {
+    "esbuild": "0.17.15",
+    "plotly": "^1.0.6"
+  }
+}
