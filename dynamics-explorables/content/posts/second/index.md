@@ -3,6 +3,7 @@ title: "Second post"
 date: 2023-04-04T15:01:47+02:00
 draft: false
 ---
+js: "my-first-post"
 
 Here is a nice figure: 
 

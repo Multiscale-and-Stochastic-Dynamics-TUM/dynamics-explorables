@@ -17,9 +17,10 @@
         {{ .Content }}
     </section>
 
-    {{- $options := dict "targetPath" "js/bundle.js" -}}
-    {{- $jsBundle := resources.Get "js/index.js" | js.Build -}}
+    {{ if isset .Params "js" }}
+    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
     <script src="{{ $jsBundle.RelPermalink }}"></script>
+    {{ end }}
 
 </div>
 

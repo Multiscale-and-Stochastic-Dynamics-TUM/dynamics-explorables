@@ -2,6 +2,7 @@
 title: "My First Post"
 date: 2023-04-01T20:06:16+02:00
 draft: false
+js: "my-first-post"
 ---
 
 ## Hello, world! 👋
