@@ -254,19 +254,18 @@ input[type="range"] {
 .range::before,
 .range::after {
     font: 12px monospace;
-    content: counter(x);
     position: absolute;
-    bottom: -1.5ch;
+    bottom: -2ch;
 }
 
 .range::before {
-    counter-reset: x var(--min);
+    content: var(--min);
     transform: translateX(-50%);
 }
 
 .range::after {
-    counter-reset: x var(--max);
     right: 0;
+    content: var(--max);
     transform: translateX(50%);
 }
 
