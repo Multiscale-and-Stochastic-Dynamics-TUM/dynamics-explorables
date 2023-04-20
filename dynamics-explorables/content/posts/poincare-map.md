@@ -1,5 +1,5 @@
 ---
-title: "Poincare map"
+title: "Poincaré map"
 date: 2023-04-06T11:23:25+02:00
 draft: false
 js: poincare-map
