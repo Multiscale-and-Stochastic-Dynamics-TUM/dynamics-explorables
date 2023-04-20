@@ -1,3 +1,5 @@
+var ode45 = require('ode45-cash-karp')
+
 export {solve_ode};
 
 /**
@@ -9,14 +11,39 @@ export {solve_ode};
  * on the time interval given by `tspan` using the RK45 method with adaptive
  * time steps.
  *
- * This is a pure javascript implementation and might be slow.
- *
  * @param {function} rhs - the right-hand side of the ODE. Should be called as
  *     rhs(t, y).
  * @param {Array} tspan - an array with two elements: `[tstart, tend]`.
  * @param {Array | number} y0 - the initial condition at time point t = tstart.
- * @returns {Object} - an object with the fields t and y
+ * @param {Array} args - an array of additional arguments to the rhs function
+ * @returns {Object} - an object with fields t and y
  */
-function solve_ode(rhs, tspan, y0) {
-  return y0;
+function solve_ode(rhs, tspan, y0, args = []) {
+  // Wrap the rhs as the solver needs it
+  function rhs_wrap(ydot, y, t) {
+    result = rhs(t, y, ...args);
+    for (let i = 0; i < y.length; i++) {
+      ydot[i] = result[i];
+    }
+  }
+
+  // initial time step
+  let dt0 = 1e-5;
+
+  // Initialize:
+  let integrator = ode45(y0, rhs_wrap, tspan[0], dt0);
+
+  let solution = {'t': [], 'y': []};
+  let dim = y0.length;
+  for (let i = 0; i < dim; i++) {
+    solution.y.push([]);
+  }
+
+  while (integrator.step(tspan[1])) {
+    solution.t.push(integrator.t);
+    for (let i = 0; i < dim; i++) {
+      solution.y[i].push(integrator.y[i]);
+    }
+  }
+  return solution;
 }
