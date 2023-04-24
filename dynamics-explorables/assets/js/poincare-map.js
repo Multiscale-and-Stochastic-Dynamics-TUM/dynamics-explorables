@@ -67,8 +67,26 @@ const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
   xaxis: {range: [-2, 2], domain: [0.15, 0.6]},
   yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1]},
-  xaxis2: {range: [0, 2], anchor: 'y2', domain: [0.7, 1.], nticks: 3},
-  yaxis2: {anchor: 'x2', range: [0, 2], domain: [0.5, 1], nticks: 3},
+  xaxis2: {
+    range: [0, 2],
+    anchor: 'y2',
+    domain: [0.7, 1.],
+    nticks: 3,
+    title: {
+      text: 'starting point',
+      standoff: 0,
+    }
+  },
+  yaxis2: {
+    anchor: 'x2',
+    range: [0, 2],
+    domain: [0.5, 1],
+    nticks: 3,
+    title: {
+      text: 'return point',
+      standoff: 0,
+    }
+  },
   //  paper_bgcolor: '#ffffff00',
   //  plot_bgcolor: '#ffffff00',
   showlegend: false,
@@ -331,12 +349,25 @@ stepButton.addEventListener('click', () => {
 // =====================================================================
 // ---------------------------- third figure ---------------------------
 
-
 let allTrajectories = document.getElementById('allTrajectories');
 
 Plotly.newPlot(allTrajectories, structuredClone(streamlineTraces), layout);
 Plotly.addTraces(allTrajectories, cycleTrace);
 Plotly.addTraces(allTrajectories, crossectionTrace);
+
+let trajectories = [];
+let yStart = [];
+let yFinal = [];
+let dy = 0.1;
+dt = 0.01;
+
+// compute the poincare map
+for (let y0 = 0.0; y0 < 2.05; y0 += dy) {
+  yStart.push(y0);
+  let trajectory = fullRotationCart(dt, 0., y0)
+  trajectories.push(trajectory);
+  yFinal.push(trajectory.at(-1)[1]);
+}
 
 let trajectoryTrace = {
   x: [],
@@ -359,8 +390,8 @@ let startFinishTrace = {
 Plotly.addTraces(allTrajectories, startFinishTrace);  // trace 12
 
 let poincareLineTrace = {
-  x: [],
-  y: [],
+  x: yStart,
+  y: yFinal,
   xaxis: 'x2',
   yaxis: 'y2',
   mode: 'lines',
@@ -378,21 +409,6 @@ let poincareMarkerTrace = {
 };
 Plotly.addTraces(allTrajectories, poincareMarkerTrace);  // trace 14
 
-
-let trajectories = [];
-let yStart = [];
-let yFinal = [];
-let dy = 0.1;
-dt = 0.01;
-
-for (let y0 = 0.0; y0 < 2.05; y0 += dy) {
-  yStart.push(y0);
-  let trajectory = fullRotationCart(dt, 0., y0)
-  trajectories.push(trajectory);
-  yFinal.push(trajectory.at(-1)[1]);
-}
-
-Plotly.update(allTrajectories, {x: [yStart], y: [yFinal]}, {}, [13]);
 setPoincareTrajectory(1.3);
 
 function setPoincareTrajectory(y0) {
@@ -408,11 +424,55 @@ function setPoincareTrajectory(y0) {
   return y1;
 }
 
-const slider = document.getElementById('y0Slider');
-const label = document.getElementById('y0SliderLabel');
-label.innerHTML = `y0 = ${slider.value}`;
+const slider = document.getElementById('x2Slider');
+const label = document.getElementById('x2SliderLabel');
+label.innerHTML = `x<sub>2</sub> = ${slider.value}`;
 
 slider.oninput = () => {
-  label.innerHTML = `y0 = ${slider.value}`;
+  label.innerHTML = `x<sub>2</sub> = ${slider.value}`;
   setPoincareTrajectory(slider.value);
 };
+
+// =====================================================================
+// ---------------------------- forth figure ---------------------------
+
+
+let poincarePlot = document.getElementById('poincarePlot');
+
+const layout2 = {
+  margin: {l: 40, r: 40, t: 40, b: 30},
+  xaxis2:
+      {range: [0, 2], title: 'starting point', domain: [0.2, 0.8], nticks: 3},
+  yaxis2: {range: [0, 2], title: 'return point', domain: [0, 1], nticks: 3},
+  //  paper_bgcolor: '#ffffff00',
+  //  plot_bgcolor: '#ffffff00',
+  showlegend: false,
+  modebar: {
+    remove: [
+      'lasso', 'pan', 'select', 'zoom', 'zoomIn2d', 'zoomOut2d', 'autoscale',
+      'resetScale2d'
+    ]
+  },
+};
+
+let unityLine = {
+  x: [0, 2],
+  y: [0, 2],
+  xaxis: 'x2',
+  yaxis: 'y2',
+  line: {color: 'lightgray', width: 1},
+  mode: 'lines',
+};
+
+let fixpoint = {
+  x: [1],
+  y: [1],
+  xaxis: 'x2',
+  yaxis: 'y2',
+  mode: 'markers',
+  marker: {symbol: 'circle', size: 8, color: 'purple'},
+};
+
+Plotly.newPlot(poincarePlot, [unityLine], layout2);
+Plotly.addTraces(poincarePlot, poincareLineTrace);
+Plotly.addTraces(poincarePlot, fixpoint);
