@@ -18,7 +18,7 @@
     </section>
 
     {{ if isset .Params "js" }}
-    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
+    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build -}}
     <script src="{{ $jsBundle.RelPermalink }}"></script>
     {{ end }}
 
