@@ -1,6 +1,6 @@
 import Plotly from 'plotly.js-dist-min'
 
-import {solve_ode} from './modules/numerics/ode_solver.js'
+import {solve_ode} from './modules/simulation/ode_solver.js'
 
 Plotly.newPlot(
     'plotlyDiv',

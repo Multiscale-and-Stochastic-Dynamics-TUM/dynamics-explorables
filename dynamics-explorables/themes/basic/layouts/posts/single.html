@@ -18,8 +18,15 @@
     </section>
 
     {{ if isset .Params "js" }}
+    {{ if .Params.js }}
     {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
     <script src="{{ $jsBundle.RelPermalink }}"></script>
+    {{ end }}
+    {{ end }}
+
+    {{/* Force Hugo to include the webworker file into the final project */}}
+    {{ if isset .Params "pyodide" }}
+    {{ $webworker := resources.Get "/js/modules/pyodide/webworker.js"}}
     {{ end }}
 
 </div>
