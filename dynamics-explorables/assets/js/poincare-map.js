@@ -1,33 +1,27 @@
 import Plotly from 'plotly.js-dist-min'
 
-function rhsCart(x, y) {
-  return [x - y - x * (x ** 2 + y ** 2), x + y - y * (x ** 2 + y ** 2)];
-}
+import {solve_ode} from './modules/simulation/ode_solver';
 
 function rhsPolar(r, theta) {
-  return [r - r ** 3, 1];
+  return [r - r ** 3, 10];
+}
+
+function rhsCart(t, y0) {
+  let [x, y] = y0;
+  let r = Math.sqrt(x ** 2 + y ** 2);
+  let theta = Math.atan2(y, x);
+  let [rdot, thetadot] = rhsPolar(r, theta);
+  let xdot = rdot * Math.cos(theta) - thetadot * r * Math.sin(theta);
+  let ydot = rdot * Math.sin(theta) + thetadot * r * Math.cos(theta);
+  return [xdot, ydot];
 }
 
 /**
  * Maps the point [x, y] at time 0 to the point at time t.
  */
 function evolveCart(t, x, y) {
-  let r = Math.sqrt(x ** 2 + y ** 2);
-  let theta = Math.atan2(y, x);
-  [r, theta] = evolvePolar(t, r, theta);
-  let xnew = r * Math.cos(theta);
-  let ynew = r * Math.sin(theta);
-  return [xnew, ynew];
-}
-
-/**
- * Maps the point [r, θ] at time t to the point at time t + dt.
- */
-function evolvePolar(dt, r, theta) {
-  return [
-    Math.sqrt(1 / (1 + Math.exp(-2 * dt) * (1 / r ** 2 - 1))),
-    (theta + 10 * dt) % (2 * Math.PI)
-  ];
+  sol = solve_ode(rhsCart, [0, t], [x, y]);
+  return [sol.y[0].at(-1), sol.y[1].at(-1)];
 }
 
 /**
@@ -38,17 +32,22 @@ function fullRotationCart(dt, x, y) {
   let trajectory = [[x, y]];
   let r = Math.sqrt(x ** 2 + y ** 2);
   let theta = Math.atan2(y, x);
-  while (angleCompleted < 2 * Math.PI) {
-    let [rnew, thetanew] = evolvePolar(dt, r, theta);
-    let [xnew, ynew] = [rnew * Math.cos(thetanew), rnew * Math.sin(thetanew)];
+  let num_steps = 0;
+  while (angleCompleted < 2 * Math.PI && num_steps < 20000) {
+    let [xnew, ynew] = evolveCart(dt, x, y);
     trajectory.push([xnew, ynew]);
+    let thetanew = Math.atan2(ynew, xnew);
     if (thetanew >= theta) {
       angleCompleted += thetanew - theta;
     } else {
       angleCompleted += thetanew + 2 * Math.PI - theta;
     }
-    r = rnew;
+    // console.log('thetanew: ', thetanew);
+    // console.log('angleCompleted: ', angleCompleted);
     theta = thetanew;
+    x = xnew;
+    y = ynew;
+    num_steps += 1;
   }
   return trajectory;
 }
@@ -67,8 +66,26 @@ const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
   xaxis: {range: [-2, 2], domain: [0.15, 0.6]},
   yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1]},
-  xaxis2: {range: [0, 2], anchor: 'y2', domain: [0.7, 1.], nticks: 3},
-  yaxis2: {anchor: 'x2', range: [0, 2], domain: [0.5, 1], nticks: 3},
+  xaxis2: {
+    range: [0, 2.1],
+    anchor: 'y2',
+    domain: [0.7, 1.],
+    nticks: 3,
+    title: {
+      text: 'starting point',
+      standoff: 0,
+    }
+  },
+  yaxis2: {
+    anchor: 'x2',
+    range: [0, 2.1],
+    domain: [0.5, 1],
+    nticks: 3,
+    title: {
+      text: 'return point',
+      standoff: 0,
+    }
+  },
   //  paper_bgcolor: '#ffffff00',
   //  plot_bgcolor: '#ffffff00',
   showlegend: false,
@@ -98,17 +115,17 @@ for (let i = 0; i < 3; i++) {
 }
 
 let streamlineTraces = [];
+let dt = 0.005;
 for (const point of startingPoints) {
   let trajectory = [point];
   // squared distance to the absorbing cycle at r = 1
   let distanceToCycle = Math.abs(Math.sqrt(point[0] ** 2 + point[1] ** 2) - 1);
   let midDistance = distanceToCycle / 2;
-  let dt = 0.01;
   let t = 0.;
   let middleFound = false;
   let midx = [undefined, undefined];
   let midy = [undefined, undefined];
-  while (distanceToCycle > 0.01 && t < 10) {
+  while (distanceToCycle > 0.01 && t < 100) {
     let [x, y] = trajectory.at(-1);
     let [xnew, ynew] = evolveCart(dt, x, y);
     trajectory.push([xnew, ynew]);
@@ -243,11 +260,10 @@ let crossectionTrace = {
 Plotly.addTraces(singleTrajectory, crossectionTrace);
 
 let p = [0.0, 1.3];
-let dt = 0.001;
 let trajectory = fullRotationCart(dt, p[0], p[1]);
 let trajectoryFrames = [];
 
-for (let i = 0; i < trajectory.length; i += 20) {
+for (let i = 0; i < trajectory.length; i += 10) {
   let tracedata = {x: [[trajectory[i][0]]], y: [[trajectory[i][1]]]};
   trajectoryFrames.push(tracedata);
 }
@@ -309,11 +325,9 @@ async function drawFrame() {
   await Plotly.extendTraces(
       singleTrajectory, trajectoryFrames[currentFrame], [11]);
   currentFrame += 1;
-  setTimeout(drawFrame, 60);
+  setTimeout(drawFrame, 10);
 }
-setTimeout(
-    drawFrame,
-);
+setTimeout(drawFrame, 10);
 
 const stepButton = document.getElementById('stepButton');
 
@@ -331,12 +345,24 @@ stepButton.addEventListener('click', () => {
 // =====================================================================
 // ---------------------------- third figure ---------------------------
 
-
 let allTrajectories = document.getElementById('allTrajectories');
 
 Plotly.newPlot(allTrajectories, structuredClone(streamlineTraces), layout);
 Plotly.addTraces(allTrajectories, cycleTrace);
 Plotly.addTraces(allTrajectories, crossectionTrace);
+
+let trajectories = [];
+let yStart = [];
+let yFinal = [];
+let dy = 0.1;
+
+// compute the poincare map
+for (let y0 = 0.0; y0 < 2.05; y0 += dy) {
+  yStart.push(y0);
+  let trajectory = fullRotationCart(dt, 0., y0)
+  trajectories.push(trajectory);
+  yFinal.push(trajectory.at(-1)[1]);
+}
 
 let trajectoryTrace = {
   x: [],
@@ -359,8 +385,8 @@ let startFinishTrace = {
 Plotly.addTraces(allTrajectories, startFinishTrace);  // trace 12
 
 let poincareLineTrace = {
-  x: [],
-  y: [],
+  x: yStart,
+  y: yFinal,
   xaxis: 'x2',
   yaxis: 'y2',
   mode: 'lines',
@@ -378,21 +404,6 @@ let poincareMarkerTrace = {
 };
 Plotly.addTraces(allTrajectories, poincareMarkerTrace);  // trace 14
 
-
-let trajectories = [];
-let yStart = [];
-let yFinal = [];
-let dy = 0.1;
-dt = 0.01;
-
-for (let y0 = 0.0; y0 < 2.05; y0 += dy) {
-  yStart.push(y0);
-  let trajectory = fullRotationCart(dt, 0., y0)
-  trajectories.push(trajectory);
-  yFinal.push(trajectory.at(-1)[1]);
-}
-
-Plotly.update(allTrajectories, {x: [yStart], y: [yFinal]}, {}, [13]);
 setPoincareTrajectory(1.3);
 
 function setPoincareTrajectory(y0) {
@@ -408,11 +419,67 @@ function setPoincareTrajectory(y0) {
   return y1;
 }
 
-const slider = document.getElementById('y0Slider');
-const label = document.getElementById('y0SliderLabel');
-label.innerHTML = `y0 = ${slider.value}`;
+const slider = document.getElementById('x2Slider');
+const label = document.getElementById('x2SliderLabel');
+label.innerHTML = `x<sub>2</sub> = ${slider.value}`;
 
 slider.oninput = () => {
-  label.innerHTML = `y0 = ${slider.value}`;
-  setPoincareTrajectory(slider.value);
+  label.innerHTML = `x<sub>2</sub> = ${slider.value}`;
+  let startingValue = parseFloat(slider.value);
+  setPoincareTrajectory(startingValue);
+  let startingPoint = document.getElementById('startingPointSpan');
+  let returnPoint = document.getElementById('returnPointSpan');
+  startingPoint.innerText =
+      `$\\mathbf{x} = \\begin{pmatrix} x_1 & x_2 \\end{pmatrix}^T = \\begin{pmatrix} 0 & ${
+          startingValue.toFixed(1)} \\end{pmatrix}^T$`
+  let ind = yStart.findIndex(y => Math.abs(y - startingValue) < 1e-4);
+  let returnValue = yFinal[ind];
+  returnPoint.innerHTML =
+      `$\\mathbf{x}' = \\begin{pmatrix} x_1' & x_2' \\end{pmatrix}^T = \\begin{pmatrix} 0 & ${
+          returnValue.toFixed(2)} \\end{pmatrix}^T$`
+  MathJax.typeset();
 };
+
+// =====================================================================
+// ---------------------------- forth figure ---------------------------
+
+
+let poincarePlot = document.getElementById('poincarePlot');
+
+const layout2 = {
+  margin: {l: 40, r: 40, t: 40, b: 30},
+  xaxis2:
+      {range: [0, 2.1], title: 'starting point', domain: [0.2, 0.8], nticks: 3},
+  yaxis2: {range: [0, 2.1], title: 'return point', domain: [0, 1], nticks: 3},
+  //  paper_bgcolor: '#ffffff00',
+  //  plot_bgcolor: '#ffffff00',
+  showlegend: false,
+  modebar: {
+    remove: [
+      'lasso', 'pan', 'select', 'zoom', 'zoomIn2d', 'zoomOut2d', 'autoscale',
+      'resetScale2d'
+    ]
+  },
+};
+
+let unityLine = {
+  x: [0, 2],
+  y: [0, 2],
+  xaxis: 'x2',
+  yaxis: 'y2',
+  line: {color: 'lightgray', width: 1},
+  mode: 'lines',
+};
+
+let fixpoint = {
+  x: [1],
+  y: [1],
+  xaxis: 'x2',
+  yaxis: 'y2',
+  mode: 'markers',
+  marker: {symbol: 'circle', size: 8, color: 'purple'},
+};
+
+Plotly.newPlot(poincarePlot, [unityLine], layout2);
+Plotly.addTraces(poincarePlot, poincareLineTrace);
+Plotly.addTraces(poincarePlot, fixpoint);
