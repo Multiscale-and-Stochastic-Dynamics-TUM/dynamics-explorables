@@ -3,6 +3,13 @@ title: "Arnold's cat map"
 date: 2023-04-06T11:03:16+02:00
 draft: false
 js: arnold-cat
+cover:
+    image: "https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
+    # can also paste direct link from external site
+    # ex. https://i.ibb.co/K0HVPBd/paper-mod-profilemode.png
+    alt: "a pretty picture"
+    caption: "Caption caption caption"
+    relative: false # To use relative path for cover image, used in hugo Page-bundles
 ---
 
 Arnold's cat map is a discrete map $g: \mathbb{T} \rightarrow \mathbb{T}$ from a torus to itself defined by:
