@@ -1,4 +1,5 @@
 baseURL = 'https://dynamics_explorables.org/'
 languageCode = 'en-us'
 title = 'Dynamics Explorables'
-theme = 'basic'
+theme = 'papermod'
+sectionPagesMenu = 'main'
