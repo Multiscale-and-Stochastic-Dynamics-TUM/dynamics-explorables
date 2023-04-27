@@ -5,11 +5,8 @@ draft: false
 js: arnold-cat
 cover:
     image: "https://images.unsplash.com/photo-1511044568932-338cba0ad803?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80"
-    # can also paste direct link from external site
-    # ex. https://i.ibb.co/K0HVPBd/paper-mod-profilemode.png
-    alt: "a pretty picture"
-    caption: "Caption caption caption"
-    relative: false # To use relative path for cover image, used in hugo Page-bundles
+    alt: "The cat has nothing to do with the topic, but it's cute."
+    caption: Photo by <a href="https://unsplash.com/ja/@ludemeula?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Ludemeula Fernandes</a> on <a href="https://unsplash.com/de/fotos/9UUoGaaHtNE?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 ---
 
 Arnold's cat map is a discrete map $g: \mathbb{T} \rightarrow \mathbb{T}$ from a torus to itself defined by:

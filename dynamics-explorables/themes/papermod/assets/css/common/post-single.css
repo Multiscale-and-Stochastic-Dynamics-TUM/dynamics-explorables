@@ -6,7 +6,7 @@
 
 .page-header,
 .post-header {
-    margin: 24px auto var(--content-gap) auto;
+    margin: 0 0 var(--content-gap) 0;
 }
 
 .post-title {
@@ -397,6 +397,7 @@ h6:hover .anchor {
 [dir="rtl"] .paginav .next {
     text-align: left;
 }
+
 
 h1>a>svg {
     display: inline;
