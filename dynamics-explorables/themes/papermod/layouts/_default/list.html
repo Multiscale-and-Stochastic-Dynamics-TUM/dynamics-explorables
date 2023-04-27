@@ -49,10 +49,6 @@
 
 {{- $paginator := .Paginate $pages }}
 
-{{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
-{{- partial "home_info.html" . }}
-{{- end }}
-
 <div class="post-card-holder" id="post-card-holder">
   {{- $term := .Data.Term }}
   {{- range $index, $page := $paginator.Pages }}
