@@ -3,3 +3,14 @@ languageCode = 'en-us'
 title = 'Dynamics Explorables'
 theme = 'papermod'
 sectionPagesMenu = 'main'
+
+[related]
+  includeNewer = true
+  threshold = 20
+  toLower = false
+[[related.indices]]
+  name = 'keywords'
+  weight = 100
+[[related.indices]]
+  name = 'date'
+  weight = 10

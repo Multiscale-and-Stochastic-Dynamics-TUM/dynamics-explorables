@@ -41,15 +41,26 @@
         </div>
         {{- end }}
 
-
-        {{ if isset .Params "js" }}
-        {{ if .Params.js }}
-        {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
-        <script src="{{ $jsBundle.RelPermalink }}"></script>
-        {{ end }}
-        {{ end }}
-
     </div>
+
+    {{- partial "post_nav_links.html" . }}
+
+    {{ $related := .Site.RegularPages.Related . | first 3 }}
+    {{ with $related }}
+    <h1>Related</h1>
+    <div class="post-card-holder" id="post-card-holder">
+        {{ range . }}
+        {{- partial "post_card.html" (dict "cxt" . "IsHome" false "class" "post-entry tag-entry") }}
+        {{ end }}
+    </div>
+    {{ end }}
+
+    {{ if isset .Params "js" }}
+    {{ if .Params.js }}
+    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
+    <script src="{{ $jsBundle.RelPermalink }}"></script>
+    {{ end }}
+    {{ end }}
 
     {{/* Force Hugo to include the webworker file into the final project */}}
     {{ if isset .Params "pyodide" }}
@@ -63,9 +74,6 @@
             <li><a href="{{ .Permalink }}">{{ .LinkTitle }}</a></li>
             {{- end }}
         </ul>
-        {{- if (.Param "ShowPostNavLinks") }}
-        {{- partial "post_nav_links.html" . }}
-        {{- end }}
         {{- if (and site.Params.ShowShareButtons (ne .Params.disableShare true)) }}
         {{- partial "share_icons.html" . -}}
         {{- end }}

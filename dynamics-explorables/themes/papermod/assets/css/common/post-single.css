@@ -2,6 +2,7 @@
     background: var(--theme);
     border-radius: var(--radius);
     padding: var(--large-gap);
+    margin-bottom: var(--large-gap);
 }
 
 .page-header,
@@ -313,7 +314,6 @@
 .paginav {
     border-radius: var(--radius);
     background: var(--code-bg);
-    border: 1px solid var(--border);
 }
 
 .post-tags a {
@@ -361,7 +361,7 @@ h6:hover .anchor {
 }
 
 .paginav {
-    margin: 10px 0;
+    margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;
     display: flex;
     line-height: 30px;
     border-radius: var(--radius);
@@ -375,7 +375,7 @@ h6:hover .anchor {
 
 .paginav .title {
     letter-spacing: 1px;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-size: small;
     color: var(--secondary);
 }
@@ -383,6 +383,7 @@ h6:hover .anchor {
 .paginav .prev,
 .paginav .next {
     width: 50%;
+    padding: var(--small-gap);
 }
 
 .paginav span:hover:not(.title) {
