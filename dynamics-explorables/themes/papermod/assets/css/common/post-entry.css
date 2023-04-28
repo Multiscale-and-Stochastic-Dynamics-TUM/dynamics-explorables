@@ -1,5 +1,5 @@
 .post-card-holder {
-    margin: var(--gap) 0;
+    margin: var(--large-gap) 0;
     padding: 0;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -22,6 +22,7 @@
     background-color: var(--theme);
     border-radius: var(--radius);
     padding: var(--gap);
+    margin: var(--gap) 0;
     position: relative;
     display: flex;
     flex-direction: column;
