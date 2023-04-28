@@ -9,17 +9,13 @@
 {{- end }}
 
 {{- $pages := union .RegularPages .Sections }}
-
-{{- if .IsHome }}
 {{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
 {{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
-{{- end }}
-
-{{- $paginator := .Paginate $pages }}
+{{- $pages = sort $pages "Date" "desc" }}
 
 {{/* Display the latest post on the page differently */}}
 {{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
-{{- $separate1st := (and $.IsHome (eq $paginator.PageNumber 1) (not $user_preferred)) }}
+{{- $separate1st := (and $.IsHome (not $user_preferred)) }}
 {{- if $separate1st }}
 <br>
 <h1>Latest</h1>
@@ -32,56 +28,48 @@
 <h1>Featured</h1>
 
 <div class="post-card-holder" id="post-card-holder">
-    {{- $term := .Data.Term }}
-    {{- range $index, $page := $paginator.Pages }}
+    {{/* Take the first 6 most recent articles where "featured" is set to true */}}
+    {{- range first 6 (sort (where $pages "Params.featured" "eq" true) "Params.date" "desc") }}
 
     {{- $class := "post-entry" }}
-    {{- if $term }}
-    {{- $class = "post-entry tag-entry" }}
-    {{- end }}
 
     {{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" $class) }}
     {{- end }}
 </div>
 
+{{/* Iterate over all sections */}}
+{{- $pageSection := first 1 .Sections }}
+{{- range $pageSection }}
+{{- range $section := sort .Sections ".Params.order" "asc" }}
 <br>
-<h1>Basics</h1>
+<h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
 
-<div class="post-card-holder" id="post-card-holder">
-    {{- $term := .Data.Term }}
-    {{- range $index, $page := $paginator.Pages }}
-
-    {{- $class := "post-entry" }}
-    {{- if $term }}
-    {{- $class = "post-entry tag-entry" }}
-    {{- end }}
-
-    {{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" $class) }}
-    {{- end }}
-</div>
-
-{{- if gt $paginator.TotalPages 1 }}
-<footer class="page-footer">
-    <nav class="pagination">
-        {{- if $paginator.HasPrev }}
-        <a class="prev" href="{{ $paginator.Prev.URL | absURL }}">
-            «&nbsp;{{ i18n "prev_page" }}&nbsp;
-            {{- if (.Param "ShowPageNums") }}
-            {{- sub $paginator.PageNumber 1 }}/{{ $paginator.TotalPages }}
-            {{- end }}
-        </a>
-        {{- end }}
-        {{- if $paginator.HasNext }}
-        <a class="next" href="{{ $paginator.Next.URL | absURL }}">
-            {{- i18n "next_page" }}&nbsp;
-            {{- if (.Param "ShowPageNums") }}
-            {{- add 1 $paginator.PageNumber }}/{{ $paginator.TotalPages }}
-            {{- end }}&nbsp;»
-        </a>
-        {{- end }}
-    </nav>
-</footer>
+{{ $sectionPages := site.GetPage .RelPermalink }}
+{{ with $sectionPages }}
+{{- $pages := .Pages }}
+{{/* Filter out only the first 6 pages */}}
+{{- $truncated := (gt (len $pages) 6) }}
+{{- if $truncated }}
+{{- $pages = first 6 $pages }}
 {{- end }}
 
+<div class="post-card-holder" id="post-card-holder">
+    {{ range $pages }}
+    {{- $class := "post-entry" }}
+    {{- partial "post_card.html" (dict "cxt" . "IsHome" .IsHome "class" $class) }}
+    {{ end }}
+</div>
+
+{{- if $truncated }}
+<nav class="paginav" style="margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;">
+    <a class="prev" style="width: auto;" href="{{ .RelPermalink }}"><span>{{ i18n "show_all" }}</span></a>
+</nav>
+{{- end }}
+
+{{ end }}{{/* end sectionPages */}}
+
+{{ end }}
+
+{{- end }}{{/* end section */}}
 
 {{ end }}
