@@ -37,3 +37,6 @@
 
 - id: code_copied
   translation: "скопировано!"
+
+- id: show_all
+  translation: "Показать все"

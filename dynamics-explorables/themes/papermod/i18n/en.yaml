@@ -31,3 +31,6 @@
 
 - id: code_copied
   translation: "copied!"
+
+- id: show_all
+  translation: "Show all"
