@@ -1,0 +1,67 @@
+{{- define "main" }}
+
+{{- if (and site.Params.profileMode.enabled .IsHome) }}
+{{- partial "index_profile.html" . }}
+{{- else }} {{/* if not profileMode */}}
+
+{{- if not .IsHome | and .Title }}
+<header class="page-header">
+    {{- partial "breadcrumbs.html" . }}
+    <h1>
+        {{ .Title }}
+        {{- if and (or (eq .Kind `term`) (eq .Kind `section`)) (.Param "ShowRssButtonInSectionTermList") }}
+        {{- with .OutputFormats.Get "rss" }}
+        <a href="{{ .RelPermalink }}" title="RSS" aria-label="RSS">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" height="23">
+                <path d="M4 11a9 9 0 0 1 9 9" />
+                <path d="M4 4a16 16 0 0 1 16 16" />
+                <circle cx="5" cy="19" r="1" />
+            </svg>
+        </a>
+        {{- end }}
+        {{- end }}
+    </h1>
+
+    {{- if .Description }}
+    <div class="post-description">
+        {{ .Description | markdownify }}
+    </div>
+    {{- end }}
+
+</header>
+{{- end }}
+
+{{- if .Content }}
+<div class="post-content">
+    {{- if not (.Param "disableAnchoredHeadings") }}
+    {{- partial "anchored_headings.html" .Content -}}
+    {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{/* Iterate over all sections */}}
+{{- range $section := .Sections }}
+<h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
+
+{{ $sectionPages := site.GetPage .RelPermalink }}
+{{ with $sectionPages }}
+{{- $pages := .Pages }}
+{{/* Filter out only the first 6 pages */}}
+{{- $pages = first 6 $pages }}
+<div class="post-card-holder" id="post-card-holder">
+    {{ range $pages }}
+    {{- $class := "post-entry" }}
+    {{- partial "post_card.html" (dict "cxt" . "IsHome" .IsHome "class" $class) }}
+    {{ end }}
+</div>
+{{ end }}{{/* end sectionPages */}}
+
+<div class="paginav"><a href="{{ .RelPermalink }}">{{ i18n "show_all" }}</a></div>
+
+
+{{- end }}{{/* end section */}}
+
+{{- end }}{{/* end profileMode */}}
+
+{{- end }}{{- /* end main */ -}}
