@@ -17,22 +17,46 @@
 
 {{- $paginator := .Paginate $pages }}
 
+{{/* Display the latest post on the page differently */}}
+{{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
+{{- $separate1st := (and $.IsHome (eq $paginator.PageNumber 1) (not $user_preferred)) }}
+{{- if $separate1st }}
+<br>
+<h1>Latest</h1>
+{{- range first 1 $pages }}
+{{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" "first-entry") }}
+{{- end }}
+{{- end }}
+
+<br>
+<h1>Featured</h1>
+
 <div class="post-card-holder" id="post-card-holder">
     {{- $term := .Data.Term }}
     {{- range $index, $page := $paginator.Pages }}
 
     {{- $class := "post-entry" }}
-
-    {{/* Display the latest post on the page differently */}}
-    {{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
-    {{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
-    {{- $class = "first-entry" }}
-    {{- else if $term }}
+    {{- if $term }}
     {{- $class = "post-entry tag-entry" }}
     {{- end }}
 
     {{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" $class) }}
+    {{- end }}
+</div>
 
+<br>
+<h1>Basics</h1>
+
+<div class="post-card-holder" id="post-card-holder">
+    {{- $term := .Data.Term }}
+    {{- range $index, $page := $paginator.Pages }}
+
+    {{- $class := "post-entry" }}
+    {{- if $term }}
+    {{- $class = "post-entry tag-entry" }}
+    {{- end }}
+
+    {{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" $class) }}
     {{- end }}
 </div>
 
