@@ -30,24 +30,32 @@
 {{- end }}
 
 {{/* Iterate over all sections */}}
-{{- range $section := .Sections }}
+{{- range $section := sort .Sections ".Params.order" "asc" }}
 <h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
 
 {{ $sectionPages := site.GetPage .RelPermalink }}
 {{ with $sectionPages }}
 {{- $pages := .Pages }}
 {{/* Filter out only the first 6 pages */}}
+{{- $truncated := (gt (len $pages) 6) }}
+{{- if $truncated }}
 {{- $pages = first 6 $pages }}
+{{- end }}
+
 <div class="post-card-holder" id="post-card-holder">
     {{ range $pages }}
     {{- $class := "post-entry" }}
     {{- partial "post_card.html" (dict "cxt" . "IsHome" .IsHome "class" $class) }}
     {{ end }}
 </div>
+
+{{- if $truncated }}
+<nav class="paginav" style="margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;">
+    <a class="prev" style="width: auto;" href="{{ .RelPermalink }}"><span>{{ i18n "show_all" }}</span></a>
+</nav>
+{{- end }}
+
 {{ end }}{{/* end sectionPages */}}
-
-<div class="paginav"><a href="{{ .RelPermalink }}">{{ i18n "show_all" }}</a></div>
-
 
 {{- end }}{{/* end section */}}
 

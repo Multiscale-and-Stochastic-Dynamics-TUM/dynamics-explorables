@@ -361,7 +361,7 @@ h6:hover .anchor {
 }
 
 .paginav {
-    margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;
+    margin: var(--gap) 0;
     display: flex;
     line-height: 30px;
     border-radius: var(--radius);
@@ -384,10 +384,6 @@ h6:hover .anchor {
 .paginav .next {
     width: 50%;
     padding: var(--small-gap);
-}
-
-.paginav span:hover:not(.title) {
-    box-shadow: 0 1px 0;
 }
 
 .paginav .next {

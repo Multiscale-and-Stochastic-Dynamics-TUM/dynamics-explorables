@@ -16,19 +16,37 @@ body {
 
 .pagination {
     display: flex;
+    flex-direction: row;
+    text-align: center;
+    align-items: bottom;
+    gap: var(--small-gap);
+    justify-content: center;
 }
 
 .pagination a {
-    color: var(--theme);
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    color: var(--content);
     font-size: 13px;
-    line-height: 36px;
-    background: var(--primary);
-    border-radius: calc(36px / 2);
+    background: var(--code-bg);
+    border-radius: var(--radius);
     padding: 0 16px;
 }
 
-.pagination .next {
-    margin-inline-start: auto;
+.pagination a:hover {
+    background: var(--theme);
+    color: var(--content);
+}
+
+.pagination .current {
+    background: var(--theme);
+}
+
+.nav-icons svg {
+    height: 10px;
+    width: 16px;
+    padding: 0 3px;
 }
 
 .social-icons {

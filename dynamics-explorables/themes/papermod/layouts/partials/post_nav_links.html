@@ -1,15 +1,17 @@
-<nav class="paginav">
+<nav class="paginav" style="margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;">
   {{- with .NextInSection }}
   <a class="prev" href="{{ .Permalink }}">
-    <span class="title">« {{ i18n "prev_page" }}</span>
-    <br>
+    <span class="title">
+      <div class="nav-icons">{{- partial "svg.html" (dict "name" "angle-left") }}{{ i18n "prev_page" }}</div>
+    </span>
     <span>{{- .Name -}}</span>
   </a>
   {{- end }}
   {{- with .PrevInSection }}
   <a class="next" href="{{ .Permalink }}">
-    <span class="title">{{ i18n "next_page" }} »</span>
-    <br>
+    <span class="title">
+      <div class="nav-icons">{{ i18n "next_page" }}{{- partial "svg.html" (dict "name" "angle-right") }}</div>
+    </span>
     <span>{{- .Name -}}</span>
   </a>
   {{- end }}
