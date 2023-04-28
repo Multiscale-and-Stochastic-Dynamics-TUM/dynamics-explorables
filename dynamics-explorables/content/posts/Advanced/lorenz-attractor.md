@@ -4,6 +4,7 @@ date: 2023-04-06T12:31:36+02:00
 draft: false
 js: "lorenz-attractor"
 pyodide: true
+featured: true
 ---
 
 The Lorenz attractor is probably the most famous example of chaos. It is an ODE given by

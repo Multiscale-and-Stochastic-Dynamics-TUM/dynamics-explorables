@@ -8,6 +8,7 @@ cover:
     alt: "What is definitely the Poincare map"
     caption: 'Photo by <a href="https://unsplash.com/@rrruthie?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Ruthie</a> on <a href="https://unsplash.com/de/fotos/a6mfMjCFkII?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>'
 keywords: ["discrete_map"]
+featured: true
 ---
 
 Consider the two-dimensional ODE in polar coordinates 

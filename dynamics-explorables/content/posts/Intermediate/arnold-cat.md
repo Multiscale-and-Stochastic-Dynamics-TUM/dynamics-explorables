@@ -8,6 +8,7 @@ cover:
     alt: "The cat has nothing to do with the topic, but it's cute."
     caption: Photo by <a href="https://unsplash.com/ja/@ludemeula?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Ludemeula Fernandes</a> on <a href="https://unsplash.com/de/fotos/9UUoGaaHtNE?utm_source=unsplash&utm_medium=referral&utm_content=creditCopyText">Unsplash</a>
 keywords: ["discrete_map"]
+featured: true
 ---
 
 Arnold's cat map is a discrete map $g: \mathbb{T} \rightarrow \mathbb{T}$ from a torus to itself defined by:
