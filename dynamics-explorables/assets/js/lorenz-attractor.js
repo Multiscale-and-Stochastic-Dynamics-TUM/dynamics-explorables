@@ -169,7 +169,7 @@ let stream = new Stream(
 const playButton = document.getElementById('playButton');
 
 playButton.addEventListener('click', () => {
-  playButton.innerHTML = stream.animationPlaying ? 'Pause' : 'Play';
+  playButton.innerHTML = stream.animationPlaying ? 'Play' : 'Pause';
   stream.togglePausePlay();
 });
 
