@@ -40,7 +40,7 @@
 {{/* Iterate over all sections */}}
 {{- $pageSection := first 1 .Sections }}
 {{- range $pageSection }}
-{{- range $section := sort .Sections ".Params.order" "asc" }}
+{{- range $section := sort .Sections ".Params.subsection_order" "asc" }}
 <br>
 <h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
 

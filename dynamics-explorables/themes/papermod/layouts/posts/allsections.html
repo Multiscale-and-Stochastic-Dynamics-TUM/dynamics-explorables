@@ -30,7 +30,7 @@
 {{- end }}
 
 {{/* Iterate over all sections */}}
-{{- range $section := sort .Sections ".Params.order" "asc" }}
+{{- range $section := sort .Sections ".Params.subsection_order" "asc" }}
 <h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
 
 {{ $sectionPages := site.GetPage .RelPermalink }}
