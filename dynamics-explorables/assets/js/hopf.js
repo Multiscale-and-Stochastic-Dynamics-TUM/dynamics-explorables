@@ -1,42 +1,12 @@
 import Plotly from 'plotly.js-dist-min'
+import {getLinspace} from './modules/utils/utils';
 
-function getLinspace(startValue, stopValue, cardinality) {
-    var arr = [];
-    var step = (stopValue - startValue) / (cardinality - 1);
-    for (var i = 0; i < cardinality; i++) {
-      arr.push(startValue + (step * i));
-    }
-    return arr;
-}
+//Style constants
+const STABLE_LINE_STYLE = {color: 'blue', width: 5}
+const UNSTABLE_LINE_STYLE = {color: 'blue', width: 5, dash: 'dash'}
+const EIGENVAL_MARKER = {color:"Purple", size: 10}
 
-function get3Dstability(gridLim=4.0, meshSize=50){
-    var x = [];
-    var y = [];
-    var z = [];
-
-    var v =getLinspace(-gridLim, gridLim, meshSize)
-    for (var i = 0; i < meshSize; i++){
-        for (var j = 0; j < meshSize; j++){
-            x.push(v[j]);
-            y.push(v[i]);
-            z.push(v[j] * v[j] + v[i] * v[i])
-        }
-    }
-    return [x, y, z];
-}
-const xLimInf = -2.0
-const xLimSup = 2.0
-const numPoints = 10000
-
-const stable_line_style = {color: 'blue', width: 5}
-const unstable_line_style = {color: 'blue', width: 5, dash: 'dash'}
-const cut_line = {color:"Red", width: 1}
-const base_stability_line = {color:"Red", width: 3}
-const eigenval_marker = {color:"Purple", size: 10}
-const stable_marker = {color:"Green", size: 10}
-const unstable_marker = {color:"Orange", size: 10}
-
-const layout_3d = {
+const LAYOUT_3D = {
     margin: {l: 40, r: 20, t: 20, b: 30},
     scene: {
       xaxis: {
@@ -68,7 +38,25 @@ const layout_3d = {
     paper_bgcolor: '#ffffff00',
   };
 
+// Generate data for the 3D parabola of stability
+function get3Dstability(gridLim=4.0, meshSize=50){
+  var x = [];
+  var y = [];
+  var z = [];
+
+  var v =getLinspace(-gridLim, gridLim, meshSize)
+  for (var i = 0; i < meshSize; i++){
+      for (var j = 0; j < meshSize; j++){
+          x.push(v[j]);
+          y.push(v[i]);
+          z.push(v[j] * v[j] + v[i] * v[i])
+      }
+  }
+  return [x, y, z];
+}
+
 let plotlyDiv = document.getElementById('plotlyHopf');
+let multiplotDiv = document.getElementById('plotlyMultiplot');
 
 var xyzData = get3Dstability();
 var trace3Dcone = {
@@ -80,6 +68,7 @@ var trace3Dcone = {
     type: 'mesh3d'
 }
 
+//Add all the traces
 var traceStableLineEq = {
     x: [0, 0], 
     y: [0, 0],
@@ -88,7 +77,8 @@ var traceStableLineEq = {
     opacity: 0.8,
     color:'blue',
     type: 'scatter3d',
-    line: stable_line_style
+    line: STABLE_LINE_STYLE,
+    showlegend: false
 }
 
 var traceUnstableLineEq = {
@@ -99,7 +89,8 @@ var traceUnstableLineEq = {
     opacity: 0.8,
     color:'blue',
     type: 'scatter3d',
-    line: unstable_line_style
+    line: UNSTABLE_LINE_STYLE,
+    showlegend: false
 }
 
 var traceCuttingPlane = {
@@ -108,30 +99,21 @@ var traceCuttingPlane = {
     z: [],
     opacity: 0.2,
     color:'red',
-    type: 'mesh3d'
+    type: 'mesh3d',
+    showlegend: false
 }
-
-/* TODO
-var traceIntersecctionRing = {
-}
-var traceIntersecctionPoint = {
-}
-*/
 
 var plotData = [trace3Dcone, traceStableLineEq, traceUnstableLineEq, traceCuttingPlane] 
-Plotly.newPlot(plotlyDiv, plotData, layout_3d);
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D);
 
-// Plotly.newPlot(stabilityDiv, [traceBaseStability, traceStabilityStablePoints, traceStabilityUnstablePoints], layout_stability)
-
-let multiplotDiv = document.getElementById('plotlyMultiplot');
-
-
+// TODO Implement the two bottom plots
 var traceEigenvals = {
     x: [-3, -3],
     y: [1, -1],
     type: 'scatter',
     mode: 'markers',
-    marker: eigenval_marker
+    marker: EIGENVAL_MARKER,
+    showlegend: false
   };
   
   var trace2 = {
@@ -139,7 +121,8 @@ var traceEigenvals = {
     y: [50, 60, 70],
     xaxis: 'x2',
     yaxis: 'y2',
-    type: 'scatter'
+    type: 'scatter',
+    showlegend: false
   };
   
   var data = [traceEigenvals, trace2];

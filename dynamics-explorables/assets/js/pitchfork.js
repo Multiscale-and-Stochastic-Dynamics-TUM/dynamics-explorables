@@ -1,22 +1,11 @@
 import Plotly from 'plotly.js-dist-min'
+import {getLinspace} from './modules/utils/utils';
 
-function getLinspace(startValue, stopValue, cardinality) {
-    var arr = [];
-    var step = (stopValue - startValue) / (cardinality - 1);
-    for (var i = 0; i < cardinality; i++) {
-      arr.push(startValue + (step * i));
-    }
-    return arr;
-}
+const X_LIMINF = -2.0
+const x_LIMSUP = 2.0
+const NUM_POINTS = 10000
 
-const xLimInf = -2.0
-const xLimSup = 2.0
-const numPoints = 10000
-
-let plotlyDiv = document.getElementById('plotlyPitchfork');
-let stabilityDiv = document.getElementById('plotlyStability');
-
-const layout_plot = {
+const LAYOUT_PITCHFORK = {
     margin: {l: 40, r: 20, t: 20, b: 30},
     xaxis: {title: 'x', range: [-2, 2],},
     yaxis: {title: 'y', range: [-2, 2], },
@@ -24,7 +13,7 @@ const layout_plot = {
     paper_bgcolor: '#ffffff00',
 };
 
-const layout_stability = {
+const LAYOUT_STABILITY = {
     margin: {l: 40, r: 20, t: 20, b: 30},
     xaxis: {title: 'x', range: [-2, 2],},
     yaxis: {title: 'y', range: [-0.5, 0.5],},
@@ -32,53 +21,56 @@ const layout_stability = {
     paper_bgcolor: '#ffffff00',
 };
 
-const parampSlider = document.getElementById('parampSlider')
+const STABLE_LINE_STYLE = {color: 'blue', width: 3}
+const UNSTABLE_LINE_STYLE = {color: 'blue', width: 3, dash: 'dash'}
+const VERTICAL_INTERSECTION_STYLE = {color:"Red", width: 1}
+const BASE_STABILITY_LINE = {color:"Red", width: 3}
+const STABLE_MARKER = {color:"Green", size: 10}
+const UNSTABLE_MARKER = {color:"Orange", size: 10}
 
-const stable_line_style = {color: 'blue', width: 3}
-const unstable_line_style = {color: 'blue', width: 3, dash: 'dash'}
-const cut_line = {color:"Red", width: 1}
-const base_stability_line = {color:"Red", width: 3}
-const stable_marker = {color:"Green", size: 10}
-const unstable_marker = {color:"Orange", size: 10}
+let parampSlider = document.getElementById('parampSlider')
+let plotlyDiv = document.getElementById('plotlyPitchfork');
+let stabilityDiv = document.getElementById('plotlyStability');
+
 
 var upperBranch = []; 
 var lowerBranch = []; 
 
-for (var i = 0; i < numPoints; i++) {
-    var xValue = i * xLimSup / numPoints
+for (var i = 0; i < NUM_POINTS; i++) {
+    var xValue = i * x_LIMSUP / NUM_POINTS
     upperBranch.push(Math.sqrt(xValue));
     lowerBranch.push(-Math.sqrt(xValue));
 }
 
 var traceStableZeroEquilibrium = {
-    x: getLinspace(xLimInf, 0, 2),
-    y: Array(numPoints).fill(0),
+    x: getLinspace(X_LIMINF, 0, 2),
+    y: Array(NUM_POINTS).fill(0),
     mode: 'lines',
-    line: stable_line_style,
+    line: STABLE_LINE_STYLE,
     showlegend: false
 };
 
 var traceUnstableZeroEquilibrium = {
-    x: getLinspace(0, xLimSup, 2),
-    y: Array(numPoints).fill(0),
+    x: getLinspace(0, x_LIMSUP, 2),
+    y: Array(NUM_POINTS).fill(0),
     mode: 'lines',
-    line: unstable_line_style,
+    line: UNSTABLE_LINE_STYLE,
     showlegend: false
 };
 
 var traceUpperBranch = {
-    x: getLinspace(0, xLimSup, numPoints),
+    x: getLinspace(0, x_LIMSUP, NUM_POINTS),
     y: upperBranch,
     mode: 'lines',
-    line: stable_line_style,
+    line: STABLE_LINE_STYLE,
     showlegend: false
 }
 
 var traceLowerBranch = {
-    x: getLinspace(0, xLimSup, numPoints),
+    x: getLinspace(0, x_LIMSUP, NUM_POINTS),
     y: lowerBranch,
     mode: 'lines',
-    line: stable_line_style,
+    line: STABLE_LINE_STYLE,
     showlegend: false
 }
 
@@ -86,7 +78,7 @@ var traceUnstableEqPoints = {
     x: xUnstablePoints,
     y: yUnstablePoints,
     mode: 'markers',
-    marker: unstable_marker,
+    marker: UNSTABLE_MARKER,
     showlegend: false
 }
 
@@ -94,7 +86,7 @@ var traceVLine = {
     x: [],
     y: [],
     mode: 'lines',
-    line: cut_line,
+    line: VERTICAL_INTERSECTION_STYLE,
     showlegend: false
 } 
 
@@ -102,7 +94,7 @@ var traceStableEqPoints = {
     x: [],
     y: [],
     mode: 'markers',
-    marker: stable_marker,
+    marker: STABLE_MARKER,
     showlegend: false
 }
 
@@ -110,15 +102,15 @@ var traceUnstableEqPoints = {
     x: [],
     y: [],
     mode: 'markers',
-    marker: unstable_marker,
+    marker: UNSTABLE_MARKER,
     showlegend: false
 }
 
 var traceBaseStability = {
-    x: getLinspace(xLimInf, xLimSup, numPoints),
-    y: Array(numPoints).fill(0),
+    x: getLinspace(X_LIMINF, x_LIMSUP, NUM_POINTS),
+    y: Array(NUM_POINTS).fill(0),
     mode: 'lines',
-    line: base_stability_line,
+    line: BASE_STABILITY_LINE,
     showlegend: false
 }
 
@@ -126,7 +118,7 @@ var traceStabilityStablePoints = {
     x: [],
     y: [],
     mode: 'markers',
-    marker: stable_marker,
+    marker: STABLE_MARKER,
     showlegend: false
 }
 
@@ -134,7 +126,7 @@ var traceStabilityUnstablePoints = {
     x: [],
     y: [],
     mode: 'markers',
-    marker: unstable_marker,
+    marker: UNSTABLE_MARKER,
     showlegend: false
 }
 
@@ -146,8 +138,8 @@ var yUnstablePoints = []
 var plotData = [traceStableZeroEquilibrium, traceUnstableZeroEquilibrium, traceUpperBranch, 
                 traceLowerBranch, traceVLine, traceStableEqPoints, traceUnstableEqPoints] 
 
-Plotly.newPlot(plotlyDiv, plotData, layout_plot);
-Plotly.newPlot(stabilityDiv, [traceBaseStability, traceStabilityStablePoints, traceStabilityUnstablePoints], layout_stability)
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK);
+Plotly.newPlot(stabilityDiv, [traceBaseStability, traceStabilityStablePoints, traceStabilityUnstablePoints], LAYOUT_STABILITY)
 
 parampSlider.oninput = () => {
     const paramp = document.getElementById('parampSliderLabel')
