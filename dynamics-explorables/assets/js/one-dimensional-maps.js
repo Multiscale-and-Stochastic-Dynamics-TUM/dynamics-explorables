@@ -40,7 +40,9 @@ function getLogisticMapValues(xInput) {
 
 let plotlyMap = document.getElementById('plotlyMap');
 let startValue = document.getElementById('startValueSlider');
+let startLabel = document.getElementById('startValueSliderLabel');
 let stepButton = document.getElementById('stepButton');
+startLabel.innerHTML = `y<sub>0</sub> = ${startValue.value}`;
 
 var x = getLinspace(0, 1, NUM_POINTS)
 
@@ -81,6 +83,11 @@ Plotly.newPlot(plotlyMap, plotData, layout_plot);
 
 var trackValuesX = [];
 var trackValuesY = [];
+
+startValue.oninput = () => {
+    startLabel.innerHTML = `y<sub>0</sub> = ${startValue.value}`;
+};
+
 startValue.addEventListener('change', () => { 
 
     console.log('A')

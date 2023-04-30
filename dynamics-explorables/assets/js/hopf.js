@@ -133,10 +133,13 @@ var traceEigenvals = {
   
   Plotly.newPlot(multiplotDiv, data, layout);
 
+const parampSlider = document.getElementById('parampSlider');
+const parampLabel = document.getElementById('parampSliderLabel');
+parampLabel.innerHTML = `p = ${parampSlider.value}`;
 
 parampSlider.oninput = () => {
-    const paramp = document.getElementById('parampSliderLabel')
     var param_value = parampSlider.value
+    parampLabel.innerHTML = `p = ${param_value}`;
 
     var xyzDataPlane = get3Dstability(4.0, 2);
     var updatedStabilityData = {

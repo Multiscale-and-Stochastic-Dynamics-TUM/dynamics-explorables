@@ -29,9 +29,11 @@ const STABLE_MARKER = {color:"Green", size: 10}
 const UNSTABLE_MARKER = {color:"Orange", size: 10}
 
 let parampSlider = document.getElementById('parampSlider')
+let parampLabel = document.getElementById('parampSliderLabel');
 let plotlyDiv = document.getElementById('plotlyPitchfork');
 let stabilityDiv = document.getElementById('plotlyStability');
 
+parampLabel.innerHTML = `p = ${parampSlider.value}`;
 
 var upperBranch = []; 
 var lowerBranch = []; 
@@ -142,8 +144,8 @@ Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK);
 Plotly.newPlot(stabilityDiv, [traceBaseStability, traceStabilityStablePoints, traceStabilityUnstablePoints], LAYOUT_STABILITY)
 
 parampSlider.oninput = () => {
-    const paramp = document.getElementById('parampSliderLabel')
     var param_value = parampSlider.value
+    parampLabel.innerHTML = `p = ${param_value}`;
 
     if (param_value <= 0) {
         xStablePoints = [param_value]
@@ -158,7 +160,7 @@ parampSlider.oninput = () => {
         xUnstablePoints = [param_value]
         yUnstablePoints = [0]
     }
-    console.log(paramp.innerHTML)
+    console.log(parampLabel.innerHTML);
 
     var updatedTraces = {x: [[param_value, param_value], xStablePoints, xUnstablePoints],
                          y: [[-2, 2],yStablePoints, yUnstablePoints]}
