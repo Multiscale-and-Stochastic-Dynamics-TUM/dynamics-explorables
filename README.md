@@ -72,3 +72,7 @@ import Plotly from 'plotly.js-dist-min'
 ```
 
 and add the corresponding library to npm. 
+
+### Notes on adding Latex
+
+To add Latex, you can use the usual commands `$ ... $` and `$$ ... $$`. However, to enter the blank line macro `\\` (used, for example, to separate rows of a matrix), you need to use a triple backslash like this: `\\\`. See [here](https://docs.mathjax.org/en/latest/input/tex/html.html#interactions-with-content-management-systems) for more details. 

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "esbuild": "0.17.15",
+    "ode45-cash-karp": "^1.1.0",
     "plotly.js-dist-min": "^2.20.0"
   },
   "description": "",
