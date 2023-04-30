@@ -391,6 +391,21 @@ h6:hover .anchor {
     text-align: right;
 }
 
+.nav-icons svg {
+    height: 10px;
+    width: 16px;
+    padding: 0 3px;
+    fill: var(--content);
+}
+
+.paginav .section-nav .title {
+    color: var(--accent1);
+}
+
+.section-nav .nav-icons svg {
+    fill: var(--accent1);
+}
+
 [dir="rtl"] .paginav .next {
     text-align: left;
 }
