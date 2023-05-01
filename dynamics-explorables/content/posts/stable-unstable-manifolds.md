@@ -5,17 +5,17 @@ draft: false
 js: "stable-unstable-manifolds"
 ---
 
+{{< plotly id="plotlyDiv" >}}
+
+
+{{< radio_button id = "help" name = "aaa" value = "1" label = "[1,2,2]">}}
+
 Welcome to the section about stable and unstable manifolds,
 an important structure in the phase space that helps to understand dynamics around the equilibrium points (if the point satisfies certain conditions).
 First the idea will be introcuced on the linear systems in tabs "Linear System" and "Eigenspaces" and generalised in "General System" and "Manifolds".
 Otherwise, you can interract immediately with the example above.
 You can click the graph to put a point on the phase space and evolve it by clicking "Play".
 You can change parameters of the demo using inputs to the right.
-
-{{< plotly id="plotlyDiv" >}}
-
-
-{{< radio_button id = "help" name = "aaa" value = "1" label = "[1,2,2]">}}
 
 ## Linear
 
