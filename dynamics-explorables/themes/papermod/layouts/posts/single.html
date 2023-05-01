@@ -57,7 +57,10 @@
 
     {{ if isset .Params "js" }}
     {{ if .Params.js }}
-    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build | minify | fingerprint -}}
+    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build -}}
+    {{- if (eq site.Params.env "production") }}
+    {{- $jsBundle = $jsBundle | minify | fingerprint }}
+    {{- end }}
     <script src="{{ $jsBundle.RelPermalink }}"></script>
     {{ end }}
     {{ end }}

@@ -15,3 +15,6 @@ paginate = 12
 [[related.indices]]
   name = 'date'
   weight = 10
+
+[params]
+  env = 'development' # development or production
