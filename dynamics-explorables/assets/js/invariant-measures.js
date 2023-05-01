@@ -2,6 +2,15 @@ import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
 
+function sleep(milliseconds) {
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < milliseconds);
+}
+
+
 // Number of points of the logistic map
 const NUM_POINTS = 10000;
 
@@ -17,9 +26,18 @@ const INTERVAL_LINE_STYLE = {
   color: 'orange',
   width: 4
 };
+const INTERVAL_AREA_LINE_STYLE = {
+  color: 'orange',
+  width: 1
+};
 const PREIMAGE_LINE_STYLE = {
   color: 'purple',
   width: 4
+};
+const MEASURE_LINE_STYLE = {
+  color: 'rgba(0, 255, 255, 0.1)',  // cyan color, needs to be this format for
+                                    // oppacity
+  width: 1
 };
 const CURRENT_POINT_STYLE = {
   color: 'Green',
@@ -40,11 +58,11 @@ const LAYOUT = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {
     title: 'x',
-    range: [-0.2, 1.2],
+    range: [-0.1, 1.1],
   },
   yaxis: {
     title: 'y',
-    range: [-0.2, 1.2],
+    range: [-0.1, 1.5],
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
@@ -81,12 +99,45 @@ function computePreimage(a, b) {
   return res;
 };
 
+function computeBaseTrace(a, b) {
+  let res = {};
+  if (b <= 1 / 2 || a >= 1 / 2) {
+    res = {'x': [a, a, b, b], 'y': [0, 0, 0, 0]};
+  };
+  if (a < 1 / 2 && b > 1 / 2) {
+    res = {'x': [a, a, 0.5, 0.5 + EPSILON, b, b], 'y': [0, 0, 0, 0, 0, 0]};
+  };
+  return res;
+};
+
+function computeAreaTrace(a, b) {
+  let res = {};
+  if (b <= 1 / 2) {
+    res = {'x': [a, a, b, b], 'y': [0, 4 / 3, 4 / 3, 0]};
+  };
+
+  if (a >= 1 / 2) {
+    res = {'x': [a, a, b, b], 'y': [0, 2 / 3, 2 / 3, 0]};
+  };
+
+  if (a < 1 / 2 && b > 1 / 2) {
+    res = {
+      'x': [a, a, 0.5, 0.5 + EPSILON, b, b],
+      'y': [0, 4 / 3, 4 / 3, 2 / 3, 2 / 3, 0]
+    };
+  };
+  return res;
+};
+
 let plotlyMap = document.getElementById('plotlyMap');
+let plotlyArea = document.getElementById('plotlyMeasure');
+
 let intervalStart = document.getElementById('inputIntervalStart');
 let intervalEnd = document.getElementById('inputIntervalEnd');
 
 let drawIntervalButton = document.getElementById('stepButtonDrawInterval');
 let drawPreimageButton = document.getElementById('stepButtonDrawPreimage');
+let measureButton = document.getElementById('stepButtonComputeMeasure');
 
 let xTrace1 = linspace(0, 1 / 2, NUM_POINTS);
 let xTrace2 = linspace(1 / 2 + EPSILON, 1, NUM_POINTS);
@@ -131,9 +182,28 @@ let tracePreimageInterval2 = {
   showlegend: false
 };
 
+let traceInvariantMeasure = {
+  x: [0, 0, 0.5, 0.5 + EPSILON, 1, 1],
+  y: [0, 4 / 3, 4 / 3, 2 / 3, 2 / 3, 0],
+  mode: 'lines',
+  fill: 'toself',
+  line: MEASURE_LINE_STYLE,
+  showlegend: false
+};
+
+let startingIntervalArea = {
+  x: [],
+  y: [],
+  mode: 'lines',
+  fill: 'toself',
+  line: INTERVAL_AREA_LINE_STYLE,
+  showlegend: false
+};
+
+
 let plotData = [
-  MapTrace1, MapTrace2, traceStartingInterval, tracePreimageInterval1,
-  tracePreimageInterval2
+  MapTrace1, MapTrace2, traceInvariantMeasure, traceStartingInterval,
+  tracePreimageInterval1, tracePreimageInterval2, startingIntervalArea
 ];
 Plotly.newPlot(plotlyMap, plotData, LAYOUT);
 
@@ -142,7 +212,7 @@ drawIntervalButton.addEventListener('click', () => {
     x: [[intervalStart.value, intervalEnd.value]],
     y: [[0, 0]]
   };
-  Plotly.update(plotlyMap, updatedTraces, {}, [2]);
+  Plotly.update(plotlyMap, updatedTraces, {}, [3]);
 });
 
 drawPreimageButton.addEventListener('click', () => {
@@ -154,10 +224,55 @@ drawPreimageButton.addEventListener('click', () => {
 
   if (preimage.length == 2) {
     let updatedTraces = {x: [preimage[0], preimage[1]], y: [[0, 0], [0, 0]]};
-    Plotly.update(plotlyMap, updatedTraces, {}, [3, 4]);
+    Plotly.update(plotlyMap, updatedTraces, {}, [4, 5]);
   };
 });
 
+drawPreimageButton.addEventListener('click', () => {
+  preimage = computePreimage(intervalStart.value, intervalEnd.value)
+  if (preimage.length == 1) {
+    let updatedTraces = {x: [preimage[0]], y: [[0, 0]]};
+    Plotly.update(plotlyMap, updatedTraces, {}, [4]);
+  };
+
+  if (preimage.length == 2) {
+    let updatedTraces = {x: [preimage[0], preimage[1]], y: [[0, 0], [0, 0]]};
+    Plotly.update(plotlyMap, updatedTraces, {}, [4, 5]);
+  };
+});
+
+measureButton.addEventListener('click', () => {
+  a = intervalStart.value;
+  b = intervalEnd.value;
+
+  baseTrace = computeBaseTrace(a, b);
+  areaTrace = computeAreaTrace(a, b);
+
+  animationTraces = [
+    {data: [{x: baseTrace['x'], y: baseTrace['y']}], traces: [6]},
+    {data: [{x: areaTrace['x'], y: areaTrace['y']}], traces: [6]}
+  ];
+  Plotly.animate(plotlyMap, animationTraces, DEFAULT_TRANSITION);
+
+  let layout = {
+    showlegend: false,
+    annotations: [{
+      x: a / 2 + b / 2,
+      y: 0.5,
+      xref: 'x',
+      yref: 'y',
+      text: 'Area',
+      showarrow: false
+    }]
+  };
+  sleep(500)
+  Plotly.update(plotlyMap, {}, layout, []);
+  // let updatedTraces = {x: [[a, a, b, b]], y: [[0, 1, 1, 0]]};
+  // Plotly.update(plotlyMap, updatedTraces, {}, [5]);
+});
+
+
+Plotly.newPlot(plotlyArea, plotData, LAYOUT);
 
 /*
 var trackValuesX = [];
