@@ -4,12 +4,6 @@ This is just a placeholder blank stylesheet so as to support adding custom style
 Read https://github.com/adityatelange/hugo-PaperMod/wiki/FAQs#bundling-custom-css-with-themes-assets for more info
 */
 
-/* Format links & buttons */
-a,
-/*a:visited {
-    color: var(--accent);
-}*/
-
 a:hover {
     color: var(--accent2);
     text-decoration: none;
@@ -56,17 +50,16 @@ input[type="range"] {
     height: 5px;
     padding: 0px;
     margin: 1.0rem 0 0.5rem 0.5rem;
-    ;
 }
 
 /* from https://stackoverflow.com/a/64306268/20471671 */
 .range {
     --ticksThickness: 2px;
     --ticksHeight: 30%;
-    --ticksColor: var(--accent1);
+    --ticksColor: var(--secondary);
 
     display: inline-block;
-    background: var(--theme);
+    background: #ffffff00;
     background-position: 0 bottom;
     position: relative;
     width: 288px;
@@ -98,6 +91,7 @@ input[type="range"] {
     width: 300px;
     margin: 0 -6px;
     /* Critical adjustment */
+    color: var(--accent1);
 }
 
 .range label {
@@ -123,4 +117,24 @@ input[type="radio"]:focus,
 input[type="radio"]:enabled:hover {
     filter: brightness(1.2);
     cursor: pointer;
+}
+
+/* Format forms */
+
+textarea,
+select,
+input {
+    font-size: inherit;
+    font-family: inherit;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--content);
+    background: var(--code-bg);
+    border: 1px solid var(--tertiary);
+    border-radius: var(--radius);
+    box-shadow: none;
+    box-sizing: border-box;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
 }
