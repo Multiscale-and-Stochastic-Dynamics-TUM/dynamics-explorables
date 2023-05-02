@@ -1,7 +1,10 @@
 {{- $scratch := newScratch }}
 
+{{- with .cxt}} {{/* Apply proper context from dict */}}
+{{- if (or (.Param "DisplayDate") $.DisplayDate) }}
 {{- if not .Date.IsZero -}}
 {{- $scratch.Add "meta" (slice (printf "<span title='%s'>%s</span>" (.Date) (.Date | time.Format (default "January 2, 2006" site.Params.DateFormat)))) }}
+{{- end }}
 {{- end }}
 
 {{- if (.Param "ShowReadingTime") -}}
@@ -18,4 +21,5 @@
 
 {{- with ($scratch.Get "meta") }}
 {{- delimit . "&nbsp;·&nbsp;" -}}
+{{- end -}}
 {{- end -}}
