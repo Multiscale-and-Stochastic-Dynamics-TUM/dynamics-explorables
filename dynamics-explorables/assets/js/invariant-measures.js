@@ -2,15 +2,6 @@ import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
 
-function sleep(milliseconds) {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < milliseconds);
-}
-
-
 // Number of points of the logistic map
 const NUM_POINTS = 10000;
 
@@ -129,6 +120,12 @@ function computeAreaTrace(a, b) {
   return res;
 };
 
+function computeMeasure(a, b, numFloatingPoint) {
+  let meas = (Math.max(1 / 2 - a, 0) * 4 / 3 + Math.max(b - 1 / 2, 0) * 2 / 3);
+
+  return (Math.round(meas * 100) / 100).toFixed(2);
+};
+
 let plotlyMap = document.getElementById('plotlyMap');
 let plotlyArea = document.getElementById('plotlyMeasure');
 
@@ -200,7 +197,6 @@ let startingIntervalArea = {
   showlegend: false
 };
 
-
 let plotData = [
   MapTrace1, MapTrace2, traceInvariantMeasure, traceStartingInterval,
   tracePreimageInterval1, tracePreimageInterval2, startingIntervalArea
@@ -241,7 +237,7 @@ drawPreimageButton.addEventListener('click', () => {
   };
 });
 
-measureButton.addEventListener('click', () => {
+measureButton.addEventListener('click', async () => {
   a = intervalStart.value;
   b = intervalEnd.value;
 
@@ -254,18 +250,27 @@ measureButton.addEventListener('click', () => {
   ];
   Plotly.animate(plotlyMap, animationTraces, DEFAULT_TRANSITION);
 
+
+  var updatedTraces = {x: [a / 2 + b / 2], y: [0.3], text: ['Area: ']};
+
+  Plotly.update(plotlyMap, updatedTraces, {}, [7]);
+
   let layout = {
     showlegend: false,
     annotations: [{
       x: a / 2 + b / 2,
-      y: 0.5,
+      y: 0.3,
       xref: 'x',
       yref: 'y',
-      text: 'Area',
-      showarrow: false
+      text: computeMeasure(a, b),
+      showarrow: false,
+      bgcolor: 'white',
+      opacity: 1.0,
+      font: {color: 'orange', size: 18}
     }]
   };
-  sleep(500)
+
+  await new Promise(r => setTimeout(r, 1000));
   Plotly.update(plotlyMap, {}, layout, []);
   // let updatedTraces = {x: [[a, a, b, b]], y: [[0, 1, 1, 0]]};
   // Plotly.update(plotlyMap, updatedTraces, {}, [5]);
