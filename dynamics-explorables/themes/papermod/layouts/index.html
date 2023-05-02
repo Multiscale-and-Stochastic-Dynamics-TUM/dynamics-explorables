@@ -1,0 +1,69 @@
+{{ define "main" }}
+
+{{- if .Content }}
+<div class="post-content">
+    {{- if not (.Param "disableAnchoredHeadings") }}
+    {{- partial "anchored_headings.html" .Content -}}
+    {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- $pages := union .RegularPages .Sections }}
+{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
+{{- $pages = sort $pages "Date" "desc" }}
+
+{{/* Display the latest post separately */}}
+<br>
+<h1>Latest</h1>
+{{- range first 1 $pages }}
+{{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" "first-entry") }}
+{{- end }}
+
+{{/* Display the first 6 most recent posts with featured set to true */}}
+<br>
+<h1>Featured</h1>
+<div class="post-card-holder" id="post-card-holder">
+    {{- $featured_pages := where $pages "Params.featured" "eq" true }}
+    {{- range first 6 (sort $featured_pages "Params.date" "desc") }}
+    {{- partial "post_card.html" (dict "cxt" . "IsHome" true "class" "post-entry") }}
+    {{- end }}
+</div>
+
+{{/* Iterate over all subsections (the subfolders of the "posts" folder) */}}
+{{- $pageSection := site.GetPage "section" "posts" }}
+{{- $subsections := $pageSection.Sections }}
+
+{{- range sort $subsections ".Params.subsection_order" "asc" }}
+<br>
+<h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
+
+{{/* Display all pages from this subsection */}}
+{{ $subsectionPages := site.GetPage .RelPermalink }}
+{{ with $subsectionPages }}
+{{- $pages := .Pages }}
+
+{{/* If the section has more than 6 pages, filter out only the first 6 */}}
+{{- $truncated := (gt (len $pages) 6) }}
+{{- if $truncated }}
+{{- $pages = first 6 $pages }}
+{{- end }}
+
+<div class="post-card-holder" id="post-card-holder">
+    {{ range $pages }}
+    {{- partial "post_card.html" (dict "cxt" . "IsHome" .IsHome "class" "post-entry") }}
+    {{ end }}
+</div>
+
+{{/* If there are more than 6 pages, show a link to the full list */}}
+{{- if $truncated }}
+<nav class="paginav" style="margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;">
+    <a class="prev" style="width: auto;" href="{{ .RelPermalink }}"><span>{{ i18n "show_all" }}</span></a>
+</nav>
+{{- end }}
+
+{{ end }}{{/* end subsectionPages */}}
+
+{{- end }}{{/* end range over subsections */}}
+
+{{ end }}{{/* end main */}}
