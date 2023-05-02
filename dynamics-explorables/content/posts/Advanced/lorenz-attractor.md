@@ -4,14 +4,15 @@ date: 2023-04-06T12:31:36+02:00
 draft: false
 js: "lorenz-attractor"
 pyodide: true
+featured: true
 ---
 
-The Lorenz attractor is probably the most famous example of chaos. It is an ODE given by
+The Lorenz attractor is perhaps the most famous example of chaos. It is an ODE given by
     $$
     \begin{align}
-    x &= \sigma (y - x) \\\
-    y &= x (\rho - z) - y \\\
-    z &= xy - \beta z.
+    \dot{x} &= \sigma (y - x) \\\
+    \dot{y} &= x (\rho - z) - y \\\
+    \dot{z} &= xy - \beta z.
     \end{align}
     $$
 Try changing the parameters below and see how the trajectory behaves.

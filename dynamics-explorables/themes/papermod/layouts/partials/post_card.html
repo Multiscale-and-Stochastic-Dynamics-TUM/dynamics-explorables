@@ -1,0 +1,24 @@
+{{- with .cxt}} {{/* Apply proper context from dict */}}
+<article class="{{ $.class }}">
+    {{- $isHidden := (site.Params.cover.hidden | default site.Params.cover.hiddenInList) }}
+    {{- partial "cover.html" (dict "cxt" . "IsHome" true "isHidden" $isHidden) }}
+    <header class="entry-header">
+        <h2>
+            {{- .Title }}
+            {{- if .Draft }}<sup><span class="entry-isdraft">&nbsp;&nbsp;[draft]</span></sup>{{- end }}
+        </h2>
+    </header>
+    {{- if (ne (.Param "hideSummary") true) }}
+    <div class="entry-content">
+        <p>{{ .Summary | plainify | htmlUnescape }}...</p>
+    </div>
+    {{- end }}
+    {{- if not (.Param "hideMeta") }}
+    <footer class="entry-footer">
+        {{- partial "post_meta.html" (dict "cxt" . "DisplayDate" false) -}}
+    </footer>
+    {{- end }}
+    <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+</article>
+
+{{- end -}}{{/* End context */ -}}

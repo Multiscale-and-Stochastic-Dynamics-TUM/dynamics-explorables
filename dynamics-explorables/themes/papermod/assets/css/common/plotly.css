@@ -1,0 +1,8 @@
+.plotly {
+    width: 100%;
+    aspect-ratio: 2;
+    max-width: 600px;
+    max-height: 300px;
+    align-self: center;
+    margin: 0;
+}
