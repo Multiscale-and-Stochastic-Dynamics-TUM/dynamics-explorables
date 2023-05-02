@@ -1,12 +1,12 @@
 ---
-title: "Stable Unstable Manifolds"
+title: "Stable & Unstable Manifolds"
 date: 2023-04-06T11:37:41+02:00
 draft: false
 js: "stable-unstable-manifolds"
 ---
 
 {{< plotly id="plotlyDiv" >}}
-
+{{< button id="playButton" text="Play" >}}
 
 {{< radio_button id = "help" name = "aaa" value = "1" label = "[1,2,2]">}}
 

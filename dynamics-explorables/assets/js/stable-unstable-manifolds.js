@@ -17,7 +17,7 @@ function getXYFromClick(plot, event) {
 
   if (x_click < l_margin || x_click > l_margin + width || y_click < t_margin ||
       y_click > t_margin + height) {
-    return;
+    return false;
   };
   // getting parameters of the axis on data
   let fig_layout = plot.layout;
@@ -28,8 +28,8 @@ function getXYFromClick(plot, event) {
   let y_coord =
       (y_click - t_margin) / height * (y_lim[0] - y_lim[1]) + y_lim[1];
   // reminder, the axis are reverted in respect to coordinates on the page
-  tracked_point = [x_coord, y_coord];
-  return tracked_point;
+  let point = [x_coord, y_coord];
+  return point;
 };
 
 function unzipCoordinates(coords) {
@@ -37,11 +37,32 @@ function unzipCoordinates(coords) {
     x: coords.map(x => x[0]), y: coords.map(x => x[1])
   }
 };
+
+function animate() {
+  return;
+}
+/*
+async function drawFrame(plot, frames, trace, currentFrame) {
+  if (!animationPlaying) {
+    return;
+  }
+  if (currentFrame >= numFrames) {
+    animationPlaying = false;
+    document.getElementById('stepButton').innerHTML = 'Play';
+    return;
+  }
+  await Plotly.extendTraces(plot, trajectoryFrames[currentFrame], [11]);
+  currentFrame += 1;
+  setTimeout(drawFrame, 10);
+}
+setTimeout(drawFrame, 10);
+*/
+
 /////end/////
 
 /////Example functions/////
-function simpleGeneralRHS(x, y) {
-  return [x, -y + x * x];
+function simpleGeneralRHS(t, X) {
+  return [X[0], -X[1] + X[0] * X[0]];
 };
 function simpleLinOriginRHS(x, y) {
   let jac = [[1, 0], [0, -1]];
@@ -59,41 +80,28 @@ function simpleManifUnstab(x) {
 function simpleManifStable(y) {
   return [0 * y, y];
 };
-/*
-function makeTrajectory(
-    system,
-    x0,
-) {
-  sol = solve_ode(simpleLinOriginRHS, [0, dt], [x, y]);
-}*/
-
-/*
-def create_trajectory(f, x_0, dt, n_it):
-    pt_trajectory = [x_0]
-    for i in range(n_it):
-            nx_point=iterate_pt(f, pt_trajectory[-1], dt)
-pt_trajectory.append(nx_point)
-pt_trajectory = np.array(pt_trajectory)
-return pt_trajectory
-*/
-
+function makeTrajectory(rhs, t, x0) {
+  x_clone = [...x0]
+  sol = solve_ode(rhs, [0, t], x_clone);
+  return sol
+}
 /////end/////
-
+/////
 const layout = {
   xaxis: {range: [-10, 10]},
   yaxis: {range: [-10, 10]},
   showlegend: true,
   margin: {l: 20, t: 20, b: 20, r: 20}
 };
+/////
 
 let linear_system_plot = document.getElementById('plotlyDiv');
-
 Plotly.newPlot(linear_system_plot, [], layout);
 
+let t = 5
 let tracked_point = [0.0, 0.0];
 
-indTrackedTrace = linear_system_plot.data.length - 1
-
+let indTrackedTrace = linear_system_plot.data.length
 Plotly.addTraces(linear_system_plot, {
   x: [tracked_point[0]],
   y: [tracked_point[1]],
@@ -101,12 +109,30 @@ Plotly.addTraces(linear_system_plot, {
   marker: {color: 'black'},
   name: 'Tracked Point'
 });
+
+let indTrackedTrajectory = linear_system_plot.data.length
+Plotly.addTraces(linear_system_plot, {
+  x: [tracked_point[0]],
+  y: [tracked_point[1]],
+  mode: 'lines',
+  name: 'Trajectory'
+});
+
 clickHandler_LinPlot = (event) => {
-  tracked_point = getXYFromClick(linear_system_plot, event);
+  let point_temp;
+  point_temp = getXYFromClick(linear_system_plot, event);
+  if (!point_temp) {
+    return;
+  }
+  tracked_point = point_temp;
   Plotly.update(
       linear_system_plot,
-      data_update = {x: [[tracked_point[0]]], y: [[tracked_point[1]]]},
+      data_update = {x: [[tracked_point[0]]], y: [[tracked_point[1]]]}, {},
       indTrackedTrace);
+  sol = makeTrajectory(simpleGeneralRHS, t, tracked_point)
+  Plotly.update(
+      linear_system_plot, data_update = {x: [sol.y[0]], y: [sol.y[1]]}, {},
+      indTrackedTrajectory);
 };
 
 linear_system_plot.addEventListener('click', clickHandler_LinPlot);
