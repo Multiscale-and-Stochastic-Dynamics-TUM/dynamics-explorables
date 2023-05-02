@@ -25,6 +25,10 @@ const PREIMAGE_LINE_STYLE = {
   color: 'purple',
   width: 4
 };
+const PREIMAGE_AREA_LINE_STYLE = {
+  color: 'purple',
+  width: 1
+};
 const MEASURE_LINE_STYLE = {
   color: 'rgba(0, 255, 255, 0.1)',  // cyan color, needs to be this format for
                                     // oppacity
@@ -106,11 +110,9 @@ function computeAreaTrace(a, b) {
   if (b <= 1 / 2) {
     res = {'x': [a, a, b, b], 'y': [0, 4 / 3, 4 / 3, 0]};
   };
-
   if (a >= 1 / 2) {
     res = {'x': [a, a, b, b], 'y': [0, 2 / 3, 2 / 3, 0]};
   };
-
   if (a < 1 / 2 && b > 1 / 2) {
     res = {
       'x': [a, a, 0.5, 0.5 + EPSILON, b, b],
@@ -120,10 +122,26 @@ function computeAreaTrace(a, b) {
   return res;
 };
 
-function computeMeasure(a, b, numFloatingPoint) {
-  let meas = (Math.max(1 / 2 - a, 0) * 4 / 3 + Math.max(b - 1 / 2, 0) * 2 / 3);
+function computeMeasure(a, b, numFloatingPoint = 2) {
+  let meas_half1 = Math.min(Math.max(1 / 2 - a, 0), b - a) * 4 / 3;
+  let meas_half2 = Math.min(Math.max(b - 1 / 2, 0), b - a) * 2 / 3;
+  let meas = meas_half1 + meas_half2
+  let rounding = parseInt(Math.pow(10, numFloatingPoint))
+  return (Math.round(meas * rounding) / rounding).toFixed(numFloatingPoint);
+};
 
-  return (Math.round(meas * 100) / 100).toFixed(2);
+function getAnnotation(a, b, color, numFloatingPoint = 2, size = 18) {
+  return {
+    x: a / 2 + b / 2,
+    y: 0.3,
+    xref: 'x',
+    yref: 'y',
+    text: computeMeasure(a, b, numFloatingPoint),
+    showarrow: false,
+    bgcolor: 'white',
+    opacity: 1.0,
+    font: {color: color, size: size}
+  };
 };
 
 let plotlyMap = document.getElementById('plotlyMap');
@@ -197,124 +215,116 @@ let startingIntervalArea = {
   showlegend: false
 };
 
-let plotData = [
-  MapTrace1, MapTrace2, traceInvariantMeasure, traceStartingInterval,
-  tracePreimageInterval1, tracePreimageInterval2, startingIntervalArea
+let preimageIntervalArea1 = {
+  x: [],
+  y: [],
+  mode: 'lines',
+  fill: 'toself',
+  line: PREIMAGE_AREA_LINE_STYLE,
+  showlegend: false
+};
+
+let preimageIntervalArea2 = {
+  x: [],
+  y: [],
+  mode: 'lines',
+  fill: 'toself',
+  line: PREIMAGE_AREA_LINE_STYLE,
+  showlegend: false
+};
+
+let plotDataMap = [
+  MapTrace1,
+  MapTrace2,
+  traceStartingInterval,
+  tracePreimageInterval1,
+  tracePreimageInterval2,
 ];
-Plotly.newPlot(plotlyMap, plotData, LAYOUT);
+
+let plotDataArea = [
+  traceInvariantMeasure, MapTrace1, MapTrace2, traceStartingInterval,
+  tracePreimageInterval1, tracePreimageInterval2, startingIntervalArea,
+  preimageIntervalArea1, preimageIntervalArea2
+];
+
+Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT);
+Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT);
 
 drawIntervalButton.addEventListener('click', () => {
+  preimage = computePreimage(intervalStart.value, intervalEnd.value);
   let updatedTraces = {
     x: [[intervalStart.value, intervalEnd.value]],
     y: [[0, 0]]
   };
-  Plotly.update(plotlyMap, updatedTraces, {}, [3]);
+  Plotly.update(plotlyMap, updatedTraces, {}, [2]);
+  Plotly.update(plotlyArea, updatedTraces, {}, [3]);
 });
 
 drawPreimageButton.addEventListener('click', () => {
-  preimage = computePreimage(intervalStart.value, intervalEnd.value)
+  preimage = computePreimage(intervalStart.value, intervalEnd.value);
   if (preimage.length == 1) {
     let updatedTraces = {x: [preimage[0]], y: [[0, 0]]};
     Plotly.update(plotlyMap, updatedTraces, {}, [3]);
+    Plotly.update(plotlyArea, updatedTraces, {}, [4]);
   };
 
   if (preimage.length == 2) {
     let updatedTraces = {x: [preimage[0], preimage[1]], y: [[0, 0], [0, 0]]};
-    Plotly.update(plotlyMap, updatedTraces, {}, [4, 5]);
-  };
-});
-
-drawPreimageButton.addEventListener('click', () => {
-  preimage = computePreimage(intervalStart.value, intervalEnd.value)
-  if (preimage.length == 1) {
-    let updatedTraces = {x: [preimage[0]], y: [[0, 0]]};
-    Plotly.update(plotlyMap, updatedTraces, {}, [4]);
-  };
-
-  if (preimage.length == 2) {
-    let updatedTraces = {x: [preimage[0], preimage[1]], y: [[0, 0], [0, 0]]};
-    Plotly.update(plotlyMap, updatedTraces, {}, [4, 5]);
+    Plotly.update(plotlyMap, updatedTraces, {}, [3, 4]);
+    Plotly.update(plotlyArea, updatedTraces, {}, [4, 5]);
   };
 });
 
 measureButton.addEventListener('click', async () => {
+  preimage = computePreimage(intervalStart.value, intervalEnd.value);
+
   a = intervalStart.value;
   b = intervalEnd.value;
 
-  baseTrace = computeBaseTrace(a, b);
-  areaTrace = computeAreaTrace(a, b);
+  baseTraceInterval = computeBaseTrace(a, b);
+  areaTraceInterval = computeAreaTrace(a, b);
+
+  baseTracePreimage1 = computeBaseTrace(preimage[0][0], preimage[0][1])
+  areaTracePreimage1 = computeAreaTrace(preimage[0][0], preimage[0][1])
 
   animationTraces = [
-    {data: [{x: baseTrace['x'], y: baseTrace['y']}], traces: [6]},
-    {data: [{x: areaTrace['x'], y: areaTrace['y']}], traces: [6]}
+    {
+      data: [
+        {x: baseTraceInterval['x'], y: baseTraceInterval['y']},
+        {x: baseTracePreimage1['x'], y: baseTracePreimage1['y']}
+      ],
+      traces: [6, 7]
+    },
+    {
+      data: [
+        {x: areaTraceInterval['x'], y: areaTraceInterval['y']},
+        {x: areaTracePreimage1['x'], y: areaTracePreimage1['y']}
+      ],
+      traces: [6, 7]
+    }
   ];
-  Plotly.animate(plotlyMap, animationTraces, DEFAULT_TRANSITION);
 
+  if (preimage.length == 2) {
+    extraBase = computeBaseTrace(preimage[1][0], preimage[1][1])
+    extraArea = computeAreaTrace(preimage[1][0], preimage[1][1])
 
-  var updatedTraces = {x: [a / 2 + b / 2], y: [0.3], text: ['Area: ']};
+    animationTraces[0]['data'].push({x: extraBase['x'], y: extraBase['y']})
+    animationTraces[0]['traces'].push(8)
 
-  Plotly.update(plotlyMap, updatedTraces, {}, [7]);
-
-  let layout = {
-    showlegend: false,
-    annotations: [{
-      x: a / 2 + b / 2,
-      y: 0.3,
-      xref: 'x',
-      yref: 'y',
-      text: computeMeasure(a, b),
-      showarrow: false,
-      bgcolor: 'white',
-      opacity: 1.0,
-      font: {color: 'orange', size: 18}
-    }]
+    animationTraces[0]['data'].push({x: extraArea['x'], y: extraArea['y']})
+    animationTraces[0]['traces'].push(8)
   };
+  Plotly.animate(plotlyArea, animationTraces, DEFAULT_TRANSITION);
+  anns = [
+    getAnnotation(a, b, 'orange', 2),
+    getAnnotation(preimage[0][0], preimage[0][1], 'purple', 2)
+  ];
+  if (preimage.length == 2) {
+    anns.push(getAnnotation(preimage[1][0], preimage[1][1], 'purple', 2));
+  };
+
+  let layout = {showlegend: false, annotations: anns};
 
   await new Promise(r => setTimeout(r, 1000));
-  Plotly.update(plotlyMap, {}, layout, []);
-  // let updatedTraces = {x: [[a, a, b, b]], y: [[0, 1, 1, 0]]};
-  // Plotly.update(plotlyMap, updatedTraces, {}, [5]);
+  Plotly.update(plotlyArea, {}, layout, []);
 });
-
-
-Plotly.newPlot(plotlyArea, plotData, LAYOUT);
-
-/*
-var trackValuesX = [];
-var trackValuesY = [];
-
-startValue.addEventListener('change', () => {
-  console.log('A')
-
-  trackValuesX = [];
-  trackValuesY = [];
-
-  var updatedTraces = {
-    x: [trackValuesX, [startValue.value]],
-    y: [trackValuesY, [0]]
-  };
-
-  Plotly.update(plotlyMap, updatedTraces, {}, [2, 3]);
-
-  GLOBAL_START_POINT_VALUE = startValue.value;
-});
-
-stepButton.addEventListener('click', () => {
-  var xValue = GLOBAL_START_POINT_VALUE;
-  var yValue = 4 * xValue * (1 - xValue);
-  animationTraces = [
-    {data: [{x: [xValue], y: [yValue]}], traces: [3]},
-    {data: [{x: [yValue], y: [yValue]}], traces: [3]},
-    {data: [{x: [yValue], y: [0]}], traces: [3]}
-  ];
-
-  Plotly.animate(plotlyMap, animationTraces, DEFAULT_TRANSITION);
-
-  trackValuesX.push(xValue);
-  trackValuesY.push(0);
-
-  var updatedTraces = {x: [trackValuesX], y: [trackValuesY]};
-  Plotly.update(plotlyMap, updatedTraces, {}, [2]);
-  GLOBAL_START_POINT_VALUE = yValue;
-});
-*/

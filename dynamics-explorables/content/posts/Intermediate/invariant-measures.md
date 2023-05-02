@@ -17,14 +17,15 @@ Select an initial condition for the map and start iterating
 
 {{< plotly id="plotlyMap">}}
 
-
 {{< button id="stepButtonDrawInterval" text="Draw Interval">}}
-
 {{< button id="stepButtonDrawPreimage" text="Draw Preimage">}}
 
-{{< button id="stepButtonComputeMeasure" text="Calculate Measure">}}
 
 Add text explaining invariant measures, how things are computed etc etc...
 
 
 {{< plotly id="plotlyMeasure">}}
+
+{{< button id="stepButtonDrawInterval" text="Draw Interval">}}
+{{< button id="stepButtonDrawPreimage" text="Draw Preimage">}}
+{{< button id="stepButtonComputeMeasure" text="Calculate Measure">}}
