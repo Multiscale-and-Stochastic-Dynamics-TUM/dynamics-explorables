@@ -41,6 +41,22 @@ function unzipCoordinates(coords) {
 function animate() {
   return;
 }
+
+function stopAnimation() {
+  Plotly.animate('myDiv', [], {mode: 'next'});
+}
+
+function startAnimation(frames) {
+  Plotly.animate('myDiv', frames, {
+    transition: {duration: 500, easing: 'linear'},
+    frame: {
+      duration: 500,
+      redraw: false,
+    },
+    mode: mode
+  });
+}
+
 /*
 async function drawFrame(plot, frames, trace, currentFrame) {
   if (!animationPlaying) {

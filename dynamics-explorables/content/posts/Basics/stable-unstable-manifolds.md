@@ -2,9 +2,13 @@
 title: "Stable & Unstable Manifolds"
 date: 2023-04-06T11:37:41+02:00
 draft: false
-js: "stable-unstable-manifolds"
+js: stable-unstable-manifolds
+cover:
+    image: ""
+    alt: ""
+    caption: ""
+keywords: ["manifold"]
 ---
-
 {{< plotly id="plotlyDiv" >}}
 {{< button id="playButton" text="Play" >}}
 
