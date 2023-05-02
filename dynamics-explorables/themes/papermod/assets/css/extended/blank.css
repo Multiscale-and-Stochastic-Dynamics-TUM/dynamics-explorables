@@ -19,7 +19,7 @@ input[type="button"] {
     border-radius: var(--radius);
     background: var(--accent1);
     font-size: 1rem;
-    color: var(--theme);
+    color: white;
     padding: 0.5rem 0.5rem;
     margin: 1.0rem 0 0.5rem 0.5rem;
     transition: 0.4s;

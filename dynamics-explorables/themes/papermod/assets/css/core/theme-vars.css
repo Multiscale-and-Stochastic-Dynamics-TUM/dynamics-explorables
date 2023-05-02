@@ -13,14 +13,20 @@
     --primary: rgb(30, 30, 30);
     --secondary: rgb(108, 108, 108);
     --tertiary: rgb(214, 214, 214);
-    --accent1: #F9A80A;
-    --accent2: #00AEDF;
-    --accent3: #DE1968;
+    --accent1: #8D342B;
+    --accent2: rgb(70, 167, 182);
+    --accent3: #de7b34;
     --content: rgb(31, 31, 31);
     --hljs-bg: rgb(28, 29, 33);
     --code-bg: rgb(245, 245, 245);
     --border: rgb(238, 238, 238);
     --disabled: #efefef;
+    --red: var(--accent1);
+    --orange: var(--accent3);
+    --yellow: #ebca28;
+    --green: #8ac74d;
+    --blue: var(--accent2);
+    --violet: #a6486e;
 }
 
 .dark {
@@ -34,6 +40,8 @@
     --code-bg: rgb(29, 30, 32);
     --border: rgb(51, 51, 51);
     --disabled: #111;
+    --accent1: #b55044;
+    --red: var(--accent1);
 }
 
 .list {

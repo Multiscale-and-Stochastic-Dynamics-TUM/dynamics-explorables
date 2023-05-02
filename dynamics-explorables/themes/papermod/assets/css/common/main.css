@@ -6,6 +6,10 @@
     padding: var(--gap);
 }
 
+a {
+    color: var(--accent2);
+}
+
 body {
     background-color: var(--code-bg);
 }
