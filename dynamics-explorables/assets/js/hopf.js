@@ -2,6 +2,9 @@ import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
 
+const NUM_POINTS = 1000;
+const STARTING_P = -1.3;
+
 // Style constants
 const STABLE_LINE_STYLE = {
   color: 'blue',
@@ -14,9 +17,24 @@ const UNSTABLE_LINE_STYLE = {
   dash: 'dash'
 };
 
+const INTERSECTION_LINE_STYLE = {
+  color: 'orange',
+  width: 7
+};
+
+const INTERSECTION_MARKER_STYLE = {
+  color: 'orange',
+  size: 5
+};
+
 const EIGENVAL_MARKER = {
   color: 'Purple',
   size: 10
+};
+
+const SPIRAL_LINE_STYLE = {
+  color: 'green',
+  with: 1
 };
 
 const LAYOUT_3D = {
@@ -47,7 +65,7 @@ const LAYOUT_3D = {
     camera: {
       up: {x: 1, y: 0, z: 0},
       center: {x: 0, y: 0, z: 0},
-      eye: {x: 0.5, y: 2.5, z: 1.0}
+      eye: {x: 0.0, y: 0.9, z: 0.9}
     },
     dragmode: 'orbit',
   },
@@ -72,6 +90,47 @@ function get3Dstability(gridLim = 4.0, meshSize = 50) {
   return [x, y, z];
 };
 
+function getIntersectionRing(param_p) {
+  let lins = linspace(0, 2 * Math.PI, NUM_POINTS)
+  let x = [];
+  let y = [];
+  let z = [];
+  if (param_p <= 0) {
+    return {'x': x, 'y': y, 'z': z};
+  };
+  for (let i = 0; i < NUM_POINTS; i++) {
+    x.push(Math.sqrt(param_p) * Math.cos(lins[i]));
+    y.push(Math.sqrt(param_p) * Math.sin(lins[i]));
+    z.push(param_p);
+  }
+  return {'x': x, 'y': y, 'z': z};
+};
+
+function getIntersectionPoint(param_p) {
+  if (param_p > 0) {
+    return {'x': [], 'y': [], 'z': []};
+  };
+  return {'x': [0], 'y': [0], 'z': [param_p]};
+};
+
+
+function getSpiral(param_p) {
+  let theta = linspace(0, 5 * Math.PI, 2000)
+  let r = 0;
+  let x = [];
+  let y = [];
+  for (let i = 0; i < 2000; i++) {
+    if (param_p > 0) {
+      r = 0.05 * Math.sqrt(param_p) * theta[i]
+    } else {
+      r = 0.05 * Math.sqrt(2.0) * theta[i]
+    };
+    x.push(r * Math.cos(theta[i]));
+    y.push(r * Math.sin(theta[i]));
+  }
+  return res = { 'x': x, 'y': y }
+};
+
 let plotlyDiv = document.getElementById('plotlyHopf');
 let multiplotDiv = document.getElementById('plotlyMultiplot');
 
@@ -80,7 +139,7 @@ var trace3Dcone = {
   x: xyzData[0],
   y: xyzData[1],
   z: xyzData[2],
-  opacity: 0.8,
+  opacity: 0.6,
   color: 'blue',
   type: 'mesh3d'
 };
@@ -91,7 +150,7 @@ var traceStableLineEq = {
   y: [0, 0],
   z: [-15, 0],
   mode: 'lines',
-  opacity: 0.8,
+  opacity: 0.6,
   color: 'blue',
   type: 'scatter3d',
   line: STABLE_LINE_STYLE,
@@ -103,50 +162,103 @@ var traceUnstableLineEq = {
   y: [0, 0],
   z: [0, 15],
   mode: 'lines',
-  opacity: 0.8,
+  opacity: 0.6,
   color: 'blue',
   type: 'scatter3d',
   line: UNSTABLE_LINE_STYLE,
   showlegend: false
 };
 
-var traceCuttingPlane = {
-  x: [],
-  y: [],
-  z: [],
+let xyzDataPlane = get3Dstability(4.0, 2);
+let traceCuttingPlane = {
+  x: xyzDataPlane[0],
+  y: xyzDataPlane[1],
+  z: Array(xyzDataPlane[0].length).fill(STARTING_P),
   opacity: 0.2,
   color: 'red',
   type: 'mesh3d',
   showlegend: false
 };
 
-var plotData =
-    [trace3Dcone, traceStableLineEq, traceUnstableLineEq, traceCuttingPlane];
+let traceIntersectionRing = {
+  x: [],
+  y: [],
+  z: [],
+  mode: 'lines',
+  type: 'scatter3d',
+  line: INTERSECTION_LINE_STYLE,
+  showlegend: false
+};
+
+let traceIntersectionPoint = {
+  x: [0],
+  y: [0],
+  z: [STARTING_P],
+  mode: 'markers',
+  type: 'scatter3d',
+  marker: INTERSECTION_MARKER_STYLE,
+  showlegend: false
+};
+
+
+var plotData = [
+  trace3Dcone, traceStableLineEq, traceUnstableLineEq, traceCuttingPlane,
+  traceIntersectionRing, traceIntersectionPoint
+];
 Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D);
 
 // TODO Implement the two bottom plots
 var traceEigenvals = {
-  x: [-3, -3],
+  x: [STARTING_P, STARTING_P],
   y: [1, -1],
+  xaxis: 'x1',
+  yaxis: 'y1',
   type: 'scatter',
   mode: 'markers',
   marker: EIGENVAL_MARKER,
   showlegend: false
 };
 
-var trace2 = {
-  x: [20, 30, 40],
-  y: [50, 60, 70],
+spiralData = getSpiral(STARTING_P);
+var traceSpiral = {
+  x: spiralData['x'],
+  y: spiralData['y'],
   xaxis: 'x2',
   yaxis: 'y2',
-  type: 'scatter',
+  mode: 'lines',
+  line: SPIRAL_LINE_STYLE,
   showlegend: false
 };
 
-var data = [traceEigenvals, trace2];
+var traceStability = {
+  x: [0],
+  y: [0],
+  xaxis: 'x2',
+  yaxis: 'y2',
+  mode: 'markers',
+  showlegend: false
+};
+
+var data = [traceEigenvals, traceStability, traceSpiral];
 
 var layout = {
   grid: {rows: 1, columns: 2, pattern: 'independent'},
+  xaxis: {
+    title: 'x',
+    range: [-2.5, 2.5],
+  },
+  yaxis: {
+    title: 'y',
+    range: [-1.5, 1.5],
+  },
+  xaxis2: {
+    title: 'x',
+    range: [-2.5, 2.5],
+  },
+  yaxis2: {
+    title: 'y',
+    range: [-2.5, 2.5],
+  },
 };
 
 Plotly.newPlot(multiplotDiv, data, layout);
@@ -156,14 +268,38 @@ const parampLabel = document.getElementById('parampSliderLabel');
 parampLabel.innerHTML = `p = ${parampSlider.value}`;
 
 parampSlider.oninput = () => {
-  var param_value = parampSlider.value;
-  parampLabel.innerHTML = `p = ${param_value}`;
+  let p = parampSlider.value;
+  parampLabel.innerHTML = `p = ${p}`;
 
   var xyzDataPlane = get3Dstability(4.0, 2);
-  var updatedStabilityData = {
-    x: [xyzDataPlane[0]],
-    y: [xyzDataPlane[1]],
-    z: [Array(xyzDataPlane[0].length).fill(param_value)]
+  let interR = getIntersectionRing(p);
+  let interP = getIntersectionPoint(p);
+
+  var updatedTraces = {
+    x: [xyzDataPlane[0], interR['x'], interP['x']],
+    y: [xyzDataPlane[1], interR['y'], interP['y']],
+    z: [Array(xyzDataPlane[0].length).fill(p), interR['z'], interP['z']]
   };
-  Plotly.update(plotlyDiv, updatedStabilityData, {}, [3]);
+  Plotly.update(plotlyDiv, updatedTraces, {}, [3, 4, 5]);
+
+  let intersectionX = [];
+  let intersectionY = [];
+  let mode = [];
+  if (p > 0) {
+    intersectionX = interR['x'];
+    intersectionY = interR['y'];
+    mode = ['markers', 'lines', 'lines'];
+  } else {
+    intersectionX = [0];
+    intersectionY = [0];
+    mode = ['markers', 'markers', 'lines'];
+  };
+
+  spiralData = getSpiral(p);
+  let multiplotTraces = {
+    x: [[p, p], intersectionX, spiralData['x']],
+    y: [[1, -1], intersectionY, spiralData['y']],
+    mode: mode
+  };
+  Plotly.update(multiplotDiv, multiplotTraces, layout, [0, 1, 2]);
 };

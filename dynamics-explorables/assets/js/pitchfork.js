@@ -5,6 +5,7 @@ import {linspace} from './modules/data_structures/iterables';
 const X_LIMINF = -2.0;
 const x_LIMSUP = 2.0;
 const NUM_POINTS = 10000;
+const STARTING_P = -1.3;
 
 const LAYOUT_PITCHFORK = {
   margin: {l: 40, r: 20, t: 20, b: 30},
@@ -45,7 +46,7 @@ const UNSTABLE_LINE_STYLE = {
 };
 const VERTICAL_INTERSECTION_STYLE = {
   color: 'Red',
-  width: 1
+  width: 3
 };
 const BASE_STABILITY_LINE = {
   color: 'Red',
@@ -117,15 +118,20 @@ var traceUnstableEqPoints = {
 };
 
 var traceVLine = {
-  x: [],
-  y: [],
+  x: [STARTING_P, STARTING_P],
+  y: [-2, 2],
   mode: 'lines',
   line: VERTICAL_INTERSECTION_STYLE,
   showlegend: false
 };
 
-var traceStableEqPoints =
-    {x: [], y: [], mode: 'markers', marker: STABLE_MARKER, showlegend: false};
+var traceStableEqPoints = {
+  x: [STARTING_P],
+  y: [0],
+  mode: 'markers',
+  marker: STABLE_MARKER,
+  showlegend: false
+};
 
 var traceUnstableEqPoints =
     {x: [], y: [], mode: 'markers', marker: UNSTABLE_MARKER, showlegend: false};
@@ -139,7 +145,7 @@ var traceBaseStability = {
 };
 
 var traceStabilityStablePoints =
-    {x: [], y: [], mode: 'markers', marker: STABLE_MARKER, showlegend: false};
+    {x: [0], y: [0], mode: 'markers', marker: STABLE_MARKER, showlegend: false};
 
 var traceStabilityUnstablePoints =
     {x: [], y: [], mode: 'markers', marker: UNSTABLE_MARKER, showlegend: false};

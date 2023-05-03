@@ -6,6 +6,6 @@ js: hopf
 ---
 
 {{< plotly id="plotlyHopf">}}
-{{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="0.0" >}}
+{{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="-1.3" >}}
 {{< plotly id="plotlyMultiplot">}}
 
