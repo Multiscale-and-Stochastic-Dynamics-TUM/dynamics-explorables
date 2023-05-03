@@ -4,6 +4,8 @@ import {linspace} from './modules/data_structures/iterables';
 
 // Number of points of the logistic map
 const NUM_POINTS = 10000;
+const STARTING_VALUE = 0.4;
+const NUM_DECIMALS_DISPLAY = 3;
 
 // Style of the plot
 const LOGISTIC_MAP_STYLE = {
@@ -17,6 +19,11 @@ const DIAGONAL_LINE_STYLE = {
 const CURRENT_POINT_STYLE = {
   color: 'Green',
   size: 7
+};
+const ANIMATION_LINE_STYLE = {
+  color: 'Green',
+  with: 2,
+  dash: 'dash'
 };
 const TRACKED_POINT_STYLE = {
   color: 'Red',
@@ -45,7 +52,7 @@ const LAYOUT = {
 
 // Global variable to know the current value for the next step, initialized at
 // the same value than the slider
-var GLOBAL_START_POINT_VALUE = 0.0;
+var GLOBAL_START_POINT_VALUE = STARTING_VALUE;
 
 function getLogisticMapValues(xInput) {
   var res = [];
@@ -55,8 +62,14 @@ function getLogisticMapValues(xInput) {
   return res;
 }
 
+function roundToDecimals(value, numDecimals = 2) {
+  let rounding = parseInt(Math.pow(10, numDecimals))
+  return (Math.round(value * rounding) / rounding).toFixed(numDecimals);
+};
+
 let plotlyMap = document.getElementById('plotlyMap');
 let startValue = document.getElementById('startValueSlider');
+let startValueLabel = document.getElementById('startValueSliderLabel');
 let stepButton = document.getElementById('stepButton');
 
 var x = linspace(0, 1, NUM_POINTS);
@@ -86,46 +99,83 @@ var traceTrackOfPoints = {
 }
 
 var traceCurrentPoint = {
-  x: [0],
+  x: [STARTING_VALUE],
   y: [0],
   mode: 'markers',
   marker: CURRENT_POINT_STYLE,
   showlegend: false
 };
 
-var plotData =
-    [traceLogisticMap, traceDiagonal, traceTrackOfPoints, traceCurrentPoint];
+var traceAnimationLine = {
+  x: [STARTING_VALUE],
+  y: [0],
+  mode: 'lines',
+  line: ANIMATION_LINE_STYLE,
+  showlegend: false
+};
+
+var plotData = [
+  traceLogisticMap, traceDiagonal, traceTrackOfPoints, traceCurrentPoint,
+  traceAnimationLine
+];
 Plotly.newPlot(plotlyMap, plotData, LAYOUT);
 
 var trackValuesX = [];
 var trackValuesY = [];
 
-startValue.addEventListener('change', () => {
-  console.log('A')
+let displayValue = GLOBAL_START_POINT_VALUE;
+startValue.oninput = () => {
+  displayValue =
+      roundToDecimals(GLOBAL_START_POINT_VALUE, NUM_DECIMALS_DISPLAY);
+  startValueLabel.innerHTML = `Value: ${displayValue}`;
 
   trackValuesX = [];
   trackValuesY = [];
 
   var updatedTraces = {
-    x: [trackValuesX, [startValue.value]],
-    y: [trackValuesY, [0]]
+    x: [trackValuesX, [startValue.value], [startValue.value]],
+    y: [trackValuesY, [0], [0]]
   };
 
-  Plotly.update(plotlyMap, updatedTraces, {}, [2, 3]);
+  Plotly.update(plotlyMap, updatedTraces, {}, [2, 3, 4]);
 
   GLOBAL_START_POINT_VALUE = startValue.value;
-});
+};
 
 stepButton.addEventListener('click', () => {
+  stepButton.disabled = true;
+  setTimeout(function() {
+    stepButton.disabled = false;
+  }, 1400);
+
+  var updatedTraces = {x: [[GLOBAL_START_POINT_VALUE]], y: [[0]]};
+  Plotly.update(plotlyMap, updatedTraces, {}, [4]);
+
   var xValue = GLOBAL_START_POINT_VALUE;
   var yValue = 4 * xValue * (1 - xValue);
   animationTraces = [
-    {data: [{x: [xValue], y: [yValue]}], traces: [3]},
-    {data: [{x: [yValue], y: [yValue]}], traces: [3]},
-    {data: [{x: [yValue], y: [0]}], traces: [3]}
+    {
+      data: [{x: [xValue], y: [yValue]}, {x: [xValue, xValue], y: [0, yValue]}],
+      traces: [3, 4]
+    },
+    {
+      data: [
+        {x: [yValue], y: [yValue]},
+        {x: [xValue, xValue, yValue], y: [0, yValue, yValue]}
+      ],
+      traces: [3, 4]
+    },
+    {
+      data: [
+        {x: [yValue], y: [0]},
+        {x: [xValue, xValue, yValue, yValue], y: [0, yValue, yValue, 0]}
+      ],
+      traces: [3, 4]
+    }
   ];
 
   Plotly.animate(plotlyMap, animationTraces, DEFAULT_TRANSITION);
+
 
   trackValuesX.push(xValue);
   trackValuesY.push(0);
@@ -133,4 +183,8 @@ stepButton.addEventListener('click', () => {
   var updatedTraces = {x: [trackValuesX], y: [trackValuesY]};
   Plotly.update(plotlyMap, updatedTraces, {}, [2]);
   GLOBAL_START_POINT_VALUE = yValue;
+
+  displayValue =
+      roundToDecimals(GLOBAL_START_POINT_VALUE, NUM_DECIMALS_DISPLAY);
+  startValueLabel.innerHTML = `Value: ${displayValue}`;
 });

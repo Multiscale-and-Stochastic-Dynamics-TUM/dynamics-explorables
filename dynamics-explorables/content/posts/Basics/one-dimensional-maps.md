@@ -14,7 +14,7 @@ Select an initial condition for the map and start iterating
 
 
 
-{{< slider id="startValueSlider" min="0.0" max="1.0" step="0.01" value="0.0" >}}
+{{< slider id="startValueSlider" min="0.0" max="1.0" step="0.01" value="0.4" >}}
 
 {{< plotly id="plotlyMap">}}
 {{< button id="stepButton" text="Iterate">}}
