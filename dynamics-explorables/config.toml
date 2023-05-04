@@ -1,4 +1,4 @@
-baseURL = 'https://dynamics_explorables.org/'
+baseURL = 'https://dynamics-explorables.netlify.app/'
 languageCode = 'en-us'
 title = 'Dynamics Explorables'
 theme = 'papermod'
@@ -17,4 +17,4 @@ paginate = 12
   weight = 10
 
 [params]
-  env = 'development' # development or production
+  env = 'production' # development or production

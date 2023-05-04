@@ -11,7 +11,7 @@
     top">
     {{- partialCached "header.html" . .Page -}}
     {{ if .IsHome }}
-    <div class="image-fullscreen" style="background-image: url('{{ .Params.cover | relURL }}');">
+    <div class="image-fullscreen" style="background-image: url('{{ .Params.cover.image | relURL }}');">
         <div class="container">
             <h1>{{ .Site.Title }}</h1>
         </div>
