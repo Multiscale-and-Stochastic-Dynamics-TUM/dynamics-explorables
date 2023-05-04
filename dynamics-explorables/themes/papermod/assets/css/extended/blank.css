@@ -25,6 +25,16 @@ input[type="button"] {
     transition: 0.4s;
 }
 
+input[type="radio"] {
+    margin: 3px 3px 0px 5px;
+}
+
+input[type="checkbox"] {
+    border-radius: 0;
+    margin: 3px 3px 0px 5px;
+}
+
+
 a button[disabled],
 button[disabled],
 [role="button"][aria-disabled="true"],
@@ -117,6 +127,11 @@ input[type="radio"]:focus,
 input[type="radio"]:enabled:hover {
     filter: brightness(1.2);
     cursor: pointer;
+}
+
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+    box-shadow: inset 0px 0px 0px 2px var(--accent1);
 }
 
 /* Format forms */

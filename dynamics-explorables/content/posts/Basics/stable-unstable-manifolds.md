@@ -14,10 +14,16 @@ keywords: ["manifold"]
 {{< button id="linResetButton" text="Reset" >}}
 {{< button id="TEST" text="TEST" >}}
 
+
 {{< radio_button id = "time_forwards" name = "time" value = 5 label = "Forwards">}}
 {{< radio_button id = "time_backwards" name = "time" value = -5 label = "Backwards">}}
 
+{{< radio_button id = "sys_lin" name = "system" value = "linear" label = "Linear">}}
+{{< radio_button id = "sys_gen" name = "system" value = "general" label = "General">}}
 
+{{< checkbox id = "showTrajectory" name = "plotElements" value = true label = "Show Trajectory">}}
+{{< checkbox id = "showEigenspaces" name = "plotElements" value = true label = "Show Eigenspaces">}}
+{{< checkbox id = "showManifolds" name = "plotElements" value = true label = "Show Manifolds">}}
 
 Welcome to the section about stable and unstable manifolds,
 an important structure in the phase space that helps to understand dynamics around the equilibrium points (if the point satisfies certain conditions).
