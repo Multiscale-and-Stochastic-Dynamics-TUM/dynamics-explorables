@@ -6,7 +6,7 @@
     padding: var(--gap);
 }
 
-a {
+p a {
     color: var(--accent2);
 }
 

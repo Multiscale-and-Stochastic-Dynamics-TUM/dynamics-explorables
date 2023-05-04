@@ -5,6 +5,12 @@
     margin-bottom: var(--large-gap);
 }
 
+@media only screen and (max-width: 440px) {
+    .post-container {
+        padding: var(--large-gap) var(--gap)
+    }
+}
+
 .page-header,
 .post-header {
     margin: 0 0 var(--content-gap) 0;
