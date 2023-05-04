@@ -40,5 +40,9 @@ Try different values of the parameter $p$ and see how the beheaviour of the syst
 
 {{< plotly id="plotlyHopf">}}
 {{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="-1.3" >}}
+
+As you can see the eigenvalues cross the imaginary axes in $p=0$. Also the stability changes from one point for negative velues of $p$ 
+to a circle of radius $\sqrt{p}$ for positive values of $p$.
+
 {{< plotly id="plotlyMultiplot">}}
 

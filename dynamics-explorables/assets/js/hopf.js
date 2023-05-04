@@ -243,12 +243,13 @@ var data = [traceEigenvals, traceStability, traceSpiral];
 
 var layout = {
   grid: {rows: 1, columns: 2, pattern: 'independent'},
+  title: ['A', 'B'],
   xaxis: {
-    title: 'x',
+    title: 'Re',
     range: [-2.5, 2.5],
   },
   yaxis: {
-    title: 'y',
+    title: 'Im',
     range: [-1.5, 1.5],
   },
   xaxis2: {
@@ -259,6 +260,34 @@ var layout = {
     title: 'y',
     range: [-2.5, 2.5],
   },
+  annotations: [
+    {
+      text: 'Eigenvalues',
+      font: {
+        size: 16,
+        color: 'black',
+      },
+      showarrow: false,
+      align: 'center',
+      x: 0.13,
+      y: 1.15,
+      xref: 'paper',
+      yref: 'paper',
+    },
+    {
+      text: 'Stability',
+      font: {
+        size: 16,
+        color: 'black',
+      },
+      showarrow: false,
+      align: 'center',
+      x: 0.835,
+      y: 1.15,
+      xref: 'paper',
+      yref: 'paper',
+    }
+  ],
   width: 650,
   height: 400
 };
