@@ -19,6 +19,7 @@ const LAYOUT_PITCHFORK = {
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
+  width: 650
 };
 
 const LAYOUT_STABILITY = {
@@ -33,6 +34,8 @@ const LAYOUT_STABILITY = {
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
+  width: 650,
+  height: 200
 };
 
 const STABLE_LINE_STYLE = {

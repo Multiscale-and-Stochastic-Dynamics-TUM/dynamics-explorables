@@ -5,15 +5,19 @@ draft: false
 js: invariant-measures
 ---
 
-Logistic map $f(x) = ....$:
+In this page we ilustrate an example of invariant measures first consider the map  
 
+$$f(x) = \begin{cases} 
+      2x & x \in [0, 1/2] \\\
+      x - \frac{1}{2} & x \in (1/2, 1] 
+   \end{cases}$$
 
-Select an initial condition for the map and start iterating
+Remember that a measure $\mu$ is invariant if $\mu(A) = \mu(f ^ {-1} (A)) \quad \forall A \in \mathcal{F}$. For 
+this example we will consider only intervals as set $A$. Now choose the edges of the interval and you can visualize the preimage:
 
 
 {{< input id="inputIntervalStart" text="Interval Start:">}}
 {{< input id="inputIntervalEnd" text="Interval End:">}}
-
 
 {{< plotly id="plotlyMap">}}
 
@@ -21,11 +25,18 @@ Select an initial condition for the map and start iterating
 {{< button id="stepButtonDrawPreimage" text="Draw Preimage">}}
 
 
-Add text explaining invariant measures, how things are computed etc etc...
+
+We claim that the measure defined by Lebesgue measure multiplied with the function $h(x)$ is an invariant measure, with:
+
+$$h(x) = \begin{cases} 
+      \frac{4}{3} & x \in [0, 1/2] \\\
+      \frac{2}{3} & x \in (1/2, 1] 
+   \end{cases}$$
+
+It is easy to check that the area corresponding to the original interval $A$ weighted with the function $h(x)$ is exactly the same that the total area of the preimage. Pres the button "Calculate Measure" after drawing the interval and the preimage to visualize this. Morover we display a numeric value corresponding to the area of the region as you can see the two areas are equal up to rounding errors.
 
 
 {{< plotly id="plotlyMeasure">}}
 
-{{< button id="stepButtonDrawInterval" text="Draw Interval">}}
-{{< button id="stepButtonDrawPreimage" text="Draw Preimage">}}
 {{< button id="stepButtonComputeMeasure" text="Calculate Measure">}}
+{{< button id="stepButtonReset" text="Reset Graphics">}}

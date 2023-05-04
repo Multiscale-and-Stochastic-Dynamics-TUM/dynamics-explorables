@@ -47,12 +47,12 @@ const LAYOUT = {
     range: [-0.2, 1.2],
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
+  paper_bgcolor: '#ffffff00'
 };
 
 // Global variable to know the current value for the next step, initialized at
 // the same value than the slider
-var GLOBAL_START_POINT_VALUE = STARTING_VALUE;
+let GLOBAL_START_POINT_VALUE = STARTING_VALUE;
 
 function getLogisticMapValues(xInput) {
   var res = [];
@@ -70,7 +70,6 @@ function roundToDecimals(value, numDecimals = 2) {
 let plotlyMap = document.getElementById('plotlyMap');
 let startValue = document.getElementById('startValueSlider');
 let startValueLabel = document.getElementById('startValueSliderLabel');
-let stepButton = document.getElementById('stepButton');
 
 var x = linspace(0, 1, NUM_POINTS);
 

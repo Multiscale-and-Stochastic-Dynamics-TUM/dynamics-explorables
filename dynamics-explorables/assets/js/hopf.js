@@ -259,6 +259,8 @@ var layout = {
     title: 'y',
     range: [-2.5, 2.5],
   },
+  width: 650,
+  height: 400
 };
 
 Plotly.newPlot(multiplotDiv, data, layout);

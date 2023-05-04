@@ -63,6 +63,9 @@ const LAYOUT = {
   paper_bgcolor: '#ffffff00',
 };
 
+let GLOBAL_INTERVAL_DRAWED = false;
+let GLOBAL_PREIMAGE_DRAWED = false;
+
 function computeMapTrace1(xInput) {
   let res = [];
   for (let i = 0; i < NUM_POINTS; i++) {
@@ -153,6 +156,7 @@ let intervalEnd = document.getElementById('inputIntervalEnd');
 let drawIntervalButton = document.getElementById('stepButtonDrawInterval');
 let drawPreimageButton = document.getElementById('stepButtonDrawPreimage');
 let measureButton = document.getElementById('stepButtonComputeMeasure');
+let resetButton = document.getElementById('stepButtonReset');
 
 let xTrace1 = linspace(0, 1 / 2, NUM_POINTS);
 let xTrace2 = linspace(1 / 2 + EPSILON, 1, NUM_POINTS);
@@ -251,6 +255,8 @@ Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT);
 Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT);
 
 drawIntervalButton.addEventListener('click', () => {
+  GLOBAL_INTERVAL_DRAWED = true;
+  drawIntervalButton.disabled = true;
   preimage = computePreimage(intervalStart.value, intervalEnd.value);
   let updatedTraces = {
     x: [[intervalStart.value, intervalEnd.value]],
@@ -261,6 +267,8 @@ drawIntervalButton.addEventListener('click', () => {
 });
 
 drawPreimageButton.addEventListener('click', () => {
+  GLOBAL_PREIMAGE_DRAWED = true;
+  drawPreimageButton.disabled = true;
   preimage = computePreimage(intervalStart.value, intervalEnd.value);
   if (preimage.length == 1) {
     let updatedTraces = {x: [preimage[0]], y: [[0, 0]]};
@@ -276,55 +284,72 @@ drawPreimageButton.addEventListener('click', () => {
 });
 
 measureButton.addEventListener('click', async () => {
-  preimage = computePreimage(intervalStart.value, intervalEnd.value);
+  if (GLOBAL_INTERVAL_DRAWED && GLOBAL_PREIMAGE_DRAWED) {
+    measureButton.disabled = true;
+    preimage = computePreimage(intervalStart.value, intervalEnd.value);
 
-  a = intervalStart.value;
-  b = intervalEnd.value;
+    a = intervalStart.value;
+    b = intervalEnd.value;
 
-  baseTraceInterval = computeBaseTrace(a, b);
-  areaTraceInterval = computeAreaTrace(a, b);
+    baseTraceInterval = computeBaseTrace(a, b);
+    areaTraceInterval = computeAreaTrace(a, b);
 
-  baseTracePreimage1 = computeBaseTrace(preimage[0][0], preimage[0][1])
-  areaTracePreimage1 = computeAreaTrace(preimage[0][0], preimage[0][1])
+    baseTracePreimage1 = computeBaseTrace(preimage[0][0], preimage[0][1])
+    areaTracePreimage1 = computeAreaTrace(preimage[0][0], preimage[0][1])
 
-  animationTraces = [
-    {
-      data: [
-        {x: baseTraceInterval['x'], y: baseTraceInterval['y']},
-        {x: baseTracePreimage1['x'], y: baseTracePreimage1['y']}
-      ],
-      traces: [6, 7]
-    },
-    {
-      data: [
-        {x: areaTraceInterval['x'], y: areaTraceInterval['y']},
-        {x: areaTracePreimage1['x'], y: areaTracePreimage1['y']}
-      ],
-      traces: [6, 7]
-    }
-  ];
+    animationTraces = [
+      {
+        data: [
+          {x: baseTraceInterval['x'], y: baseTraceInterval['y']},
+          {x: baseTracePreimage1['x'], y: baseTracePreimage1['y']}
+        ],
+        traces: [6, 7]
+      },
+      {
+        data: [
+          {x: areaTraceInterval['x'], y: areaTraceInterval['y']},
+          {x: areaTracePreimage1['x'], y: areaTracePreimage1['y']}
+        ],
+        traces: [6, 7]
+      }
+    ];
 
-  if (preimage.length == 2) {
-    extraBase = computeBaseTrace(preimage[1][0], preimage[1][1])
-    extraArea = computeAreaTrace(preimage[1][0], preimage[1][1])
+    if (preimage.length == 2) {
+      extraBase = computeBaseTrace(preimage[1][0], preimage[1][1])
+      extraArea = computeAreaTrace(preimage[1][0], preimage[1][1])
 
-    animationTraces[0]['data'].push({x: extraBase['x'], y: extraBase['y']})
-    animationTraces[0]['traces'].push(8)
+      animationTraces[0]['data'].push({x: extraBase['x'], y: extraBase['y']})
+      animationTraces[0]['traces'].push(8)
 
-    animationTraces[0]['data'].push({x: extraArea['x'], y: extraArea['y']})
-    animationTraces[0]['traces'].push(8)
+      animationTraces[0]['data'].push({x: extraArea['x'], y: extraArea['y']})
+      animationTraces[0]['traces'].push(8)
+    };
+    Plotly.animate(plotlyArea, animationTraces, DEFAULT_TRANSITION);
+    anns = [
+      getAnnotation(a, b, 'orange', 2),
+      getAnnotation(preimage[0][0], preimage[0][1], 'purple', 2)
+    ];
+    if (preimage.length == 2) {
+      anns.push(getAnnotation(preimage[1][0], preimage[1][1], 'purple', 2));
+    };
+
+    let layout = {annotations: anns};
+
+    await new Promise(r => setTimeout(r, 1000));
+    Plotly.update(plotlyArea, {}, layout, []);
   };
-  Plotly.animate(plotlyArea, animationTraces, DEFAULT_TRANSITION);
-  anns = [
-    getAnnotation(a, b, 'orange', 2),
-    getAnnotation(preimage[0][0], preimage[0][1], 'purple', 2)
-  ];
-  if (preimage.length == 2) {
-    anns.push(getAnnotation(preimage[1][0], preimage[1][1], 'purple', 2));
-  };
+});
 
-  let layout = {showlegend: false, annotations: anns};
+resetButton.addEventListener('click', () => {
+  drawIntervalButton.disabled = false;
+  drawPreimageButton.disabled = false;
+  measureButton.disabled = false;
 
-  await new Promise(r => setTimeout(r, 1000));
-  Plotly.update(plotlyArea, {}, layout, []);
+  let layout = {annotations: []};
+
+  let updatedTraces = {x: Array(3).fill([]), y: Array(3).fill([])};
+  Plotly.update(plotlyMap, updatedTraces, layout, [2, 3, 4]);
+
+  let updatedTracesArea = {x: Array(6).fill([]), y: Array(6).fill([])};
+  Plotly.update(plotlyArea, updatedTracesArea, layout, [3, 4, 5, 6, 7, 8]);
 });
