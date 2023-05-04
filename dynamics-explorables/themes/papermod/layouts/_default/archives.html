@@ -31,10 +31,10 @@
       {{- range .Pages }}
       {{- if eq .Kind "page" }}
       <div class="archive-entry">
-        <h3 class="archive-entry-title">
+        <h4 class="archive-entry-title">
           {{- .Title | markdownify }}
           {{- if .Draft }}<sup><span class="entry-isdraft">&nbsp;&nbsp;[draft]</span></sup>{{- end }}
-        </h3>
+        </h4>
         <div class="archive-meta">
           {{- partial "post_meta.html" (dict "cxt" . "DisplayDate" true) -}}
         </div>

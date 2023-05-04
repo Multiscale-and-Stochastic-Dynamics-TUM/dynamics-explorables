@@ -24,7 +24,7 @@
 
 .logo a {
     color: var(--primary);
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
@@ -46,7 +46,7 @@ button#theme-toggle {
     display: flex;
     background: #ffffff00;
     color: var(--primary);
-    font-size: 16px;
+    font-size: 1rem;
     margin: auto 4px;
 }
 
@@ -76,7 +76,7 @@ body:not(.dark) #sun {
     display: inline;
     vertical-align: middle;
     color: var(--primary);
-    font-size: 16px;
+    font-size: 1rem;
 }
 
 #menu .active {
@@ -98,7 +98,7 @@ body:not(.dark) #sun {
 
 .lang-switch a {
     margin: auto 3px;
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
 }
 
