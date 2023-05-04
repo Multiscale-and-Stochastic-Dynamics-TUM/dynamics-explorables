@@ -39,11 +39,11 @@ const DEFAULT_TRANSITION = {
 const LAYOUT = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {
-    title: 'x',
+    title: '',
     range: [-0.2, 1.2],
   },
   yaxis: {
-    title: 'y',
+    title: '',
     range: [-0.2, 1.2],
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},

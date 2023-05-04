@@ -26,7 +26,7 @@ this example we will consider only intervals as set $A$. Now choose the edges of
 
 
 
-We claim that the measure defined by Lebesgue measure multiplied with the function $h(x)$ is an invariant measure, with:
+We claim that the measure defined by Lebesgue measure multiplied with the function $h(x)$ is an invariant measure, where:
 
 $$h(x) = \begin{cases} 
       \frac{4}{3} & x \in [0, 1/2] \\\

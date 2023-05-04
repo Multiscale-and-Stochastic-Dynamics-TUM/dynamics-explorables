@@ -17,7 +17,7 @@ being $0$ the only unstable one. In the second case there is only one equilibria
 
 You can vary the values of $p$ in the plot below and see how the stability diagram changes.
 
-{{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="0.0" >}}
+{{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="-1.3" >}}
 {{< plotly id="plotlyPitchfork">}}
 {{< plotly id="plotlyStability">}}
 

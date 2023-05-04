@@ -2,19 +2,19 @@ import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
 
-const X_LIMINF = -2.0;
-const x_LIMSUP = 2.0;
+const X_LIMINF = -2.2;
+const x_LIMSUP = 2.2;
 const NUM_POINTS = 10000;
 const STARTING_P = -1.3;
 
 const LAYOUT_PITCHFORK = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {
-    title: 'x',
-    range: [-2, 2],
+    title: 'p',
+    range: [-2.2, 2.2],
   },
   yaxis: {
-    title: 'y',
+    title: 'x',
     range: [-2, 2],
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
@@ -26,14 +26,15 @@ const LAYOUT_STABILITY = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {
     title: 'x',
-    range: [-2, 2],
+    range: [-2.2, 2.2],
   },
   yaxis: {
-    title: 'y',
+    title: '',
     range: [-0.5, 0.5],
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
+  annotations: [getArrowH(-0.2, true), getArrowH(0.2, false)],
   width: 650,
   height: 200
 };
@@ -62,6 +63,29 @@ const STABLE_MARKER = {
 const UNSTABLE_MARKER = {
   color: 'Orange',
   size: 10
+};
+
+function getArrowH(point, right = true) {
+  let ax = 10;
+  if (right) {
+    ax = -10;
+  };
+  return {
+    x: point,
+    y: 0,
+    xref: 'x',
+    yref: 'y',
+    text: '',
+    showarrow: true,
+    align: 'center',
+    arrowhead: 2,
+    arrowsize: 1.1,
+    arrowwidth: 2.2,
+    arrowcolor: 'red',
+    ax: ax,
+    ay: 0,
+    opacity: 1.0
+  };
 };
 
 let parampSlider = document.getElementById('parampSlider');
@@ -176,21 +200,37 @@ parampSlider.oninput = () => {
   var param_value = parampSlider.value;
   parampLabel.innerHTML = `p = ${param_value}`;
 
+  anns = [];
+
   if (param_value <= 0) {
     xStablePoints = [param_value];
     yStablePoints = [0];
 
     xUnstablePoints = [];
     yUnstablePoints = [];
+
+    anns1D = [getArrowH(-0.2, true), getArrowH(0.2, false)]
   } else {
     xStablePoints = [param_value, param_value];
     yStablePoints = [Math.sqrt(param_value), -Math.sqrt(param_value)];
 
     xUnstablePoints = [param_value];
     yUnstablePoints = [0];
+    let pos = Math.sqrt(param_value) / 2;
+    if (param_value < 0.7) {
+      // one arrow in the middle of the two eq points
+      anns1D = [
+        getArrowH(-3 * pos + 0.05, true), getArrowH(-pos - 0.05, false),
+        getArrowH(pos + 0.05, true), getArrowH(3 * pos - 0.05, false)
+      ];
+    } else {  // one arrow for each eq point
+      anns1D = [
+        getArrowH(-0.3, false), getArrowH(0.3, true),
+        getArrowH(-2 * pos + 0.2, false), getArrowH(-2 * pos - 0.2, true),
+        getArrowH(2 * pos + 0.2, false), getArrowH(2 * pos - 0.2, true)
+      ]
+    };
   }
-  console.log(parampLabel.innerHTML);
-
   var updatedTraces = {
     x: [[param_value, param_value], xStablePoints, xUnstablePoints],
     y: [[-2, 2], yStablePoints, yUnstablePoints]
@@ -203,5 +243,9 @@ parampSlider.oninput = () => {
       Array(yStablePoints.length).fill(0), Array(yUnstablePoints.length).fill(0)
     ]
   };
-  Plotly.update(stabilityDiv, updatedStabilityData, {}, [1, 2]);
+
+
+  let layout = LAYOUT_STABILITY;
+  layout['annotations'] = anns1D;
+  Plotly.update(stabilityDiv, updatedStabilityData, layout, [1, 2]);
 };

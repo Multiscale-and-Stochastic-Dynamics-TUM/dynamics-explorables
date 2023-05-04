@@ -46,6 +46,7 @@ const LAYOUT_3D = {
       tick0: -50,
       dtick: 25,
       zerolinewidth: 2,
+      title: 'x2'
     },
     yaxis: {
       range: [-4, 4],
@@ -53,6 +54,7 @@ const LAYOUT_3D = {
       tick0: -50,
       dtick: 25,
       zerolinewidth: 2,
+      title: 'x1'
     },
     zaxis: {
       range: [-4, 4],
@@ -60,17 +62,20 @@ const LAYOUT_3D = {
       tick0: 0,
       dtick: 25,
       zerolinewidth: 2,
+      title: 'p'
     },
     aspectmode: 'cube',
     camera: {
       up: {x: 1, y: 0, z: 0},
       center: {x: 0, y: 0, z: 0},
-      eye: {x: 0.0, y: 0.9, z: 0.9}
+      eye: {x: 0.0, y: 1.4, z: 1.4}
     },
     dragmode: 'orbit',
   },
   modebar: {remove: ['pan3d']},
   paper_bgcolor: '#ffffff00',
+  width: 600,
+  height: 500
 };
 
 // Generate data for the 3D parabola of stability
@@ -253,11 +258,11 @@ var layout = {
     range: [-1.5, 1.5],
   },
   xaxis2: {
-    title: 'x',
+    title: 'x1',
     range: [-2.5, 2.5],
   },
   yaxis2: {
-    title: 'y',
+    title: 'x2',
     range: [-2.5, 2.5],
   },
   annotations: [

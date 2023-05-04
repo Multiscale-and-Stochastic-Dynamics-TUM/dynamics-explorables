@@ -5,30 +5,28 @@ draft: false
 js: hopf
 ---
 
-Consifer a smooth two-dimensional one-parameter ODE: is topologically equivalent to:
-$x' = f(x, p) \qquad x \in \mathbb{R}^2, \quad p\in \mathbb{R}$
-
-which satisfies the conditions $f(0, 0)=0$ and the jacobian $\text{D}_x f(0, p)$ has a complex conjugate pair of eigenvalues that have real part
+Consider a smooth two-dimensional one-parameter ODE: $x' = f(x, p)$,  $x \in \mathbb{R}^2$,  $p\in \mathbb{R}$ which 
+satisfies the conditions: $f(0, 0)=0$ and $\text{D}_x f(0, p)$ has a complex conjugate pair of eigenvalues that have real part
 equal to zero. Then this system is topologically to one of the two following ODEs:
          
 $$
 \begin{pmatrix}
-y_1'  \\
-y_2' 
+x_1'  \\\
+x_2' 
 \end{pmatrix} = 
 \begin{pmatrix}
-p & -1  \\
-1 & p  \\
+p & -1  \\\
+1 & p  \\\
 \end{pmatrix}
 \begin{pmatrix}
-y_1  \\
-y_2 
+x_1  \\\
+x_2 
 \end{pmatrix}
 \pm
-(y_1^2 + y_2 ^ 2)
+(x_1^2 + x_2 ^ 2)
 \begin{pmatrix}
-y_1  \\
-y_2 
+x_1  \\\
+x_2 
 \end{pmatrix} 
 $$
 
