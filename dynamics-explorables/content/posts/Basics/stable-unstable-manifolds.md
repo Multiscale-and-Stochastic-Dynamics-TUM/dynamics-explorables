@@ -10,9 +10,14 @@ cover:
 keywords: ["manifold"]
 ---
 {{< plotly id="plotlyDiv" >}}
-{{< button id="playButton" text="Play" >}}
+{{< button id="linPlayButton" text="Play" >}}
+{{< button id="linResetButton" text="Reset" >}}
+{{< button id="TEST" text="TEST" >}}
 
-{{< radio_button id = "help" name = "aaa" value = "1" label = "[1,2,2]">}}
+{{< radio_button id = "time_forwards" name = "time" value = 5 label = "Forwards">}}
+{{< radio_button id = "time_backwards" name = "time" value = -5 label = "Backwards">}}
+
+
 
 Welcome to the section about stable and unstable manifolds,
 an important structure in the phase space that helps to understand dynamics around the equilibrium points (if the point satisfies certain conditions).

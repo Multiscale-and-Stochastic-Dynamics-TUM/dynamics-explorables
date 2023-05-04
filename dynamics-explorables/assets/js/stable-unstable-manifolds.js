@@ -2,9 +2,13 @@ import Plotly from 'plotly.js-dist-min'
 
 import {solve_ode} from './modules/simulation/ode_solver';
 
-dt = 0.01
-
 /////Functions for plots and coordinates/////
+const LAYOUT = {
+  xaxis: {range: [-10, 10]},
+  yaxis: {range: [-10, 10]},
+  showlegend: true,
+  margin: {l: 20, t: 20, b: 20, r: 20}
+};
 function getXYFromClick(plot, event) {
   let element = plot.querySelector(['g.xy']).querySelector(['rect']);
   let l_margin = element.x.baseVal.value;
@@ -42,18 +46,25 @@ function animate() {
   return;
 }
 
-function stopAnimation() {
-  Plotly.animate('myDiv', [], {mode: 'next'});
+function stopAnimation(plot) {
+  Plotly.animate(plot, [], {mode: 'next'});
 }
 
-function startAnimation(frames) {
-  Plotly.animate('myDiv', frames, {
-    transition: {duration: 500, easing: 'linear'},
+function startAnimation(plot, frames, no_transition = false) {
+  let transition, duration;
+  transition = {duration: duration, easing: 'linear'};
+  if (no_transition) {
+    duration = 1
+  } else {
+    duration = 100
+  }
+  Plotly.animate(plot, frames, {
+    transition: transition,
     frame: {
-      duration: 500,
+      duration: duration,
       redraw: false,
     },
-    mode: mode
+    mode: 'next',
   });
 }
 
@@ -73,8 +84,6 @@ async function drawFrame(plot, frames, trace, currentFrame) {
 }
 setTimeout(drawFrame, 10);
 */
-
-/////end/////
 
 /////Example functions/////
 function simpleGeneralRHS(t, X) {
@@ -97,58 +106,114 @@ function simpleManifStable(y) {
   return [0 * y, y];
 };
 function makeTrajectory(rhs, t, x0) {
-  x_clone = [...x0]
-  sol = solve_ode(rhs, [0, t], x_clone);
+  let x_clone = [...x0];
+  let sol = solve_ode(rhs, [0, t], x_clone).y;
+
   return sol
 }
-/////end/////
-/////
-const layout = {
-  xaxis: {range: [-10, 10]},
-  yaxis: {range: [-10, 10]},
-  showlegend: true,
-  margin: {l: 20, t: 20, b: 20, r: 20}
-};
-/////
+/////First plot/////
+/// Time
+let T = 5
+let timeRadio_f = document.getElementById('time_forwards')
+let timeRadio_b = document.getElementById('time_backwards')
+function clickHandler_RadioTime() {
+  T = timeRadio_f.checked * (5.) + timeRadio_b.checked * (-5.0);
+  return;
+}
+timeRadio_f.addEventListener('click', clickHandler_RadioTime);
+timeRadio_b.addEventListener('click', clickHandler_RadioTime);
+timeRadio_f.click()
 
+/// Main plot and traces
 let linear_system_plot = document.getElementById('plotlyDiv');
-Plotly.newPlot(linear_system_plot, [], layout);
+Plotly.newPlot(linear_system_plot, [], LAYOUT);
 
-let t = 5
-let tracked_point = [0.0, 0.0];
+let TRACKED_POINT = [0.0, 0.0];
+let TRACKED_TRAJECTORY = [[0.0], [0.0]];
 
-let indTrackedTrace = linear_system_plot.data.length
+let indTrackedTrajectory = linear_system_plot.data.length
 Plotly.addTraces(linear_system_plot, {
-  x: [tracked_point[0]],
-  y: [tracked_point[1]],
+  x: [TRACKED_POINT[0]],
+  y: [TRACKED_POINT[1]],
+  mode: 'lines',
+  marker: {color: '#ff00ff50'},
+  name: 'Trajectory',
+});
+
+let indTrackedPoint = linear_system_plot.data.length
+Plotly.addTraces(linear_system_plot, {
+  x: [TRACKED_POINT[0]],
+  y: [TRACKED_POINT[1]],
   mode: 'markers',
   marker: {color: 'black'},
   name: 'Tracked Point'
 });
-
-let indTrackedTrajectory = linear_system_plot.data.length
-Plotly.addTraces(linear_system_plot, {
-  x: [tracked_point[0]],
-  y: [tracked_point[1]],
-  mode: 'lines',
-  name: 'Trajectory'
-});
-
+/// Clickable plot
 clickHandler_LinPlot = (event) => {
   let point_temp;
   point_temp = getXYFromClick(linear_system_plot, event);
   if (!point_temp) {
     return;
   }
-  tracked_point = point_temp;
+  stopAnimation(linear_system_plot)
+  TRACKED_POINT = point_temp;
   Plotly.update(
       linear_system_plot,
-      data_update = {x: [[tracked_point[0]]], y: [[tracked_point[1]]]}, {},
-      indTrackedTrace);
-  sol = makeTrajectory(simpleGeneralRHS, t, tracked_point)
+      data_update = {x: [[TRACKED_POINT[0]]], y: [[TRACKED_POINT[1]]]}, {},
+      indTrackedPoint);
+  TRACKED_TRAJECTORY = makeTrajectory(simpleGeneralRHS, T, TRACKED_POINT);
   Plotly.update(
-      linear_system_plot, data_update = {x: [sol.y[0]], y: [sol.y[1]]}, {},
-      indTrackedTrajectory);
-};
+      linear_system_plot,
+      data_update = {x: [TRACKED_TRAJECTORY[0]], y: [TRACKED_TRAJECTORY[1]]},
+      {}, indTrackedTrajectory);
 
+  startAnimation(
+      linear_system_plot, {
+        data: [{x: [TRACKED_POINT[0]], y: [TRACKED_POINT[1]]}],
+        traces: [indTrackedPoint]
+      },
+      no_transition = 1);
+};
 linear_system_plot.addEventListener('click', clickHandler_LinPlot);
+/// Play Button
+let linSysPlay = document.getElementById('linPlayButton')
+function linAnimate() {
+  let frames = [];
+  for (let i = 1; i < TRACKED_TRAJECTORY[0].length; i++) {
+    frames.push({
+      data: [{x: [TRACKED_TRAJECTORY[0][i]], y: [TRACKED_TRAJECTORY[1][i]]}],
+      traces: [indTrackedPoint]
+    });
+  };
+  startAnimation(linear_system_plot, frames);
+  return;
+}
+linSysPlay.addEventListener('click', linAnimate);
+/// Reset button
+let linSysReset = document.getElementById('linResetButton')
+function linReset() {
+  startAnimation(
+      linear_system_plot, {
+        data: [{x: [TRACKED_POINT[0]], y: [TRACKED_POINT[1]]}],
+        traces: [indTrackedPoint]
+      },
+      no_transition = true);
+  return;
+}
+linSysReset.addEventListener('click', linReset);
+/////////////////
+
+let TEST_b = document.getElementById('TEST')
+function TEST_f() {
+  console.log('TEST')
+  console.log(TRACKED_TRAJECTORY)
+
+  startAnimation(
+      linear_system_plot, {
+        data: [{x: [TRACKED_POINT[0]], y: [TRACKED_POINT[1]]}],
+        traces: [indTrackedPoint]
+      },
+      no_transition = true);
+  return;
+}
+TEST_b.addEventListener('click', TEST_f);
