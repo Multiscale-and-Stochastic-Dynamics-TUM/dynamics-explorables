@@ -153,3 +153,31 @@ input {
     -webkit-appearance: none;
     appearance: none;
 }
+
+
+
+
+.action {
+    position: fixed;
+    bottom: 50px;
+    left: 50px;
+}
+
+.action.active button {
+    transform: rotate(135deg);
+}
+
+.action .openable {
+    display: none;
+    transition: 0.3s;
+}
+
+.action.active .openable {
+    position: absolute;
+    bottom: 55px;
+    min-width: 400px;
+    opacity: 1;
+    visibility: visible;
+    display: grid;
+    transition: 0.3s;
+}

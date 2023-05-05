@@ -86,6 +86,19 @@ function simpleManifStable(y) {
 };
 /////First plot/////
 /// Global vars and page elements
+
+//!!!!!!//
+/*
+let action = document.getElementById('magic');
+let buttonopen = action.querySelector('button')
+buttonopen.addEventListener('click', () => {
+  action.classList.toggle('active');
+  console.log('clicked');
+})
+let linear_system_plot = action.querySelector('.openable')
+*/
+//!!!!!!//
+
 let linear_system_plot = document.getElementById('plotlyDiv');
 
 let timeRadio_f = document.getElementById('time_forwards');
@@ -304,11 +317,23 @@ textSetX.addEventListener('keydown', inputHandler_setPoint);
 textSetY.addEventListener('keydown', inputHandler_setPoint);
 
 
-/////////////////
+////////////////
+
+let action = document.getElementById('magic');
+let buttonopen = action.querySelector('button')
+buttonopen.addEventListener('click', () => {
+  action.classList.toggle('active');
+  console.log('clicked');
+})
+let plottingopen = action.querySelector('.openable');
+/*
+
+{{< button id="TEST" text="TEST" >}}
 let TEST_b = document.getElementById('TEST')
 function TEST_f() {
-  console.log('TEST')
-  console.log(xLinspace)
+  console.log('TEST');
+  plottingopen.appendChild(linear_system_plot);
   return;
 }
 TEST_b.addEventListener('click', TEST_f);
+*/
