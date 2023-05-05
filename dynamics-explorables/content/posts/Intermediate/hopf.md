@@ -3,6 +3,7 @@ title: "Hopf"
 date: 2023-04-17T11:37:45+02:00
 draft: false
 js: hopf
+keywords: ["bifurcation"]
 ---
 
 Consider a smooth two-dimensional one-parameter ODE: <!--more--> $x' = f(x, p)$, $x \in \mathbb{R}^2$,  $p\in \mathbb{R}$ which 
