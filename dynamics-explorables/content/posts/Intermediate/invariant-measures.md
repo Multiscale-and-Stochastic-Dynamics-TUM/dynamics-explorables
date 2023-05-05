@@ -5,7 +5,7 @@ draft: false
 js: invariant-measures
 ---
 
-In this page we ilustrate an example of invariant measures first consider the map  
+Consider the map:  
 <!-- more -->
 $$f(x) = \begin{cases} 
       2x & x \in [0, 1/2] \\\
@@ -14,7 +14,7 @@ $$f(x) = \begin{cases}
    \end{cases}$$
 
 Remember that a measure $\mu$ is invariant if $\mu(A) = \mu(f ^ {-1} (A)) \quad \forall A \in \mathcal{F}$. For 
-this example we will consider only intervals as set $A$. Now choose the edges of the interval and you can visualize the slected interval in {{< span style="color:orange" text="orange" >}} and the preimage in {{< span style="color:purple" text="purple" >}}:
+this example, we will consider only intervals as set $A$. Now choose the edges of the interval. You can visualize the selected interval in {{< span style="color:orange" text="orange" >}} and the preimage in {{< span style="color:purple" text="purple" >}}:
 
 
 {{< input id="inputIntervalStart" min="0.0" max="1.0" step="0.1">}}
@@ -35,7 +35,7 @@ $$h(x) = \begin{cases}
       2 / 3 & x \in (1/2, 1] 
    \end{cases}$$
 
-It is easy to check that the area corresponding to the original interval $A$ weighted with the function $h(x)$ showed in {{< span style="color:cyan" text="cyan" >}} is exactly the same that the total area of the preimage. Pres the button "Calculate Measure" after drawing the interval and the preimage to visualize this. Morover we display a numeric value corresponding to the area of the region as you can see the two areas are equal up to rounding errors.
+It is easy to check that the area corresponding to the original interval $A$ weighted with the function $h(x)$ showed in {{< span style="color:cyan" text="cyan" >}} is exactly the same as the total area of the preimage. Press the button "Calculate Measure" after drawing the interval and the preimage to visualize this. We show the area of the regions on top of the shaded areas. As you can see, the two areas are equal up to rounding errors.
 
 
 {{< plotly id="plotlyMeasure">}}

@@ -54,7 +54,7 @@ const LAYOUT_3D = {
       tick0: -50,
       dtick: 25,
       zerolinewidth: 2,
-      title: 'x1'
+      title: 'p'
     },
     zaxis: {
       range: [-4, 4],
@@ -62,7 +62,7 @@ const LAYOUT_3D = {
       tick0: 0,
       dtick: 25,
       zerolinewidth: 2,
-      title: 'p'
+      title: 'x1'
     },
     aspectmode: 'cube',
     camera: {
