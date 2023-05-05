@@ -4,15 +4,13 @@ date: 2023-05-04T16:18:08+02:00
 draft: false
 js: false
 cover:
-    image: ""
+    image: "https://images.unsplash.com/photo-1496504175726-c7b4523c7e81?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2117&q=80"
     alt: ""
-    caption: ""
+    caption: Photo by <a href="https://images.unsplash.com/photo-1496504175726-c7b4523c7e81?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2117&q=80">Unsplash</a>
 keywords: []
 ---
 
 This website aims to give students at different levels of learning first contact with dynamical systems. Here you will find posts that illustrate various concepts from the field in a simple and interactive way.
-
-Intuitively speaking, a dynamical system is a system which changes with time. The time can be a continuous variable, like in a swinging pendulum, or a discrete one, like in a traffic light, but it has to be the only independent variable of the system. The phase space $\mathcal{X}$ is the collection of all possible states of the system. For example, for the traffic light, $\mathcal{X}$ is equal to red, yellow and green.
 
 The evolution function  tells how the dynamical system evolves with time. If we knew the evolution function of a given system, we could predict its state at any time in the future from the current state. For some real-world systems, this is indeed possible: for example, we can predict the motion of the planets with high accuracy far into the future. On the other hand, we cannot predict the weather more than a few days in advance. We will explore the theoretical reasons for why weather prediction is so hard in the chapter on chaos.
 
@@ -27,4 +25,6 @@ An example of dynamical system arises from solving a linear ordinary differentia
 
 $$ \phi_t(x) =  e ^ {tA}x = \sum_{k = 0} ^ {\infty} \frac{(tA)^ k }{k!}x, \qquad x \in \mathbb{R} ^ {2} $$
 It is straight forward to check that $\phi_t$ fulfills the two conditions mentioned above.
+
+Intuitively speaking, a dynamical system is a system which changes with time. The time can be a continuous variable, like in a swinging pendulum, or a discrete one, like in a traffic light, but it has to be the only independent variable of the system. The phase space $\mathcal{X}$ is the collection of all possible states of the system. For example, for the traffic light, $\mathcal{X}$ is equal to "red", "yellow" and "green".
 
