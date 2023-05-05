@@ -12,6 +12,7 @@ featured: true
 ---
 
 Consider the two-dimensional ODE in polar coordinates 
+<!-- more -->
     $$
     \begin{align}
     \dot{r} &= (1 - r^2) r \\\

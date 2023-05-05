@@ -11,7 +11,7 @@ keywords: ["discrete_map"]
 featured: true
 ---
 
-Arnold's cat map is a discrete map $g: \mathbb{T} \rightarrow \mathbb{T}$ from a torus to itself defined by:
+Arnold's cat map is a discrete map <!--more--> $g: \mathbb{T} \rightarrow \mathbb{T}$ from a torus to itself defined by:
 
 $$ g(x, y) = \begin{pmatrix} 2 & 1 \\\ 1 & 1 \end{pmatrix}
 \begin{pmatrix} x \\\ y \end{pmatrix} \mod 1 $$
