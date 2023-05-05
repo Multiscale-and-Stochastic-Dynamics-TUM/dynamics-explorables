@@ -101,6 +101,26 @@ input[type="range"] {
     margin: 10px 20px 0px 30px;
 }
 
+@media only screen and (max-width: 600px) {
+    .range {
+        width: 90%;
+        display: block;
+        padding-top: 30px;
+        margin-right: var(--gap);
+    }
+
+    .range>input {
+        width: 100%;
+    }
+
+    .range label {
+        position: absolute;
+        top: 0;
+        left: -6px;
+        margin: 10px 0px
+    }
+}
+
 /* end of range copypaste */
 
 button:enabled:hover,
