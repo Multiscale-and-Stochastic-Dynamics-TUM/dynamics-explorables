@@ -8,6 +8,7 @@ cover:
     alt: ""
     caption: Photo by <a href="https://images.unsplash.com/photo-1496504175726-c7b4523c7e81?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2117&q=80">Unsplash</a>
 keywords: []
+weight: 1
 ---
 
 This website aims to give students at different levels of learning first contact with dynamical systems. Here you will find posts that illustrate various concepts from the field in a simple and interactive way.

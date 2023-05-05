@@ -3,6 +3,7 @@ title: "Pitchfork"
 date: 2023-04-13T10:44:26+02:00
 draft: false
 js: pitchfork
+keywords: ["bifurcation"]
 ---
 
 The appearance of a non-equivalent phase portrait upon parameter variation is called a 
