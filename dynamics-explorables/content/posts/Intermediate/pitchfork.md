@@ -9,7 +9,7 @@ The appeareance of a non-equivalent phase portrairt uppon parameter variation is
 Bifurcation. In this page we introduce the pitchfork bifurcation, which is one of the main examples of 
 this topic. Consider the ordinary differential equation:
 
-$$x' = px - x ^ 3"$$
+$$x' = px - x ^ 3$$
 
 With $p \in \mathbb{R}$. As you can see the beheaviour of the system is different for
 $p > 0$ and for $p \leq 0$. In the first case we have 3 equilibria, at $-\sqrt{p}$, $0$ and $\sqrt{p}$),
