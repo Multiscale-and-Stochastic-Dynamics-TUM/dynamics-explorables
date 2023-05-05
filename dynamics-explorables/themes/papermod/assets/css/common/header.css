@@ -13,9 +13,81 @@
 }
 
 .logo,
-#menu {
+.menu {
     display: flex;
     margin: auto var(--gap);
+}
+
+.menu {
+    vertical-align: middle;
+    list-style: none;
+    word-break: keep-all;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.menu li {
+    display: flex;
+    margin: auto var(--gap);
+}
+
+.menu a {
+    display: inline;
+    vertical-align: middle;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.menu .active {
+    font-weight: 500;
+    border-bottom: 2px solid currentColor;
+}
+
+#menu-toggle {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .menu {
+        position: inline;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .menu-button-container {
+        display: flex;
+        height: 100%;
+        width: 26px;
+        margin: auto var(--gap);
+        cursor: pointer;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        fill: var(--content);
+    }
+
+    #menu-toggle~.menu li {
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    #menu-toggle:checked~.menu li {
+        display: flex;
+        align-items: center;
+        border: 0;
+        height: 3rem;
+        transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    #menu-toggle:checked~.menu {
+        padding-bottom: var(--gap);
+    }
+
 }
 
 .logo {
@@ -57,31 +129,6 @@ body.dark #moon {
 
 body:not(.dark) #sun {
     display: none;
-}
-
-#menu {
-    vertical-align: middle;
-    list-style: none;
-    word-break: keep-all;
-    overflow-x: auto;
-    white-space: nowrap;
-}
-
-#menu li {
-    display: flex;
-    margin: auto var(--gap);
-}
-
-#menu a {
-    display: inline;
-    vertical-align: middle;
-    color: var(--primary);
-    font-size: 1rem;
-}
-
-#menu .active {
-    font-weight: 500;
-    border-bottom: 2px solid currentColor;
 }
 
 .lang-switch li,
