@@ -9,11 +9,11 @@ cover:
     caption: ""
 keywords: ["manifold"]
 ---
-{{< plotly id="plotlyDiv" >}}
+{{< plotly id="plotlyDiv">}}
 {{< button id="linPlayButton" text="Play" >}}
 {{< button id="linResetButton" text="Reset" >}}
-{{< button id="TEST" text="TEST" >}}
-
+{{< textfield id = "setPointX" name = "setPoint" label = "x:" width = "50px">}}
+{{< textfield id = "setPointY" name = "setPoint" label = "y:" width = "50px">}}
 
 {{< radio_button id = "time_forwards" name = "time" value = 5 label = "Forwards">}}
 {{< radio_button id = "time_backwards" name = "time" value = -5 label = "Backwards">}}
@@ -25,6 +25,7 @@ keywords: ["manifold"]
 {{< checkbox id = "showEigenspaces" name = "plotElements" value = true label = "Show Eigenspaces">}}
 {{< checkbox id = "showManifolds" name = "plotElements" value = true label = "Show Manifolds">}}
 
+{{< button id="TEST" text="TEST" >}}
 Welcome to the section about stable and unstable manifolds,
 an important structure in the phase space that helps to understand dynamics around the equilibrium points (if the point satisfies certain conditions).
 First the idea will be introcuced on the linear systems in tabs "Linear System" and "Eigenspaces" and generalised in "General System" and "Manifolds".

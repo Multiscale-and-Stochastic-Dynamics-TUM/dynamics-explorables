@@ -1,0 +1,6 @@
+{{ $id := .Get "id" }}
+{{ $name := .Get "name" }}
+{{ $width := .Get "width" }}
+{{ $label:= .Get "label" }}
+<label for="{{$id}}">{{$label}}</label>
+<input type="text" id="{{ $id }}" name="{{ $name }}" style="width: {{$width}};" />

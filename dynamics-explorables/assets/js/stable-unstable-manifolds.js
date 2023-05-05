@@ -10,6 +10,7 @@ const LAYOUT = {
   margin: {l: 20, t: 20, b: 20, r: 20}
 };
 function getXYFromClick(plot, event) {
+  //!!!returns false if clickout of bounds
   let element = plot.querySelector(['g.xy']).querySelector(['rect']);
   let l_margin = element.x.baseVal.value;
   let t_margin = element.y.baseVal.value;
@@ -86,15 +87,23 @@ function simpleManifStable(y) {
 /////First plot/////
 /// Global vars and page elements
 let linear_system_plot = document.getElementById('plotlyDiv');
+
 let timeRadio_f = document.getElementById('time_forwards');
 let timeRadio_b = document.getElementById('time_backwards');
+
 let sysRadio_l = document.getElementById('sys_lin');
 let sysRadio_g = document.getElementById('sys_gen');
+
 let linSysPlay = document.getElementById('linPlayButton');
-let linSysReset = document.getElementById('linResetButton')
+let linSysReset = document.getElementById('linResetButton');
+
 let showTrajectory = document.getElementById('showTrajectory');
 let showEigenspaces = document.getElementById('showEigenspaces');
 let showManifolds = document.getElementById('showManifolds');
+
+let textSetX = document.getElementById('setPointX')
+let textSetY = document.getElementById('setPointY')
+
 let T = 5;
 let CURRENT_SYSTEM = simpleLinOriginRHS;
 let TRACKED_POINT = [0.0, 0.0];
@@ -175,8 +184,11 @@ Plotly.addTraces(linear_system_plot, {
 });
 
 /// Clickable plot
+// function updating point, trajectory, traces
 function updateLinPlot_pt(point) {
-  TRACKED_POINT = point;
+  if (point) {
+    TRACKED_POINT = point;
+  }
   // updating traces
   Plotly.update(
       linear_system_plot,
@@ -198,9 +210,11 @@ function updateLinPlot_pt(point) {
 }
 clickHandler_LinPlot = (event) => {
   let point_temp;
-  point_temp = getXYFromClick(linear_system_plot, event);
-  if (!point_temp) {
-    return;
+  point_temp = getXYFromClick(
+      linear_system_plot, event);  //!!!returns false if clicked out of bounds
+  if (point_temp) {
+    textSetX.value = point_temp[0];
+    textSetY.value = point_temp[1];
   }
   updateLinPlot_pt(point_temp);
   return;
@@ -274,6 +288,22 @@ showTrajectory.addEventListener('click', clickHandler_showPlotElements);
 showEigenspaces.addEventListener('click', clickHandler_showPlotElements);
 showManifolds.addEventListener('click', clickHandler_showPlotElements);
 clickHandler_showPlotElements();
+/// Manuslly setting the point
+function inputHandler_setPoint(event) {
+  if (event.key == 'Enter') {
+    let valX = Number(textSetX.value);
+    let valY = Number(textSetY.value);
+    if (isNaN(valX * valY)) {
+      return;
+    }
+    updateLinPlot_pt([valX, valY]);
+    return;
+  }
+}
+textSetX.addEventListener('keydown', inputHandler_setPoint);
+textSetY.addEventListener('keydown', inputHandler_setPoint);
+
+
 /////////////////
 let TEST_b = document.getElementById('TEST')
 function TEST_f() {
