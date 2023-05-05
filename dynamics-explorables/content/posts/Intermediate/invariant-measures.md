@@ -6,7 +6,7 @@ js: invariant-measures
 ---
 
 In this page we ilustrate an example of invariant measures first consider the map  
-
+<!-- more -->
 $$f(x) = \begin{cases} 
       2x & x \in [0, 1/2] \\\
       \\\

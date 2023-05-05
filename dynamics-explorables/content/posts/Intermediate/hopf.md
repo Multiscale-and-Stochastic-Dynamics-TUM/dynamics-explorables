@@ -5,7 +5,7 @@ draft: false
 js: hopf
 ---
 
-Consider a smooth two-dimensional one-parameter ODE: $x' = f(x, p)$,  $x \in \mathbb{R}^2$,  $p\in \mathbb{R}$ which 
+Consider a smooth two-dimensional one-parameter ODE: <!--more--> $x' = f(x, p)$, $x \in \mathbb{R}^2$,  $p\in \mathbb{R}$ which 
 satisfies the conditions: $f(0, 0)=0$ and $\text{D}_x f(0, p)$ has a complex conjugate pair of eigenvalues that have real part
 equal to zero. Then this system is topologically to one of the two following ODEs:
          
