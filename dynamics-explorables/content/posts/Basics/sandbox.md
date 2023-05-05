@@ -1,8 +1,8 @@
 ---
-title: "Sandbox"
+title: "My First Post"
 date: 2023-04-01T20:06:16+02:00
 draft: true
-js: "sandbox"
+js: "my-first-post"
 ---
 
 ## Hello, world! 👋
