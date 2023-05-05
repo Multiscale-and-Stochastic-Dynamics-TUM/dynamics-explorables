@@ -320,20 +320,23 @@ textSetY.addEventListener('keydown', inputHandler_setPoint);
 ////////////////
 
 let action = document.getElementById('magic');
-let buttonopen = action.querySelector('button')
-buttonopen.addEventListener('click', () => {
-  action.classList.toggle('active');
-  console.log('clicked');
-})
 let plottingopen = action.querySelector('.openable');
-/*
+let buttonopen = action.querySelector('button');
+buttonopen.addEventListener(
+    'click',
+    () => {
+      plottingopen.appendChild(linear_system_plot);
+      action.classList.toggle('active');
+      console.log('clicked');
+    })
+    /*
 
-{{< button id="TEST" text="TEST" >}}
-let TEST_b = document.getElementById('TEST')
-function TEST_f() {
-  console.log('TEST');
-  plottingopen.appendChild(linear_system_plot);
-  return;
-}
-TEST_b.addEventListener('click', TEST_f);
-*/
+    {{< button id="TEST" text="TEST" >}}
+    let TEST_b = document.getElementById('TEST')
+    function TEST_f() {
+      console.log('TEST');
+      plottingopen.appendChild(linear_system_plot);
+      return;
+    }
+    TEST_b.addEventListener('click', TEST_f);
+    */
