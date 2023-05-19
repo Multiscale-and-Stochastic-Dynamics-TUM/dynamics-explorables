@@ -1,5 +1,6 @@
 import Plotly from 'plotly.js-dist-min'
 
+import {getXYFromClick} from './modules/plotting/plotly_click';
 import {solve_ode} from './modules/simulation/ode_solver';
 
 /////Functions for plots and coordinates/////
@@ -8,33 +9,6 @@ const LAYOUT = {
   yaxis: {range: [-10, 10]},
   showlegend: true,
   margin: {l: 20, t: 20, b: 20, r: 20}
-};
-function getXYFromClick(plot, event) {
-  //!!!returns false if clickout of bounds
-  let element = plot.querySelector(['g.xy']).querySelector(['rect']);
-  let l_margin = element.x.baseVal.value;
-  let t_margin = element.y.baseVal.value;
-  let width = element.width.baseVal.value;
-  let height = element.height.baseVal.value;
-
-  let x_click = event.offsetX;
-  let y_click = event.offsetY;
-
-  if (x_click < l_margin || x_click > l_margin + width || y_click < t_margin ||
-      y_click > t_margin + height) {
-    return false;
-  };  // not reacting out of border clicks
-  // getting parameters of the axis on data
-  let fig_layout = plot.layout;
-  let x_lim = fig_layout.xaxis.range;
-  let y_lim = fig_layout.yaxis.range;
-
-  let x_coord = (x_click - l_margin) / width * (x_lim[1] - x_lim[0]) + x_lim[0];
-  let y_coord =
-      (y_click - t_margin) / height * (y_lim[0] - y_lim[1]) + y_lim[1];
-  // reminder, the axis are reverted in respect to coordinates on the page
-  let point = [x_coord, y_coord];
-  return point;
 };
 function startAnimation(plot, frames, no_transition = false) {
   let transition, duration;
@@ -86,18 +60,7 @@ function simpleManifStable(y) {
 };
 /////First plot/////
 /// Global vars and page elements
-
-//!!!!!!//
-/*
-let action = document.getElementById('magic');
-let buttonopen = action.querySelector('button')
-buttonopen.addEventListener('click', () => {
-  action.classList.toggle('active');
-  console.log('clicked');
-})
-let linear_system_plot = action.querySelector('.openable')
-*/
-//!!!!!!//
+let post = document.querySelector('.post-content')
 
 let linear_system_plot = document.getElementById('plotlyDiv');
 
@@ -138,7 +101,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleEigenUnstab(linEnds['x'])[0],
   y: simpleEigenUnstab(linEnds['x'])[1],
   mode: 'lines',
-  marker: {color: '0000ff50'},
+  marker: {color: '#0000ff50'},
   name: 'Unstable Eigenspace',
 });
 
@@ -147,7 +110,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleEigenStable(linEnds['y'])[0],
   y: simpleEigenStable(linEnds['y'])[1],
   mode: 'lines',
-  marker: {color: 'ff000050'},
+  marker: {color: '#ff000050'},
   name: 'Stable Eigenspace',
 });
 
@@ -167,7 +130,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleManifUnstab(xLinspace)[0],
   y: simpleManifUnstab(xLinspace)[1],
   mode: 'lines',
-  marker: {color: '4040ff50'},
+  marker: {color: '#4040ff50'},
   name: 'Unstable Manifold',
 });
 let indStableManifold = linear_system_plot.data.length;
@@ -175,7 +138,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleManifStable(yLinspace)[0],
   y: simpleManifStable(yLinspace)[1],
   mode: 'lines',
-  marker: {color: 'ff404050'},
+  marker: {color: '#ff404050'},
   name: 'Stable Manifold',
 });
 // movable stuff
@@ -317,26 +280,27 @@ textSetX.addEventListener('keydown', inputHandler_setPoint);
 textSetY.addEventListener('keydown', inputHandler_setPoint);
 
 
-////////////////
+///////pop-out button/////////
 
-let action = document.getElementById('magic');
+let action = document.getElementById('popOut');
 let plottingopen = action.querySelector('.openable');
 let buttonopen = action.querySelector('button');
-buttonopen.addEventListener(
-    'click',
-    () => {
-      plottingopen.appendChild(linear_system_plot);
-      action.classList.toggle('active');
-      console.log('clicked');
-    })
-    /*
+buttonopen.addEventListener('click', () => {
+  action.classList.toggle('active');
 
-    {{< button id="TEST" text="TEST" >}}
-    let TEST_b = document.getElementById('TEST')
-    function TEST_f() {
-      console.log('TEST');
-      plottingopen.appendChild(linear_system_plot);
-      return;
-    }
-    TEST_b.addEventListener('click', TEST_f);
-    */
+  if (action.classList.contains('active')) {
+    plottingopen.appendChild(linear_system_plot);
+  } else {
+    post.insertBefore(linear_system_plot, post.childNodes[1]);
+  }
+})
+
+// text elemets quality of life
+let eigenspaceText = document.getElementById('eigenspacesText');
+eigenspaceText.addEventListener('click', () => {showEigenspaces.click()});
+let trajectoryText = document.getElementById('trajectoryText');
+trajectoryText.addEventListener('click', () => {showTrajectory.click()});
+let generalText = document.getElementById('generalText');
+generalText.addEventListener('click', () => {sysRadio_g.click()});
+let manifoldsText = document.getElementById('manifoldsText');
+manifoldsText.addEventListener('click', () => {showManifolds.click()});
