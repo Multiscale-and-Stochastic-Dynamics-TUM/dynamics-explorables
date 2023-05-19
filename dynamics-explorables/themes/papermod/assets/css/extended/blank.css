@@ -159,10 +159,11 @@ input {
 
 .action {
     position: fixed;
-    width: 35px;
-    height: 35px;
-    bottom: 50px;
-    left: 50px;
+    bottom: 60px;
+    left: 30px;
+    width: 42px;
+    height: 42px;
+    z-index: 99;
 }
 
 .action button {
@@ -175,21 +176,23 @@ input {
     line-height: 0;
     padding: 0;
     margin: 0;
+    opacity: 1;
 }
 
 .action.active button {
-    transform: rotate(135deg);
+    transform: rotate(-135deg);
     border-radius: 50%;
 }
 
 .action .openable {
     display: none;
     transition: 0.3s;
+    border: 1px solid var(--secondary);
 }
 
 .action.active .openable {
     position: absolute;
-    bottom: 55px;
+    bottom: 50px;
     min-width: 400px;
     display: grid;
     transition: 0.3s;
