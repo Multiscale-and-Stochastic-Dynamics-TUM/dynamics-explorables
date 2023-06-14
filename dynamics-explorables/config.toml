@@ -16,5 +16,7 @@ paginate = 12
   name = 'date'
   weight = 10
 
+
 [params]
   env = 'production' # development or production
+  disableScrollToTop = true
