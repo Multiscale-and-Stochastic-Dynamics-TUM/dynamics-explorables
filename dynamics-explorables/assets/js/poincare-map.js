@@ -64,7 +64,7 @@ function unzipCoordinates(coords) {
 
 const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis: {range: [-2, 2], domain: [0.15, 0.6]},
+  xaxis: {range: [-2, 2], domain: [0.05, 0.50]},
   yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1]},
   xaxis2: {
     range: [0, 2.1],
@@ -89,12 +89,11 @@ const layout = {
   //  paper_bgcolor: '#ffffff00',
   //  plot_bgcolor: '#ffffff00',
   showlegend: false,
-  modebar: {
-    remove: [
-      'lasso', 'pan', 'select', 'zoom', 'zoomIn2d', 'zoomOut2d', 'autoscale',
-      'resetScale2d'
-    ]
-  },
+};
+
+const config = {
+  responsive: true,
+  displayModeBar: false,
 };
 
 // Generate some streamlines to show the vector field
@@ -205,7 +204,7 @@ let cycleTrace = [
 
 let vectorPlot = document.getElementById('vectorPlot');
 
-Plotly.newPlot(vectorPlot, structuredClone(streamlineTraces), layout);
+Plotly.newPlot(vectorPlot, structuredClone(streamlineTraces), layout, config);
 Plotly.addTraces(vectorPlot, cycleTrace);
 
 // =====================================================================
@@ -213,7 +212,8 @@ Plotly.addTraces(vectorPlot, cycleTrace);
 
 let singleTrajectory = document.getElementById('singleTrajectory');
 
-Plotly.newPlot(singleTrajectory, structuredClone(streamlineTraces), layout);
+Plotly.newPlot(
+    singleTrajectory, structuredClone(streamlineTraces), layout, config);
 Plotly.addTraces(singleTrajectory, cycleTrace);
 
 let annotations = {
@@ -253,8 +253,8 @@ let crossectionTrace = {
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'lines+markers',
-  marker: {symbol: 'line-ew-open', size: 10, color: 'orange', line: {width: 3}},
-  line: {color: 'orange', width: 3}
+  marker: {symbol: 'line-ew-open', size: 10, color: 'orange', line: {width: 2}},
+  line: {color: 'orange', width: 2}
 };
 
 Plotly.addTraces(singleTrajectory, crossectionTrace);
@@ -347,7 +347,8 @@ stepButton.addEventListener('click', () => {
 
 let allTrajectories = document.getElementById('allTrajectories');
 
-Plotly.newPlot(allTrajectories, structuredClone(streamlineTraces), layout);
+Plotly.newPlot(
+    allTrajectories, structuredClone(streamlineTraces), layout, config);
 Plotly.addTraces(allTrajectories, cycleTrace);
 Plotly.addTraces(allTrajectories, crossectionTrace);
 
@@ -453,13 +454,7 @@ const layout2 = {
   yaxis2: {range: [0, 2.1], title: 'return point', domain: [0, 1], nticks: 3},
   //  paper_bgcolor: '#ffffff00',
   //  plot_bgcolor: '#ffffff00',
-  showlegend: false,
-  modebar: {
-    remove: [
-      'lasso', 'pan', 'select', 'zoom', 'zoomIn2d', 'zoomOut2d', 'autoscale',
-      'resetScale2d'
-    ]
-  },
+  showlegend: false
 };
 
 let unityLine = {
@@ -480,6 +475,6 @@ let fixpoint = {
   marker: {symbol: 'circle', size: 8, color: 'purple'},
 };
 
-Plotly.newPlot(poincarePlot, [unityLine], layout2);
+Plotly.newPlot(poincarePlot, [unityLine], layout2, config);
 Plotly.addTraces(poincarePlot, poincareLineTrace);
 Plotly.addTraces(poincarePlot, fixpoint);
