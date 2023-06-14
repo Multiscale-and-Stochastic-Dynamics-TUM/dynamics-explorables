@@ -22,16 +22,12 @@
 .image-fullscreen .container h1 {
     margin: 40px;
     color: white;
-    font-size: 36pt;
+    font-size: 2.25rem;
     text-shadow: 4px 4px 4px black;
 }
 
 @media only screen and (max-width: 440px) {
     .image-fullscreen {
         height: 500px;
-    }
-
-    .image-fullscreen .container h1 {
-        font-size: 26pt;
     }
 }

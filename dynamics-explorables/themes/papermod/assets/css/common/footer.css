@@ -1,15 +1,21 @@
 .footer,
 .top-link {
-    font-size: 12px;
+    font-size: 0.75rem;
     color: var(--secondary);
 }
 
 .footer {
-    max-width: calc(var(--main-width) + var(--gap) * 2);
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    background-color: var(--theme);
     margin: auto;
-    padding: calc((var(--footer-height) - var(--gap)) / 2) var(--gap);
-    text-align: center;
+    padding: calc((var(--footer-height) - var(--gap)) / 2) calc((100% - var(--main-width)) / 2);
     line-height: 24px;
+}
+
+.footer-col {
+    text-align: left;
 }
 
 .footer span {
@@ -28,6 +34,17 @@
 
 .footer a:hover {
     border-bottom: 1px solid var(--primary);
+}
+
+.footer .social-icons a {
+    border-bottom: none;
+}
+
+.footer .social-icons svg {
+    padding: 8px;
+    height: 35px;
+    width: 35px;
+    stroke: var(--secondary);
 }
 
 .top-link {
