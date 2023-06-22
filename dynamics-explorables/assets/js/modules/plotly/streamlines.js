@@ -296,12 +296,16 @@ function _integrate(
     let trajectory = solve_ode(internalRhs, [t, t + dt], [x, y]);
 
     let lastStep = trajectory.y.length;
+    let cell = _coordToGridCell(x, y, grid);
+    let prevCell = cell;
+
     for (let step = 0; step < trajectory.y.length; step++) {
       t = trajectory.t[step];
       x = trajectory.y[0][step];
       y = trajectory.y[1][step];
 
-      let cell = _coordToGridCell(x, y, grid);
+      prevCell = cell;
+      cell = _coordToGridCell(x, y, grid);
       // stop the streamline if we are outside the boundaries of the plot
       if (cell[0] < 0 || cell[0] >= grid.size || cell[1] < 0 ||
           cell[1] >= grid.size) {
@@ -321,6 +325,12 @@ function _integrate(
         // if we entered a new cell which was not discovered before, mark it
         if (!discovered[cell[0]][cell[1]]) {
           discovered[cell[0]][cell[1]] = true;
+        } else {
+          if (prevCell[0] != cell[0] || prevCell[1] != cell[1]) {
+            terminate = true;
+            lastStep = step;
+            break;
+          }
         }
       }
     }
