@@ -28,7 +28,7 @@ function solve_ode(rhs, tspan, y0, args = []) {
   }
 
   // initial time step
-  let dt0 = 1e-5;
+  let dt0 = 1e-3;
 
   // Initialize:
   let integrator = ode45(y0, rhs_wrap, tspan[0], dt0);
