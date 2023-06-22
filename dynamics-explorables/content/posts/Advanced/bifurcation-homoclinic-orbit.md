@@ -12,7 +12,8 @@ In the [previous]({{< ref "pitchfork" >}}) [posts]({{< ref "hopf" >}}) we looked
 Take a look at the phase space in the plot below:
 
 <!-- Phase plot with a slider for the parameter -->
-{{< plotly id="streamlines">}}
+{{< plotly id="streamlines" >}}
+{{< slider id="streamlinesSlider" min="0.5" max="1.5" step="0.05" value="1" >}}
 
 Previously, a bifurcation occurred when the critical point changed its stability under the variation of a parameter. This system of ODEs has a critical point at $\mathbf{x} = 0$; however, this point remains a saddle for all values of $p$. And yet, the phase plot changes qualitatively as the parameter changes. Here is the same phase plot, but with the stable and unstable manifolds marked. Can you find the value of $p$ at which a bifurcation occurs?
 

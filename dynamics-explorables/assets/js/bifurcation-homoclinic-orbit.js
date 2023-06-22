@@ -7,8 +7,8 @@ import {solve_ode} from './modules/simulation/ode_solver';
 
 const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis: {range: [-1.5, 1.5]},
-  yaxis: {range: [-1.5, 1.5], scaleanchor: 'x1'},
+  xaxis: {range: [0, 2]},
+  yaxis: {range: [-1., 1.], scaleanchor: 'x1'},
   showlegend: false,
 };
 
@@ -16,34 +16,72 @@ const config = {
   displayModeBar: false,
 };
 
-/**
- * The rhs of a hopf normal form. We use it to construct an ODE in which
- * a homoclinic bifurcation occurs.
- */
-function hopf(x, y, q) {
-  return [q * x - y - (x ** 2 + y ** 2) * x, x + q * y - (x ** 2 + y ** 2) * y];
+function rhs(t, y, q) {
+  let [y1, y2] = y;
+  return [y2, -q * y2 + y1 - y1 ** 2 + y1 * y2];
 }
 
-/**
- * The rhs of an ODE which contains a homoclinic bifurcation.
- * @param q - a bifurcation parameter
- * @param a - the eigenvalue of the Jacobian at (0, 0) in the x-direction
- * @param b - the eigenvalue of the Jacobian at (0, 0) in the y-direction
- */
-function bifurcationODE(t, y, q, a, b) {
-  let [y1, y2] = y;
-  let hopf_rhs = hopf(x - 1, y - 1, q);
+function eigenvalues(q) {
   return [
-    a * y1 + (y1 ** 2 + y2 ** 2) * hopf_rhs[0],
-    b * y2 + (y1 ** 2 + y2 ** 2) * hopf_rhs[1]
+    0.5 * (-q - Math.sqrt(q ** 2 + 4)), 0.5 * (-q + Math.sqrt(q ** 2 + 4))
   ];
 }
 
-function simpleRHS(t, y) {
-  return [y[1], -y[0]];
+function eigenvectors(q) {
+  return [
+    [-0.5 * (q - Math.sqrt(q ** 2 + 4)), -1],
+    [0.5 * (q + Math.sqrt(q ** 2 + 4)), 1]
+  ];
 }
 
+const slider = document.getElementById('streamlinesSlider');
+const label = document.getElementById('streamlinesSliderLabel');
+
+label.innerHTML = `p = ${slider.value}`;
+
+slider.oninput = () => {
+  label.innerHTML = `p = ${slider.value}`;
+};
+
 let plotlyDiv = document.getElementById('streamlines');
-streamlines(
-    plotlyDiv, simpleRHS, [], [-1, 1], [-1, 1], 6,
-    {line: {width: 1}, layout: layout, config: config});
+
+slider.addEventListener('change', async (event) => {
+  let q = parseFloat(event.target.value);
+  let startingCoords = eigenvectors(q);
+  for (let i = 0; i < startingCoords.length; i++) {
+    startingCoords[i][0] *= 0.01;
+    startingCoords[i][1] *= 0.01;
+
+    if (startingCoords[i][0] < 0) {
+      startingCoords[i][0] *= -1;
+      startingCoords[i][1] *= -1;
+    }
+  }
+
+  let numLines = 10
+  let deltaY = (layout.yaxis.range[1] - layout.yaxis.range[0]) / numLines
+  for (let i = 0; i < numLines; i++) {
+    let y = layout.yaxis.range[0] + i * deltaY;
+    startingCoords.push([0, y]);
+  }
+  for (let i = 0; i < numLines; i++) {
+    let y = layout.yaxis.range[0] + i * deltaY;
+    startingCoords.push([layout.xaxis.range[1], y]);
+  }
+  for (let i = 0; i < numLines; i++) {
+    let y = layout.yaxis.range[0] + i * deltaY;
+    startingCoords.push([1, y]);
+  }
+
+  streamlines(plotlyDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range, 15, {
+    line: {width: 1},
+    layout: layout,
+    config: config,
+    brokenStreamlines: true,
+    // startingCoords: startingCoords,
+  });
+});
+
+// trigger the first update of the plot manually
+var event = new Event('change');
+slider.dispatchEvent(event);
