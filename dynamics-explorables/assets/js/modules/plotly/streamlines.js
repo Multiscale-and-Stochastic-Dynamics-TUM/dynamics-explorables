@@ -24,10 +24,18 @@ export {streamlines};
  *     function
  * @param config - a plotly config object which will be passed to the plotly
  *     function
+ * @param {boolean} brokenStreamlines - If false, forces streamlines to continue
+ *     until they
+ *       leave the plot domain. If true, they may be terminated if they
+ *       come too close to another streamline.
+ * @param startingCoords - a vector of custom starting points. Should be given
+ *     as `[[x1, y1], [x2, y2], ... ]`. If not provided,
+ *     the starting points will be generated automatically on a grid.
  */
 function streamlines(
     plotlyDiv, rhs, params, xrange, yrange, density = 6,
-    {line, layout, config} = {}) {
+    {line, layout, config, brokenStreamlines = true, startingCoords = []} =
+        {}) {
   let [xmin, xmax] = xrange;
   let [ymin, ymax] = yrange;
   let xnodes = linspace(xmin, xmax, density);
@@ -46,16 +54,20 @@ function streamlines(
   };
 
   // initiate the grid
-  for (let i = 0; i < grid.size; i++) {
-    grid.visited.push([]);
-    grid.coordinates.push([]);
-    for (let j = 0; j < grid.size; j++) {
-      grid.visited[i].push(false);
-      grid.coordinates[i].push([xnodes[i], ynodes[j]]);
+  if (brokenStreamlines) {
+    for (let i = 0; i < grid.size; i++) {
+      grid.visited.push([]);
+      grid.coordinates.push([]);
+      for (let j = 0; j < grid.size; j++) {
+        grid.visited[i].push(false);
+        grid.coordinates[i].push([xnodes[i], ynodes[j]]);
+      }
     }
   }
 
-  let startingCoords = _getStartingCoords(xrange, yrange, grid.size);
+  if (startingCoords.length == 0) {
+    startingCoords = _getStartingCoords(xrange, yrange, grid.size);
+  }
 
   let streamlines = [];
   let streamline = {
@@ -65,7 +77,8 @@ function streamlines(
 
   // for every starting point, draw the streamline and add it to the vector
   for (const startingCoord of startingCoords) {
-    [streamline, grid] = _getStreamline(rhs, params, startingCoord, grid);
+    [streamline, grid] =
+        _getStreamline(rhs, params, startingCoord, grid, brokenStreamlines);
     if (streamline.x.length > 1) {
       streamlines.push(streamline);
     }
@@ -165,7 +178,7 @@ function _coordToGridCell(x, y, grid) {
   return [xind, yind];
 }
 
-function _getStreamline(rhs, params, start, grid) {
+function _getStreamline(rhs, params, start, grid, brokenStreamlines) {
   // cells which were visited for the first time by this streamline
   let discovered = [];
   for (let i = 0; i < grid.size; i++) {
@@ -187,7 +200,7 @@ function _getStreamline(rhs, params, start, grid) {
 
   try {
     [forwardStreamline, discovered] =
-        _integrate(rhs, params, start, grid, discovered, 1);
+        _integrate(rhs, params, start, grid, discovered, 1, brokenStreamlines);
   } catch (error) {
     console.log('Error encountered during forward integration: ')
     console.log(error.message);
@@ -199,7 +212,7 @@ function _getStreamline(rhs, params, start, grid) {
 
   try {
     [backwardStreamline, discovered] =
-        _integrate(rhs, params, start, grid, discovered, -1);
+        _integrate(rhs, params, start, grid, discovered, -1, brokenStreamlines);
   } catch (error) {
     console.log('Error encountered during backward integration: ')
     console.log(error.message);
@@ -215,16 +228,19 @@ function _getStreamline(rhs, params, start, grid) {
 
   // add the newly discovered cells
   let updatedGrid = structuredClone(grid);
-  for (let i = 0; i < grid.size; i++) {
-    for (let j = 0; j < grid.size; j++) {
-      updatedGrid.visited[i][j] = grid.visited[i][j] || discovered[i][j];
+  if (brokenStreamlines) {
+    for (let i = 0; i < grid.size; i++) {
+      for (let j = 0; j < grid.size; j++) {
+        updatedGrid.visited[i][j] = grid.visited[i][j] || discovered[i][j];
+      }
     }
   }
 
   return [streamline, updatedGrid]
 }
 
-function _integrate(rhs, params, start, grid, discovered, timeSign) {
+function _integrate(
+    rhs, params, start, grid, discovered, timeSign, brokenStreamlines) {
   let streamline = {
     x: [],
     y: [],
@@ -255,13 +271,14 @@ function _integrate(rhs, params, start, grid, discovered, timeSign) {
 
   let terminate = false
   let numIterations = 0;
-  while (!terminate && numIterations < 10000) {
+  while (!terminate && numIterations < 1000) {
     numIterations += 1;
 
     let trajectory = solve_ode(internalRhs, [t, t + dt], [x, y]);
 
     let lastStep = trajectory.y.length;
     for (let step = 0; step < trajectory.y.length; step++) {
+      t = trajectory.t[step];
       x = trajectory.y[0][step];
       y = trajectory.y[1][step];
 
@@ -274,16 +291,18 @@ function _integrate(rhs, params, start, grid, discovered, timeSign) {
         break;
       }
 
-      // stop the streamline if we came to an already visited cell
-      if (grid.visited[cell[0]][cell[1]]) {
-        terminate = true;
-        lastStep = step;
-        break;
-      }
+      if (brokenStreamlines) {
+        // stop the streamline if we came to an already visited cell
+        if (grid.visited[cell[0]][cell[1]]) {
+          terminate = true;
+          lastStep = step;
+          break;
+        }
 
-      // if we entered a new cell which was not discovered before, mark it
-      if (!discovered[cell[0]][cell[1]]) {
-        discovered[cell[0]][cell[1]] = true;
+        // if we entered a new cell which was not discovered before, mark it
+        if (!discovered[cell[0]][cell[1]]) {
+          discovered[cell[0]][cell[1]] = true;
+        }
       }
     }
     streamline.x = streamline.x.concat(trajectory.y[0].slice(0, lastStep));
