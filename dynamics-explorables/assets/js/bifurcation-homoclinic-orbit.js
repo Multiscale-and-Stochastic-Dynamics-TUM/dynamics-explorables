@@ -73,10 +73,12 @@ slider.addEventListener('change', async (event) => {
     startingCoords.push([1, y]);
   }
 
-  streamlines(plotlyDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range, 15, {
+  streamlines(plotlyDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range, {
     line: {width: 1},
     layout: layout,
     config: config,
+    density: 15,
+    minlength: 1,
     brokenStreamlines: true,
     // startingCoords: startingCoords,
   });

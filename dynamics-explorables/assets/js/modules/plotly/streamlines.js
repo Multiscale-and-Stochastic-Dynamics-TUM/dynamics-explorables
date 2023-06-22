@@ -16,14 +16,15 @@ export {streamlines};
  *     `[xmin, xmax]`
  * @param {Array} yrange - vector with the minimum and maximum value of y,
  *     `[ymin, ymax]`
- * @param {int} density - how dense to plot the lines. Gives the number of lines
- *     which start from each border of the image
  * keyword arguments:
  * @param line - a plotly object which contains the properties of the line
  * @param layout - a plotly layout object which will be passed to the plotly
  *     function
  * @param config - a plotly config object which will be passed to the plotly
  *     function
+ * @param {int} density - how dense to plot the lines. Gives the number of lines
+ *     which start from each border of the image
+ * @param minlength - minimum allowed length of the line
  * @param {boolean} brokenStreamlines - If false, forces streamlines to continue
  *     until they
  *       leave the plot domain. If true, they may be terminated if they
@@ -32,10 +33,15 @@ export {streamlines};
  *     as `[[x1, y1], [x2, y2], ... ]`. If not provided,
  *     the starting points will be generated automatically on a grid.
  */
-function streamlines(
-    plotlyDiv, rhs, params, xrange, yrange, density = 6,
-    {line, layout, config, brokenStreamlines = true, startingCoords = []} =
-        {}) {
+function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
+  line,
+  layout,
+  config,
+  density = 6,
+  minlength = 0.1,
+  brokenStreamlines = true,
+  startingCoords = [],
+} = {}) {
   let [xmin, xmax] = xrange;
   let [ymin, ymax] = yrange;
   let xnodes = linspace(xmin, xmax, density);
@@ -77,8 +83,8 @@ function streamlines(
 
   // for every starting point, draw the streamline and add it to the vector
   for (const startingCoord of startingCoords) {
-    [streamline, grid] =
-        _getStreamline(rhs, params, startingCoord, grid, brokenStreamlines);
+    [streamline, grid] = _getStreamline(
+        rhs, params, startingCoord, grid, brokenStreamlines, minlength);
     if (streamline.x.length > 1) {
       streamlines.push(streamline);
     }
@@ -178,7 +184,8 @@ function _coordToGridCell(x, y, grid) {
   return [xind, yind];
 }
 
-function _getStreamline(rhs, params, start, grid, brokenStreamlines) {
+function _getStreamline(
+    rhs, params, start, grid, brokenStreamlines, minlength) {
   // cells which were visited for the first time by this streamline
   let discovered = [];
   for (let i = 0; i < grid.size; i++) {
@@ -225,6 +232,18 @@ function _getStreamline(rhs, params, start, grid, brokenStreamlines) {
     x: backwardStreamline.x.concat(forwardStreamline.x),
     y: backwardStreamline.y.concat(forwardStreamline.y),
   };
+
+  // calculate the length of the streamline and check if it is long enough
+  let totalLength = 0.0
+  for (let i = 1; i < streamline.x.length; i++) {
+    totalLength += Math.sqrt(
+        (streamline.x[i] - streamline.x[i - 1]) ** 2 +
+        (streamline.y[i] - streamline.y[i - 1]) ** 2)
+  }
+
+  if (totalLength < minlength) {
+    return [{x: [], y: []}, grid]
+  }
 
   // add the newly discovered cells
   let updatedGrid = structuredClone(grid);
