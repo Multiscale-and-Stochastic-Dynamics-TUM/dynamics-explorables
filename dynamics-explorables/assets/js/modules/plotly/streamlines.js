@@ -271,7 +271,7 @@ function _integrate(
 
   let terminate = false
   let numIterations = 0;
-  while (!terminate && numIterations < 1000) {
+  while (!terminate && numIterations < 10000) {
     numIterations += 1;
 
     let trajectory = solve_ode(internalRhs, [t, t + dt], [x, y]);
