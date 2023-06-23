@@ -32,6 +32,10 @@ export {streamlines};
  * @param startingCoords - a vector of custom starting points. Should be given
  *     as `[[x1, y1], [x2, y2], ... ]`. If not provided,
  *     the starting points will be generated automatically on a grid.
+ * @param {boolean} redraw - if true, a new plot is created, otherwise, the
+ *     streamlines are drawn on top of existing lines.
+ * @param {boolean} noDisplay - if true, the streamlines will only be
+ *     precomputed but not drawn.
  */
 function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
   line,
@@ -41,6 +45,8 @@ function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
   minlength = 0.1,
   brokenStreamlines = true,
   startingCoords = [],
+  redraw = true,
+  noDisplay = false,
 } = {}) {
   let [xmin, xmax] = xrange;
   let [ymin, ymax] = yrange;
@@ -106,7 +112,13 @@ function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
     };
   });
 
-  Plotly.newPlot(plotlyDiv, traces, layout, config);
+  if (!noDisplay) {
+    if (redraw) {
+      Plotly.react(plotlyDiv, traces, layout, config);
+    } else {
+      Plotly.addTraces(plotlyDiv, traces);
+    }
+  }
 
   let angleTrace = {
     x: arrowPositions.x,
@@ -122,7 +134,13 @@ function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
     },
   };
 
-  Plotly.addTraces(plotlyDiv, angleTrace);
+  if (!noDisplay) {
+    Plotly.addTraces(plotlyDiv, angleTrace);
+  } else {
+    traces.push(angleTrace);
+  }
+
+  return traces;
 }
 
 /**
