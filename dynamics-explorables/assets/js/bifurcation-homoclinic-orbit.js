@@ -16,21 +16,27 @@ const config = {
   displayModeBar: false,
 };
 
+const qc = 0.06456;
+
 function rhs(t, y, q) {
   let [y1, y2] = y;
-  return [y2, -q * y2 + y1 - y1 ** 2 + y1 * y2];
+  let qmod = q + qc;
+  return [y2, -qmod * y2 + y1 - y1 ** 2 + y1 * y2];
 }
 
 function eigenvalues(q) {
+  let qmod = q + qc;
   return [
-    0.5 * (-q - Math.sqrt(q ** 2 + 4)), 0.5 * (-q + Math.sqrt(q ** 2 + 4))
+    0.5 * (-qmod - Math.sqrt(qmod ** 2 + 4)),
+    0.5 * (-qmod + Math.sqrt(qmod ** 2 + 4))
   ];
 }
 
 function eigenvectors(q) {
+  let qmod = q + qc;
   return [
-    [-0.5 * (q - Math.sqrt(q ** 2 + 4)), -1],
-    [0.5 * (q + Math.sqrt(q ** 2 + 4)), 1]
+    [-0.5 * (qmod - Math.sqrt(qmod ** 2 + 4)), -1],
+    [0.5 * (qmod + Math.sqrt(qmod ** 2 + 4)), 1]
   ];
 }
 
@@ -65,6 +71,33 @@ function precomputeStreamlines(q) {
         });
 
     streamlineCache.set(ind, traces);
+
+    // draw the stable/unstable manifolds
+    let manifoldStartingCoords = eigenvectors(q);
+
+    for (let coord of manifoldStartingCoords) {
+      coord[0] *= 0.01;
+      coord[1] *= 0.01;
+      if (coord[0] < 0) {
+        coord[0] *= -1;
+        coord[1] *= -1;
+      }
+    }
+
+    let manifoldTraces = streamlines(
+        streamlinesManifoldsDiv, rhs, [q], layout.xaxis.range,
+        layout.yaxis.range, {
+          line: {width: 1, color: 'red'},
+          layout: layout,
+          config: config,
+          minlength: 0.5,
+          startingCoords: manifoldStartingCoords,
+          redraw: false,
+          brokenStreamlines: false,
+          noDisplay: true
+        });
+    let allTraces = structuredClone(traces).concat(manifoldTraces);
+    streamlineManifoldCache.set(ind, allTraces);
   }
 }
 
@@ -76,36 +109,10 @@ slider.oninput = async (event) => {
   if (!streamlineCache.has(ind)) {
     precomputeStreamlines(q);
   }
-  traces = streamlineCache.get(ind)
+  traces = streamlineCache.get(ind);
+  manifoldTraces = streamlineManifoldCache.get(ind);
   Plotly.react(streamlinesDiv, traces, layout, config);
-  Plotly.react(streamlinesManifoldsDiv, traces, layout, config);
-
-  // draw the stable/unstable manifolds
-  /*let manifoldStartingCoords = eigenvectors(q);
-
-  for (let coord of manifoldStartingCoords) {
-    coord[0] *= 0.01;
-    coord[1] *= 0.01;
-    if (coord[0] < 0) {
-      coord[0] *= -1;
-      coord[1] *= -1;
-    }
-  }
-
-  console.log(manifoldStartingCoords);
-
-  streamlines(
-      streamlinesManifoldsDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range,
-      {
-        line: {width: 1, color: 'red'},
-        layout: layout,
-        config: config,
-        minlength: 0.5,
-        startingCoords: manifoldStartingCoords,
-        redraw: false,
-        brokenStreamlines: false
-      })
-      */
+  Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layout, config);
 };
 
 // trigger the first update of the plot manually
@@ -113,8 +120,6 @@ var event = new Event('input');
 slider.dispatchEvent(event);
 
 let taskList = [];
-let totalTaskCount = 0;
-let currentTaskNumber = 0;
 let taskHandle = null;
 
 // Use idle tasks to precompute streamlines in the background while there are
@@ -125,10 +130,8 @@ function enqueueTask(taskHandler, taskData) {
     data: taskData,
   });
 
-  totalTaskCount++;
-
   if (!taskHandle) {
-    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 1000});
+    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
   }
 }
 
@@ -136,12 +139,11 @@ function runTaskQueue(deadline) {
   while ((deadline.timeRemaining() > 0 || deadline.didTimeout) &&
          taskList.length) {
     const task = taskList.shift();
-    currentTaskNumber++;
     task.handler(task.data);
   }
 
   if (taskList.length) {
-    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 1000});
+    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
   } else {
     taskHandle = 0;
   }
