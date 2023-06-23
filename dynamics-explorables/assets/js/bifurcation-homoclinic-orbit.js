@@ -45,45 +45,19 @@ slider.oninput = () => {
 
 let plotlyDiv = document.getElementById('streamlines');
 
-slider.addEventListener('change', async (event) => {
+slider.oninput = async (event) => {
   let q = parseFloat(event.target.value);
-  let startingCoords = eigenvectors(q);
-  for (let i = 0; i < startingCoords.length; i++) {
-    startingCoords[i][0] *= 0.01;
-    startingCoords[i][1] *= 0.01;
-
-    if (startingCoords[i][0] < 0) {
-      startingCoords[i][0] *= -1;
-      startingCoords[i][1] *= -1;
-    }
-  }
-
-  let numLines = 10
-  let deltaY = (layout.yaxis.range[1] - layout.yaxis.range[0]) / numLines
-  for (let i = 0; i < numLines; i++) {
-    let y = layout.yaxis.range[0] + i * deltaY;
-    startingCoords.push([0, y]);
-  }
-  for (let i = 0; i < numLines; i++) {
-    let y = layout.yaxis.range[0] + i * deltaY;
-    startingCoords.push([layout.xaxis.range[1], y]);
-  }
-  for (let i = 0; i < numLines; i++) {
-    let y = layout.yaxis.range[0] + i * deltaY;
-    startingCoords.push([1, y]);
-  }
 
   streamlines(plotlyDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range, {
     line: {width: 1},
     layout: layout,
     config: config,
-    density: 15,
-    minlength: 1,
-    brokenStreamlines: true,
-    // startingCoords: startingCoords,
+    density: 6,
+    minlength: 0.5,
+    brokenStreamlines: true
   });
-});
+};
 
 // trigger the first update of the plot manually
-var event = new Event('change');
+var event = new Event('input');
 slider.dispatchEvent(event);
