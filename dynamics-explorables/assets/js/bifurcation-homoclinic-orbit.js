@@ -56,49 +56,71 @@ let streamlinesManifoldsDiv =
 let streamlineCache = new Map();
 let streamlineManifoldCache = new Map();
 
+let streamlineKwargs = {
+  line: {width: 1, color: 'gray'},
+  layout: layout,
+  config: config,
+  density: 6,
+  minlength: 0.5,
+};
+
 function precomputeStreamlines(q) {
   let ind = Math.round((q - qmin) / qstep);
   if (!streamlineCache.has(ind)) {
-    let traces = streamlines(
-        streamlinesDiv, rhs, [q], layout.xaxis.range, layout.yaxis.range, {
-          line: {width: 1},
-          layout: layout,
-          config: config,
-          density: 6,
-          minlength: 0.5,
-          brokenStreamlines: true,
-          noDisplay: true,
-        });
-
+    let xrange = layout.xaxis.range;
+    let yrange = layout.yaxis.range;
+    let kwargs = {noDisplay: true, ...streamlineKwargs};
+    let traces = streamlines(streamlinesDiv, rhs, [q], xrange, yrange, kwargs);
     streamlineCache.set(ind, traces);
 
     // draw the stable/unstable manifolds
-    let manifoldStartingCoords = eigenvectors(q);
+    let manifoldTraces = computeManifolds(q);
+    let allTraces = traces.concat(manifoldTraces);
+    streamlineManifoldCache.set(ind, allTraces);
 
-    for (let coord of manifoldStartingCoords) {
-      coord[0] *= 0.01;
-      coord[1] *= 0.01;
-      if (coord[0] < 0) {
-        coord[0] *= -1;
-        coord[1] *= -1;
-      }
+    console.log(manifoldTraces);
+  }
+}
+
+function computeManifolds(q) {
+  let manifoldStartingCoords = eigenvectors(q);
+
+  let traces = [];
+
+  let stableLine = {
+    color: 'red',
+    dash: 'solid',
+  };
+
+  let unstableLine = {
+    color: 'blue',
+    dash: 'dash',
+  }
+
+  for (let coord of manifoldStartingCoords) {
+    coord[0] *= 0.01;
+    coord[1] *= 0.01;
+    if (coord[0] < 0) {
+      coord[0] *= -1;
+      coord[1] *= -1;
     }
 
-    let manifoldTraces = streamlines(
+    let line = rhs(0, coord, q)[0] < 0 ? stableLine : unstableLine;
+    let kwargs = {
+      ...streamlineKwargs,
+      line: line,
+      redraw: false,
+      startingCoords: [coord],
+      brokenStreamlines: false,
+      noDisplay: true
+    };
+
+    let trace = streamlines(
         streamlinesManifoldsDiv, rhs, [q], layout.xaxis.range,
-        layout.yaxis.range, {
-          line: {width: 1, color: 'red'},
-          layout: layout,
-          config: config,
-          minlength: 0.5,
-          startingCoords: manifoldStartingCoords,
-          redraw: false,
-          brokenStreamlines: false,
-          noDisplay: true
-        });
-    let allTraces = structuredClone(traces).concat(manifoldTraces);
-    streamlineManifoldCache.set(ind, allTraces);
+        layout.yaxis.range, kwargs);
+    traces = traces.concat(trace);
   }
+  return traces;
 }
 
 slider.oninput = async (event) => {

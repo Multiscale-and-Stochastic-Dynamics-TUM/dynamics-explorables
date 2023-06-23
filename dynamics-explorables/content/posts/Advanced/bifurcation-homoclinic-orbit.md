@@ -21,6 +21,6 @@ Previously, a bifurcation occurred when the critical point changed its stability
 {{< plotly id="streamlinesWithManifolds" >}}
 {{< slider id="streamlinesWithManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
 
-At p = TODO, the stable and unstable manifolds meet and form a single orbit. An orbit like this which starts at a critical point at returns back to it is called a homoclinic orbit. Similarly, a heteroclinic orbit is a trajectory which starts at one critical point and converges to another one. 
+At $p = 0.8$, the stable and unstable manifolds meet and form a single orbit. An orbit like this which starts at a critical point at returns back to it is called a homoclinic orbit. Similarly, a heteroclinic orbit is a trajectory which starts at one critical point and converges to another one. 
 
 <!-- static image of homo/heteroclinic orbits -->
