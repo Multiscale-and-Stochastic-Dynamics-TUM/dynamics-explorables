@@ -16,6 +16,11 @@ sudo apt install hugo
 
 For any other systems, refer to the official Hugo [installation guidelines](https://gohugo.io/installation/).
 
+Furthermore, install npm if it is not installed already:
+```bash
+sudo apt install npm
+```
+
 ### Creating the website locally
 
 To create the website, install all npm libraries and start a Hugo server:
