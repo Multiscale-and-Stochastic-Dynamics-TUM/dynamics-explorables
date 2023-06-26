@@ -1,0 +1,83 @@
+{{- define "main" }}
+
+{{- if (and site.Params.profileMode.enabled .IsHome) }}
+{{- partial "index_profile.html" . }}
+{{- else }} {{/* if not profileMode */}}
+
+{{- if not .IsHome | and .Title }}
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+
+  <h1>
+    {{ .Title }}
+    {{- partial "rss.html" . }}
+  </h1>
+
+  {{- if .Description }}
+  <div class="post-description">
+    {{ .Description | markdownify }}
+  </div>
+  {{- end }}
+
+</header>
+{{- end }}
+
+{{- if .Content }}
+<div class="post-content">
+  {{- if not (.Param "disableAnchoredHeadings") }}
+  {{- partial "anchored_headings.html" .Content -}}
+  {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- $pages := union .RegularPages .Sections }}
+
+{{- if .IsHome }}
+{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true" }}
+{{- end }}
+
+{{- $paginator := .Paginate $pages }}
+
+<div class="post-card-holder" id="post-card-holder">
+  {{- $term := .Data.Term }}
+  {{- range $index, $page := $paginator.Pages }}
+
+  {{- $class := "post-entry" }}
+
+  {{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
+  {{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
+  {{- $class = "first-entry" }}
+  {{- else if $term }}
+  {{- $class = "post-entry tag-entry" }}
+  {{- end }}
+
+  {{- partial "post_card.html" (dict "cxt" . "IsHome" .IsHome "class" $class) }}
+
+  {{- end }}
+</div>
+
+{{- if gt $paginator.TotalPages 1 }}
+<footer class="page-footer">
+  <nav class="pagination">
+    {{- if $paginator.HasPrev }}
+    <a href="{{ $paginator.Prev.URL | absURL }}">
+      <p class="nav-icons">{{- partial "svg.html" (dict "name" "angle-left") }}</p>
+    </a>
+    <a href="{{ $paginator.Prev.URL | absURL }}">{{ $paginator.Prev.PageNumber }}</a>
+    {{- end }}
+    <a class="current" href="{{ $paginator.URL | absURL }}">{{ $paginator.PageNumber }}</a>
+    {{- if $paginator.HasNext }}
+    <a href="{{ $paginator.Next.URL | absURL }}">{{ $paginator.Next.PageNumber }}</a>
+    <a href="{{ $paginator.Next.URL | absURL }}">
+      <p class="nav-icons">{{- partial "svg.html" (dict "name" "angle-right") }}</p>
+    </a>
+    {{- end }}
+  </nav>
+</footer>
+{{- end }}
+{{- partial "post_nav_links.html" . }}
+
+{{- end }}{{/* end profileMode */}}
+
+{{- end }}{{- /* end main */ -}}

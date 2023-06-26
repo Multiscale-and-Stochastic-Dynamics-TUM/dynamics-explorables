@@ -1,0 +1,52 @@
+{{/* Find previous and next subsections, if they exist */}}
+{{- $pageSection := site.GetPage "section" "posts" }}
+{{- $prevSubsectionOrder := sub .Params.subsection_order 1 }}
+{{- $prevSubsection := where $pageSection.Sections ".Params.subsection_order" "==" $prevSubsectionOrder }}
+{{- $nextSubsectionOrder := add .Params.subsection_order 1 }}
+{{- $nextSubsection := where $pageSection.Sections ".Params.subsection_order" "==" $nextSubsectionOrder }}
+
+{{/* For some reason, Hugo exactly mixes up previous and next page.
+The PrevInSection points to the next page and the NextInSection to the
+previous. So we just use the functions in a mirrored way. Yay for confusion. */}}
+
+<nav class="paginav" style="margin: calc(var(--gap) * (-1)) 0 var(--large-gap) 0;">
+  {{- if .NextInSection }}
+  {{/* If a previous page exists, link to it */}}
+  <a class="prev" href="{{ .NextInSection.Permalink }}">
+    <span class="title">
+      <div class="nav-icons">{{- partial "svg.html" (dict "name" "angle-left") }}{{ i18n "prev_page" }}</div>
+    </span>
+    <span>{{- .NextInSection.Name -}}</span>
+  </a>
+  {{- else }}
+  {{/* If a previous page does not exist, link to the previous chapter */}}
+  {{- range $prevSubsection }}
+  <a class="prev section-nav" href="{{ .Permalink }}">
+    <span class="title">
+      <div class="nav-icons">{{- partial "svg.html" (dict "name" "angles-left") }}Previous section</div>
+    </span>
+    <span>{{- .Name -}}</span>
+  </a>
+  {{- end }}
+  {{- end }}
+
+  {{- if .PrevInSection }}
+  {{/* If the next page exists, link to it */}}
+  <a class="next" href="{{ .PrevInSection.Permalink }}">
+    <span class="title">
+      <div class="nav-icons">{{ i18n "next_page" }}{{- partial "svg.html" (dict "name" "angle-right") }}</div>
+    </span>
+    <span>{{- .PrevInSection.Name -}}</span>
+  </a>
+  {{- else }}
+  {{/* If the next page does not exist, link to the next chapter */}}
+  {{- range $nextSubsection }}
+  <a class="next section-nav" href="{{ .Permalink }}">
+    <span class="title">
+      <div class="nav-icons">Next section{{- partial "svg.html" (dict "name" "angles-right") }}</div>
+    </span>
+    <span>{{- .Name -}}</span>
+  </a>
+  {{- end }}
+  {{- end }}
+</nav>

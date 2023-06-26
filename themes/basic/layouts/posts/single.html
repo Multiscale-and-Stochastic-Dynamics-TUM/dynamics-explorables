@@ -1,0 +1,40 @@
+{{ define "main" }}
+
+<div class="project-container">
+
+    <section class="project-list">
+        <h2>Posts</h2>
+
+        <ul>
+            {{ range (where .Site.RegularPages "Type" "in" "posts") }}
+            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+            {{ end }}
+        </ul>
+    </section>
+    <section class="project">
+        <h2>{{ .Title }}</h2>
+
+        {{ .Content }}
+    </section>
+
+    {{ if isset .Params "js" }}
+    {{ if .Params.js }}
+    {{- $jsBundle := resources.Get (print "/js/" .Params.js ".js") | js.Build -}}
+<<<<<<< HEAD
+=======
+    {{- if (eq site.Params.env "production") }}
+    {{- $jsBundle = $jsBundle | minify | fingerprint }}
+    {{- end }}
+>>>>>>> dev
+    <script src="{{ $jsBundle.RelPermalink }}"></script>
+    {{ end }}
+    {{ end }}
+
+    {{/* Force Hugo to include the webworker file into the final project */}}
+    {{ if isset .Params "pyodide" }}
+    {{ $webworker := resources.Get "/js/modules/pyodide/webworker.js"}}
+    {{ end }}
+
+</div>
+
+{{ end }}

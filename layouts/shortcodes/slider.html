@@ -1,0 +1,5 @@
+<div class="range" style='--min:"{{ .Get `min` }}"; --max:"{{ .Get `max` }}"; --step:{{ .Get `step` }};'>
+    <input type="range" id="{{ .Get `id` }}" min="{{ .Get `min` }}" max="{{ .Get `max` }}" step="{{ .Get `step` }}"
+        value="{{ .Get `value` }}">
+    <label id="{{ .Get `id` }}Label" for="{{ .Get `id` }}"></label>
+</div>

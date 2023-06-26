@@ -1,0 +1,10 @@
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ .Site.Title }}</title>
+    {{ $css := resources.Get "css/simple.css" }}
+    {{- if (eq site.Params.env "production") }}
+    {{- $css = $css | minify | fingerprint -}}
+    {{- end }}
+    <link rel="stylesheet" href='{{ $css.RelPermalink }}'>
+</head>
