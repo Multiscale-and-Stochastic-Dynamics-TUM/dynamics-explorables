@@ -33,8 +33,6 @@
 {{- range $section := sort .Sections ".Params.subsection_order" "asc" }}
 <h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
 
-{{ $sectionPages := site.GetPage .RelPermalink }}
-{{ with $sectionPages }}
 {{- $pages := .Pages }}
 {{/* Filter out only the first 6 pages */}}
 {{- $truncated := (gt (len $pages) 6) }}
@@ -54,8 +52,6 @@
     <a class="prev" style="width: auto;" href="{{ .RelPermalink }}"><span>{{ i18n "show_all" }}</span></a>
 </nav>
 {{- end }}
-
-{{ end }}{{/* end sectionPages */}}
 
 {{- end }}{{/* end section */}}
 
