@@ -19,6 +19,6 @@ with $0$ being the only unstable one. In the second case, there is only one equi
 You can vary the values of $p$ in the plot below and see how the stability diagram changes.
 
 {{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="-1.3" >}}
-{{< plotly id="plotlyPitchfork">}}
-{{< plotly id="plotlyStability">}}
+{{< plotly id="plotlyPitchfork" height="30%" >}}
+{{< plotly id="plotlyStability" height="30%" >}}
 

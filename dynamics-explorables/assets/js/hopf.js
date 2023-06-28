@@ -74,8 +74,6 @@ const LAYOUT_3D = {
   },
   modebar: {remove: ['pan3d']},
   paper_bgcolor: '#ffffff00',
-  width: 600,
-  height: 500
 };
 
 // Generate data for the 3D parabola of stability
@@ -292,9 +290,7 @@ var layout = {
       xref: 'paper',
       yref: 'paper',
     }
-  ],
-  width: 650,
-  height: 400
+  ]
 };
 
 Plotly.newPlot(multiplotDiv, data, layout);
