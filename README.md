@@ -14,12 +14,16 @@ sudo apt install hugo
 
 For any other systems, refer to the official Hugo [installation guidelines](https://gohugo.io/installation/).
 
+Furthermore, install npm if it is not installed already:
+```bash
+sudo apt install npm
+```
+
 ### Creating the website locally
 
-To create the website, switch to the `dynamics-explorables` folder, install all npm libraries and start a Hugo server:
+To create the website, install all npm libraries and start a Hugo server:
 
 ```bash
-cd dynamics-explorables
 npm install
 npm run hugo-server
 ```
@@ -27,8 +31,6 @@ npm run hugo-server
 The website should open in your default browser.
 
 ## How to add new content
-
-> 📝 The explanations here and the bash commands assume that you are in the `dynamics-explorables/dynamics-explorables` folder as this is the Hugo root folder.
 
 All explorables should be located a subfolder of `content/posts`, for example, `content/posts/Basics`. Creating a post directly in `content/posts` and not in a subfolder can cause errors! It is best to create a new file with Hugo as it will use a template and auto-insert YAML. To create a file with the name "my-very-own-explorable" in the Basics category, do
 
