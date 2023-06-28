@@ -245,6 +245,7 @@ var traceStability = {
 var data = [traceEigenvals, traceStability, traceSpiral];
 
 var layout = {
+  margin: {l: 40, r: 20, t: 40, b: 30},
   grid: {rows: 1, columns: 2, pattern: 'independent'},
   title: ['A', 'B'],
   xaxis: {
@@ -271,11 +272,12 @@ var layout = {
         color: 'black',
       },
       showarrow: false,
-      align: 'center',
-      x: 0.13,
-      y: 1.15,
-      xref: 'paper',
+      x: 0.,
+      y: 1.,
+      xanchor: 'center',
+      xref: 'x1',
       yref: 'paper',
+      yshift: 24
     },
     {
       text: 'Stability',
@@ -284,11 +286,12 @@ var layout = {
         color: 'black',
       },
       showarrow: false,
-      align: 'center',
-      x: 0.835,
-      y: 1.15,
-      xref: 'paper',
+      x: 0.,
+      y: 1.,
+      xanchor: 'center',
+      xref: 'x2',
       yref: 'paper',
+      yshift: 24,
     }
   ]
 };
