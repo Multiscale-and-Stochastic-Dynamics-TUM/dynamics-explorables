@@ -18,8 +18,8 @@ Take a look at the phase space in the plot below:
 Previously, a bifurcation occurred when a critical point changed its stability under the variation of a parameter. This is not the case here: the system of ODEs has a critical point at $\mathbf{x} = 0$; however, this point remains a saddle for all values of $p$. And yet, the phase plot changes qualitatively as the parameter changes. Here is the same phase plot, but with the stable and unstable manifolds marked. Can you find the value of $p$ at which a bifurcation occurs?
 
 <!-- Same phase plot but with stable/unstable manifold in red -->
-{{< plotly id="streamlinesWithManifolds" >}}
-{{< slider id="streamlinesWithManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
+{{< plotly id="streamlinesManifolds" >}}
+{{< slider id="streamlinesManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
 
 At $p = 0.8$, the stable and unstable manifolds meet and form a single orbit. An orbit like this which starts at a critical point at returns back to it is called a homoclinic orbit. Similarly, a heteroclinic orbit is a trajectory which starts at one critical point and converges to another one. 
 

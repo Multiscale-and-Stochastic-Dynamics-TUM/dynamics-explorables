@@ -41,7 +41,10 @@ function eigenvectors(q) {
 }
 
 const slider = document.getElementById('streamlinesSlider');
+const sliderManifolds = document.getElementById('streamlinesManifoldsSlider');
 const label = document.getElementById('streamlinesSliderLabel');
+const labelManifolds =
+    document.getElementById('streamlinesManifoldsSliderLabel');
 
 label.innerHTML = `p = ${slider.value}`;
 
@@ -50,8 +53,7 @@ let qmax = parseFloat(slider.max);
 let qstep = parseFloat(slider.step);
 
 let streamlinesDiv = document.getElementById('streamlines');
-let streamlinesManifoldsDiv =
-    document.getElementById('streamlinesWithManifolds');
+let streamlinesManifoldsDiv = document.getElementById('streamlinesManifolds');
 
 let streamlineCache = new Map();
 let streamlineManifoldCache = new Map();
@@ -123,9 +125,17 @@ function computeManifolds(q) {
   return traces;
 }
 
-slider.oninput = async (event) => {
+async function updatePlots(event, sliderId) {
   let q = parseFloat(event.target.value);
   label.innerHTML = `p = ${slider.value}`;
+  labelManifolds.innerHTML = `p = ${slider.value}`;
+
+  if (sliderId == 0) {
+    sliderManifolds.value = q;
+  } else {
+    slider.value = q;
+  }
+
   let ind = Math.round((q - qmin) / qstep);
 
   if (!streamlineCache.has(ind)) {
@@ -135,7 +145,16 @@ slider.oninput = async (event) => {
   manifoldTraces = streamlineManifoldCache.get(ind);
   Plotly.react(streamlinesDiv, traces, layout, config);
   Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layout, config);
+}
+
+slider.oninput = async (event) => {
+  updatePlots(event, 0);
 };
+
+sliderManifolds.oninput =
+    async (event) => {
+  updatePlots(event, 1);
+}
 
 // trigger the first update of the plot manually
 var event = new Event('input');
