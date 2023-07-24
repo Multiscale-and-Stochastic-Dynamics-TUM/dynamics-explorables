@@ -1,5 +1,6 @@
 import Plotly from 'plotly.js-dist-min'
 
+import {linspace} from './modules/data_structures/iterables';
 import {solve_ode} from './modules/simulation/ode_solver';
 
 function rhsPolar(r, theta) {
@@ -64,8 +65,8 @@ function unzipCoordinates(coords) {
 
 const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis: {range: [-2, 2], domain: [0.05, 0.50]},
-  yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1]},
+  xaxis: {range: [-2, 2], domain: [0.05, 0.50], showgrid: false},
+  yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1], showgrid: false},
   xaxis2: {
     range: [0, 2.1],
     anchor: 'y2',
@@ -93,6 +94,7 @@ const layout = {
 
 const config = {
   responsive: true,
+  staticPlot: true,
   displayModeBar: false,
 };
 
@@ -198,6 +200,247 @@ let cycleTrace = [
     },
   }
 ];
+
+// =====================================================================
+// ---------------------------- car figure ---------------------------
+
+const carX = 0.7;
+let carY = 0.5
+
+function getCarReturnY(y0) {
+  return 0.1 * y0 * ((y0 - 1) ** 2 + 4);
+}
+
+let carTraces = [
+  {
+    // a ghost image of the old position
+    mode: 'text',
+    x: [carX],
+    y: [carY],
+    text: ['🏎️'],
+    type: 'scatter',
+    textfont: {size: 35},
+    opacity: 0.3,
+  },
+  {
+    // solid car that is moving
+    mode: 'text',
+    x: [carX],
+    y: [carY],
+    text: ['🏎️'],
+    type: 'scatter',
+    textfont: {size: 35},
+  },
+  {
+    // an observer
+    mode: 'text',
+    x: [0],
+    y: [1.6],
+    text: ['🙇'],
+    type: 'scatter',
+    textfont: {size: 35}
+  },
+];
+
+let raceTrackLayout = {
+  showlegend: false,
+  xaxis: {range: [-4, 4], zeroline: false, showgrid: false, visible: false},
+  yaxis: {range: [-2, 2], zeroline: false, showgrid: false, visible: false},
+  margin: {l: 30, r: 0, t: 30, b: 30},
+  shapes: [
+    {
+      // the gray track
+      type: 'rect',
+      xref: 'paper',
+      yref: 'y',
+      x0: 0,
+      y0: -1.4,
+      x1: 1,
+      y1: 1.4,
+      fillcolor: 'gray',
+      opacity: 1,
+      line: {width: 0},
+      layer: 'below',
+    },
+    {
+      // yellow line above
+      type: 'rect',
+      xref: 'paper',
+      yref: 'y',
+      x0: 0,
+      y0: 1.2,
+      x1: 1,
+      y1: 1.25,
+      fillcolor: '#EFC14C',
+      opacity: 1,
+      line: {width: 0},
+      layer: 'below',
+    },
+    {
+      // yellow line below
+      type: 'rect',
+      xref: 'paper',
+      yref: 'y',
+      x0: 0,
+      y0: -1.2,
+      x1: 1,
+      y1: -1.25,
+      fillcolor: '#EFC14C',
+      opacity: 1,
+      line: {width: 0},
+      layer: 'below',
+    }
+  ]
+};
+
+// add the checkboard starting line
+for (let i = 0; i < 8; i++) {
+  let firstColor = i % 2 == 0 ? 'white' : 'black'
+  let secondColor = i % 2 == 0 ? 'black' : 'white'
+  // left square
+  raceTrackLayout.shapes.push({
+    type: 'rect',
+    xref: 'x',
+    yref: 'y',
+    x0: 0.3,
+    y0: -1.2 + i * 0.3,
+    x1: 0,
+    y1: -1.2 + (i + 1) * 0.3,
+    fillcolor: firstColor,
+    opacity: 1,
+    line: {width: 0},
+    layer: 'below',
+  });
+  // right square
+  raceTrackLayout.shapes.push({
+    type: 'rect',
+    xref: 'x',
+    yref: 'y',
+    x0: 0,
+    y0: -1.2 + i * 0.3,
+    x1: -0.3,
+    y1: -1.2 + (i + 1) * 0.3,
+    fillcolor: secondColor,
+    opacity: 1,
+    line: {width: 0},
+    layer: 'below',
+  })
+}
+
+Plotly.newPlot('carExample', carTraces, raceTrackLayout, {staticPlot: true});
+
+carButton = document.getElementById('carButton')
+
+carButton.addEventListener('click', async () => {
+  carButton.disabled = true;
+
+  // reset the position of the ghost car
+  Plotly.update('carExample', {y: [[carY]]}, {}, [0]);
+
+  let y0 = await Plotly.animate(
+      'carExample', {data: [{x: [-5]}], traces: [1]},
+      {transition: {duration: 800, easing: 'cubic-in-out'}});
+
+  carY = getCarReturnY(carY);
+
+  await Plotly.animate(
+      'carExample', {data: [{x: [5], y: [carY]}], traces: [1]},
+      {transition: {duration: 0}});
+  await Plotly.animate(
+      'carExample', {data: [{x: [carX]}], traces: [1]},
+      {transition: {duration: 400, easing: 'cubic-in-out'}});
+
+  carButton.disabled = false;
+})
+
+carSlider = document.getElementById('carSlider');
+
+carSlider.oninput = () => {
+  carY = carSlider.value;
+  Plotly.update('carExample', {y: [[carY]]}, {}, [1]);
+};
+
+// =====================================================================
+// ---------------------------- carPoincare ---------------------------
+
+let carPoincareSlider = document.getElementById('carSlider2');
+
+let startPos = carPoincareSlider.value;
+let returnPos = getCarReturnY(startPos);
+
+let carPoincareMap = {
+  x: linspace(-1.1, 1.1, 100),
+  y: linspace(-1.1, 1.1, 100).map(getCarReturnY),
+  mode: 'lines',
+  line: {color: 'purple'},
+};
+
+let carPoincareMapMarker = {
+  x: [startPos],
+  y: [returnPos],
+  mode: 'markers',
+  marker: {size: 10, color: 'purple', symbol: 'x'},
+};
+
+let carTrajectory1 = {
+  x: [-5, carX],
+  y: [startPos, startPos],
+  mode: 'lines',
+  line: {color: 'purple'},
+};
+
+let carTrajectory2 = {
+  x: [5, carX],
+  y: [returnPos, returnPos],
+  mode: 'lines',
+  line: {color: 'purple'},
+};
+
+let carTrajectoryMarker = {
+  x: [carX, carX - 3, carX, carX + 3],
+  y: [startPos, startPos, returnPos, returnPos],
+  xaxis: 'x1',
+  yaxis: 'y1',
+  mode: 'markers',
+  marker: {size: 10, color: 'purple', symbol: 'triangle-left'},
+};
+
+Plotly.newPlot(
+    'carTrajectory',
+    [carTrajectory1, carTrajectory2, carTrajectoryMarker, carTraces[2]],
+    raceTrackLayout, {staticPlot: true});
+
+const plotLayout = {
+  margin: {l: 80, r: 40, t: 40, b: 70},
+  xaxis: {
+    range: [-1.1, 1.1],
+    title: {text: 'starting position', standoff: 10},
+    nticks: 5
+  },
+  yaxis: {range: [-1.1, 1.1], title: 'return position', nticks: 5},
+  paper_bgcolor: '#ffffff00',
+  plot_bgcolor: '#ffffff00',
+  showlegend: false,
+};
+
+Plotly.newPlot(
+    'carPoincareMap', [carPoincareMap, carPoincareMapMarker], plotLayout,
+    {staticPlot: true});
+
+carPoincareSlider.oninput = () => {
+  startPos = carPoincareSlider.value
+  returnPos = getCarReturnY(startPos);
+  Plotly.update(
+      'carTrajectory', {
+        x: [[-5, carX], [5, carX], [carX, carX - 3, carX, carX + 3]],
+        y: [
+          [startPos, startPos], [returnPos, returnPos],
+          [startPos, startPos, returnPos, returnPos]
+        ]
+      },
+      {}, [0, 1, 2]);
+  Plotly.update('carPoincareMap', {x: [[startPos]], y: [[returnPos]]}, {}, [1]);
+};
 
 // =====================================================================
 // ---------------------------- first figure ---------------------------
@@ -449,12 +692,17 @@ let poincarePlot = document.getElementById('poincarePlot');
 
 const layout2 = {
   margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis2:
-      {range: [0, 2.1], title: 'starting point', domain: [0.2, 0.8], nticks: 3},
-  yaxis2: {range: [0, 2.1], title: 'return point', domain: [0, 1], nticks: 3},
+  xaxis2: {
+    range: [0, 2.1],
+    title: 'starting position',
+    domain: [0.2, 0.8],
+    nticks: 3
+  },
+  yaxis2:
+      {range: [0, 2.1], title: 'return position', domain: [0, 1], nticks: 3},
   //  paper_bgcolor: '#ffffff00',
   //  plot_bgcolor: '#ffffff00',
-  showlegend: false
+  showlegend: false,
 };
 
 let unityLine = {
