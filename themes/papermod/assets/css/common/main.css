@@ -6,7 +6,7 @@
     padding: var(--gap);
 }
 
-a {
+p a {
     color: var(--accent2);
 }
 
@@ -15,7 +15,33 @@ body {
 }
 
 .page-header h1 {
-    font-size: 40px;
+    font-size: 2.25rem;
+}
+
+h1 {
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+}
+
+h2 {
+    margin: 0 auto 1.25rem;
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+h5 {
+    font-size: 1.125rem;
+}
+
+h6 {
+    font-size: 1rem;
 }
 
 .pagination {
@@ -32,7 +58,7 @@ body {
     line-height: 40px;
     text-align: center;
     color: var(--content);
-    font-size: 13px;
+    font-size: 0.875rem;
     background: var(--code-bg);
     border-radius: var(--radius);
     padding: 0 16px;
@@ -78,7 +104,7 @@ pre {
     background: rgba(78, 78, 78, 0.8);
     border-radius: var(--radius);
     padding: 0 5px;
-    font-size: 14px;
+    font-size: 0.875rem;
     user-select: none;
 }
 

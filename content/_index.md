@@ -2,7 +2,8 @@
 title: "Dynamics Explorables"
 date: 2023-04-01T22:40:42+02:00
 draft: false
-cover: "images/cover_black.jpg"
+cover: 
+    image: "images/cover_black.jpg"
 ---
 
 Welcome to Dynamics Explorables! Here, you will find interactive explanations of various models in a branch of mathematics called dynamical systems. 

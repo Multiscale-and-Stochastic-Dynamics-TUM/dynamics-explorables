@@ -37,10 +37,6 @@
 {{- range sort $subsections ".Params.subsection_order" "asc" }}
 <br>
 <h1><a href="{{ .RelPermalink }}" style="color:var(--content)">{{ .Title }}</a></h1>
-
-{{/* Display all pages from this subsection */}}
-{{ $subsectionPages := site.GetPage .RelPermalink }}
-{{ with $subsectionPages }}
 {{- $pages := .Pages }}
 
 {{/* If the section has more than 6 pages, filter out only the first 6 */}}
@@ -61,8 +57,6 @@
     <a class="prev" style="width: auto;" href="{{ .RelPermalink }}"><span>{{ i18n "show_all" }}</span></a>
 </nav>
 {{- end }}
-
-{{ end }}{{/* end subsectionPages */}}
 
 {{- end }}{{/* end range over subsections */}}
 

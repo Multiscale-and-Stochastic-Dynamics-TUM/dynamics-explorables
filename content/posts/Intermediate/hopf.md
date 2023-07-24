@@ -37,11 +37,11 @@ that are called subcritical (with the plus sign) and supercritical (with the min
 Here we present the 3D stability diagram of the supercritical Hopf bifurcation as well as 2D plots of the eigenvalues of the Jacobian. 
 Try different values of the parameter $p$ and see how the behavior of the systems changes.
 
-{{< plotly id="plotlyHopf">}}
+{{< plotly id="plotlyHopf" height="83%" >}}
 {{< slider id="parampSlider" min="-2.0" max="2.0" step="0.1" value="-1.3" >}}
 
 As you can see the eigenvalues cross the imaginary axes in $p=0$. Also the stability changes from one point for negative values of $p$ 
 to a circle of radius $\sqrt{p}$ for positive values of $p$.
 
-{{< plotly id="plotlyMultiplot">}}
+{{< plotly id="plotlyMultiplot" height="60%" >}}
 

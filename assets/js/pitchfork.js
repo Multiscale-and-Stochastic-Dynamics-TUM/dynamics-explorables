@@ -19,7 +19,6 @@ const LAYOUT_PITCHFORK = {
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
-  width: 650
 };
 
 const LAYOUT_STABILITY = {
@@ -35,26 +34,24 @@ const LAYOUT_STABILITY = {
   modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
   annotations: [getArrowH(-0.2, true), getArrowH(0.2, false)],
-  width: 650,
-  height: 200
 };
 
 const STABLE_LINE_STYLE = {
   color: 'blue',
-  width: 3
+  width: 2
 };
 const UNSTABLE_LINE_STYLE = {
   color: 'blue',
-  width: 3,
+  width: 2,
   dash: 'dash'
 };
 const VERTICAL_INTERSECTION_STYLE = {
   color: 'Red',
-  width: 3
+  width: 2
 };
 const BASE_STABILITY_LINE = {
   color: 'Red',
-  width: 3
+  width: 2
 };
 const STABLE_MARKER = {
   color: 'Green',
