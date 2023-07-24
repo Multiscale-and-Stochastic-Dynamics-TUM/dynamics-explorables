@@ -47,6 +47,7 @@ const labelManifolds =
     document.getElementById('streamlinesManifoldsSliderLabel');
 
 label.innerHTML = `p = ${slider.value}`;
+labelManifolds.innerHTML = `p = ${sliderManifolds.value}`;
 
 let qmin = parseFloat(slider.min);
 let qmax = parseFloat(slider.max);
@@ -127,13 +128,15 @@ function computeManifolds(q) {
 
 async function updatePlots(event, sliderId) {
   let q = parseFloat(event.target.value);
-  label.innerHTML = `p = ${slider.value}`;
-  labelManifolds.innerHTML = `p = ${slider.value}`;
 
   if (sliderId == 0) {
     sliderManifolds.value = q;
-  } else {
+    label.innerHTML = `p = ${slider.value}`;
+    labelManifolds.innerHTML = `p = ${slider.value}`;
+  } else if (sliderId == 1) {
     slider.value = q;
+    label.innerHTML = `p = ${sliderManifolds.value}`;
+    labelManifolds.innerHTML = `p = ${sliderManifolds.value}`;
   }
 
   let ind = Math.round((q - qmin) / qstep);
