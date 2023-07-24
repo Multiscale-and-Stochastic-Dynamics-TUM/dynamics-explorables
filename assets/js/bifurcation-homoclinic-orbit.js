@@ -67,6 +67,20 @@ let streamlineKwargs = {
   minlength: 0.5,
 };
 
+let criticalPointTraces = [{
+  mode: 'markers',
+  x: [0, 1],
+  y: [0, 0],
+  text: ['saddle', 'source'],
+  type: 'scatter',
+  marker: {
+    size: 8,
+    symbol: 'x',
+    color: 'black',
+  },
+  name: 'critical point',
+}];
+
 function precomputeStreamlines(q) {
   let ind = Math.round((q - qmin) / qstep);
   if (!streamlineCache.has(ind)) {
@@ -98,7 +112,7 @@ function computeManifolds(q) {
   let unstableLine = {
     color: 'red',
     dash: 'dash',
-  }
+  };
 
   for (let coord of manifoldStartingCoords) {
     coord[0] *= 0.01;
@@ -148,6 +162,9 @@ async function updatePlots(event, sliderId) {
   manifoldTraces = streamlineManifoldCache.get(ind);
   Plotly.react(streamlinesDiv, traces, layout, config);
   Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layout, config);
+
+  Plotly.addTraces(streamlinesDiv, criticalPointTraces);
+  Plotly.addTraces(streamlinesManifoldsDiv, criticalPointTraces);
 }
 
 slider.oninput = async (event) => {
