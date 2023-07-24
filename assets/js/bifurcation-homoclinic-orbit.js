@@ -91,12 +91,12 @@ function computeManifolds(q) {
   let traces = [];
 
   let stableLine = {
-    color: 'red',
+    color: 'blue',
     dash: 'solid',
   };
 
   let unstableLine = {
-    color: 'blue',
+    color: 'red',
     dash: 'dash',
   }
 
