@@ -1,0 +1,16 @@
+{{/*
+A component for a plotly div.
+
+Parameters:
+- `id`: the id of the div
+- `height`: the height of the div as a percentage of width, should be given, e.g., as "20%"
+*/}}
+<div class="plotly-flexbox">
+    <div class="plotly-container">
+        {{ if isset .Params "height" }}
+        <div id="{{ .Get `id` }}" class="plotly" , style="padding-bottom: {{ .Get `height` }};"></div>
+        {{- else }}
+        <div id="{{ .Get `id` }}" class="plotly"></div>
+        {{- end }}
+    </div>
+</div>

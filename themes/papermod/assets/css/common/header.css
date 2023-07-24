@@ -1,0 +1,154 @@
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    max-width: calc(var(--nav-width) + var(--gap) * 2);
+    margin-inline-start: auto;
+    margin-inline-end: auto;
+    line-height: var(--header-height);
+}
+
+.nav a {
+    display: block;
+}
+
+.logo,
+.menu {
+    display: flex;
+    margin: auto var(--gap);
+}
+
+.menu {
+    vertical-align: middle;
+    list-style: none;
+    word-break: keep-all;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.menu li {
+    display: flex;
+    margin: auto var(--gap);
+}
+
+.menu a {
+    display: inline;
+    vertical-align: middle;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.menu .active {
+    font-weight: 500;
+    border-bottom: 2px solid currentColor;
+}
+
+#menu-toggle {
+    display: none;
+}
+
+@media (max-width: 700px) {
+    .menu {
+        position: inline;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .menu-button-container {
+        display: flex;
+        height: 100%;
+        width: 26px;
+        margin: auto var(--gap);
+        cursor: pointer;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        fill: var(--content);
+    }
+
+    #menu-toggle~.menu li {
+        height: 0;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    #menu-toggle:checked~.menu li {
+        display: flex;
+        align-items: center;
+        border: 0;
+        height: 3rem;
+        transition: height 400ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    #menu-toggle:checked~.menu {
+        padding-bottom: var(--gap);
+    }
+
+}
+
+.logo {
+    flex-wrap: inherit;
+}
+
+.logo a {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.logo a:hover {
+    color: var(--primary);
+}
+
+.logo a img,
+.logo a svg {
+    display: inline;
+    vertical-align: middle;
+    pointer-events: none;
+    transform: translate(0, -10%);
+    border-radius: 6px;
+    margin-inline-end: 8px;
+}
+
+button#theme-toggle {
+    display: flex;
+    background: #ffffff00;
+    color: var(--primary);
+    font-size: 1rem;
+    margin: auto 4px;
+}
+
+body.dark #moon {
+    vertical-align: middle;
+    display: none;
+}
+
+body:not(.dark) #sun {
+    display: none;
+}
+
+.lang-switch li,
+.lang-switch ul,
+.logo-switches {
+    display: inline-flex;
+    margin: auto 4px;
+}
+
+.lang-switch {
+    display: flex;
+    flex-wrap: inherit;
+}
+
+.lang-switch a {
+    margin: auto 3px;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.logo-switches {
+    flex-wrap: inherit;
+}

@@ -1,0 +1,18 @@
+.plotly-flexbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.plotly-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+.plotly {
+    width: 100%;
+    /* Hack to set the height to 50% of the width. 
+    See here: https://stackoverflow.com/questions/30789414/css-set-height-according-to-width */
+    padding-bottom: 50%;
+    height: 0;
+}
