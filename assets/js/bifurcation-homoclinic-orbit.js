@@ -21,7 +21,7 @@ const qc = 0.06456;
 function rhs(t, y, q) {
   let [y1, y2] = y;
   let qmod = q + qc;
-  return [y2, -qmod * y2 + y1 - y1 ** 2 + y1 * y2];
+  return [-y2, qmod * y2 - y1 + y1 ** 2 - y1 * y2];
 }
 
 function eigenvalues(q) {
@@ -55,6 +55,7 @@ let qstep = parseFloat(slider.step);
 
 let streamlinesDiv = document.getElementById('streamlines');
 let streamlinesManifoldsDiv = document.getElementById('streamlinesManifolds');
+let limitCycleDiv = document.getElementById('limitCycle');
 
 let streamlineCache = new Map();
 let streamlineManifoldCache = new Map();
@@ -71,7 +72,7 @@ let criticalPointTraces = [{
   mode: 'markers',
   x: [0, 1],
   y: [0, 0],
-  text: ['saddle', 'source'],
+  text: ['saddle point', 'stable point'],
   type: 'scatter',
   marker: {
     size: 8,
@@ -97,6 +98,41 @@ function precomputeStreamlines(q) {
 
     console.log(manifoldTraces);
   }
+}
+
+// Use idle tasks to precompute streamlines in the background while there are
+// resources available.
+
+let taskList = [];
+let taskHandle = null;
+
+function enqueueTask(taskHandler, taskData) {
+  taskList.push({
+    handler: taskHandler,
+    data: taskData,
+  });
+
+  if (!taskHandle) {
+    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
+  }
+}
+
+function runTaskQueue(deadline) {
+  while ((deadline.timeRemaining() > 0 || deadline.didTimeout) &&
+         taskList.length) {
+    const task = taskList.shift();
+    task.handler(task.data);
+  }
+
+  if (taskList.length) {
+    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
+  } else {
+    taskHandle = 0;
+  }
+}
+
+for (let q = qmin; q <= qmax + 1e-5; q += qstep) {
+  enqueueTask(precomputeStreamlines, q);
 }
 
 function computeManifolds(q) {
@@ -176,40 +212,30 @@ sliderManifolds.oninput =
   updatePlots(event, 1);
 }
 
-// trigger the first update of the plot manually
+async function drawLimitCycle(q) {
+  let ind = Math.round((q - qmin) / qstep);
+
+  if (!streamlineCache.has(ind)) {
+    precomputeStreamlines(q);
+  }
+  let manifoldTraces = structuredClone(streamlineManifoldCache.get(ind));
+
+  Plotly.react(limitCycleDiv, manifoldTraces, layout, config);
+
+  let limitCycleTrace = structuredClone(manifoldTraces.at(-2));
+  limitCycleTrace.x = limitCycleTrace.x.slice(0, 1250);
+  limitCycleTrace.y = limitCycleTrace.y.slice(0, 1250);
+
+  limitCycleTrace.line.color = 'orange';
+  limitCycleTrace.line.width = 3;
+
+  Plotly.addTraces(limitCycleDiv, [limitCycleTrace]);
+  Plotly.addTraces(limitCycleDiv, criticalPointTraces);
+}
+
+// draw the limit cycle at p = 0.9
+drawLimitCycle(0.9);
+
+// trigger the first update of the interactive plots manually
 var event = new Event('input');
 slider.dispatchEvent(event);
-
-let taskList = [];
-let taskHandle = null;
-
-// Use idle tasks to precompute streamlines in the background while there are
-// resources available.
-function enqueueTask(taskHandler, taskData) {
-  taskList.push({
-    handler: taskHandler,
-    data: taskData,
-  });
-
-  if (!taskHandle) {
-    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
-  }
-}
-
-function runTaskQueue(deadline) {
-  while ((deadline.timeRemaining() > 0 || deadline.didTimeout) &&
-         taskList.length) {
-    const task = taskList.shift();
-    task.handler(task.data);
-  }
-
-  if (taskList.length) {
-    taskHandle = requestIdleCallback(runTaskQueue, {timeout: 500});
-  } else {
-    taskHandle = 0;
-  }
-}
-
-for (let q = qmin; q <= qmax + 1e-5; q += qstep) {
-  enqueueTask(precomputeStreamlines, q);
-}
