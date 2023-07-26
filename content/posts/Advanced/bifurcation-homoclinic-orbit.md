@@ -33,3 +33,12 @@ If we push the slider even further to $p > 0.8$, something interesting happens. 
 
 It turns out, that there is nothing special about our system in particular that produces this limit cycle. In fact, the limit cycle appears in a wide variety of two-dimensional ODEs which undergo a homoclinic bifurcation. The theorem below illustrates this fact.
 
+> **Andronov-Leontovich Theorem**
+>
+> Consider a two-dimensional system
+> $$ \dot{\mathbf{x}} = f(\mathbf{x}, \alpha), \mathbf{x} \in \mathbb{R}^2, \alpha \in \mathbb{R} $$
+> with smooth $f$, having at $\alpha = 0$ a saddle equilibrium point $\mathbf{x}_0 = 0$ with eigenvalues $\lambda_1(0) < 0 < \lambda_2(0)$ and a homoclinic orbit $\Gamma_0$. Assume that the following genericity conditions hold:
+> * $\sigma_0 = \lambda_1(0) + \lambda_2(0) \neq 0$
+> * $\beta(0) \neq 0$, where $\beta(\alpha)$ is the previously defined split function. 
+> 
+> Then, for all sufficiently small $|\alpha|$, there exists a neighborhood $U_0$ of $\Gamma_0 \cup x_0$ in which a unique limit cycle $L_\beta$ bifurcates from $\Gamma_0$. Moreover, the cycle is stable and exists for $\beta > 0$ if $\sigma_0 < 0$ and is unstable and exists for $\beta < 0$ if $\sigma_0 > 0$. 
