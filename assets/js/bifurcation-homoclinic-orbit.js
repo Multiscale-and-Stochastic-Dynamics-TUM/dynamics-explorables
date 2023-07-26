@@ -5,6 +5,19 @@ import {Trajectory2D} from './modules/data_structures/trajectory';
 import {streamlines} from './modules/plotly/streamlines';
 import {solve_ode} from './modules/simulation/ode_solver';
 
+const style = getComputedStyle(document.body)
+
+const stableManifoldColor = style.getPropertyValue('--green');
+const unstableManifoldColor = style.getPropertyValue('--red');
+
+for (const span of document.getElementsByTagName('span')) {
+  if (span.innerHTML == 'stable') {
+    span.style.color = stableManifoldColor;
+  } else if (span.innerHTML == 'unstable') {
+    span.style.color = unstableManifoldColor;
+  }
+}
+
 const layout = {
   margin: {l: 40, r: 40, t: 40, b: 30},
   xaxis: {range: [0, 2]},
@@ -93,8 +106,7 @@ function precomputeStreamlines(q) {
 
     // draw the stable/unstable manifolds
     let manifoldTraces = computeManifolds(q);
-    let allTraces = traces.concat(manifoldTraces);
-    streamlineManifoldCache.set(ind, allTraces);
+    streamlineManifoldCache.set(ind, manifoldTraces);
 
     console.log(manifoldTraces);
   }
@@ -141,12 +153,12 @@ function computeManifolds(q) {
   let traces = [];
 
   let stableLine = {
-    color: 'blue',
+    color: stableManifoldColor,
     dash: 'solid',
   };
 
   let unstableLine = {
-    color: 'red',
+    color: unstableManifoldColor,
     dash: 'dash',
   };
 
