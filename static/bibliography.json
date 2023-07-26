@@ -207,5 +207,34 @@
 				]
 			]
 		}
+	},
+	{
+		"id": "strogatz_nonlinear_2019",
+		"type": "book",
+		"abstract": "This textbook is aimed at newcomers to nonlinear dynamics and chaos, especially students taking a first course in the subject. The presentation stresses analytical methods, concrete examples, and geometric intuition. The theory is developed systematically, starting with first-order differential equations and their bifurcations, followed by phase plane analysis, limit cycles and their bifurcations, and culminating with the Lorenz equations, chaos, iterated maps, period doubling, renormalization, fractals, and strange attractors.",
+		"edition": "2",
+		"event-place": "Boca Raton",
+		"ISBN": "978-0-429-49256-3",
+		"note": "DOI: 10.1201/9780429492563",
+		"number-of-pages": "532",
+		"publisher": "CRC Press",
+		"publisher-place": "Boca Raton",
+		"title": "Nonlinear Dynamics and Chaos",
+		"title-short": "Nonlinear Dynamics and Chaos",
+		"author": [
+			{
+				"family": "Strogatz",
+				"given": "Steven H."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2019",
+					5,
+					23
+				]
+			]
+		}
 	}
 ]
