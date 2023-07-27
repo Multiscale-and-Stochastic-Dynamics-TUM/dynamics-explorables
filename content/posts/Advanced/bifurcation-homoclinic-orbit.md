@@ -14,7 +14,7 @@ Take a look at the phase space in the plot below:
 
 <!-- Phase plot with a slider for the parameter -->
 {{< plotly id="streamlines" >}}
-{{< slider id="streamlinesSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
+{{< slider id="streamlinesSlider" min="0.5" max="0.9" step="0.02" value="0.5" >}}
 
 (the numerical example is taken from {{< cite "strogatz_nonlinear_2019" 266 >}} with some modifications)
 
@@ -24,7 +24,7 @@ And yet, the phase plot changes qualitatively as the parameter changes. Here is 
 
 <!-- Same phase plot but with stable/unstable manifold in red -->
 {{< plotly id="streamlinesManifolds" >}}
-{{< slider id="streamlinesManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
+{{< slider id="streamlinesManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.5" >}}
 
 At $p = 0.8$, the stable and unstable manifolds meet and form a single orbit. Our visualization makes this sudden jump very apparent: at $p = 0.78$, the {{<span text="stable" >}} manifold spirals to the critical point at $\mathbf{x}_2 = (1, 0)$, but at $p = 0.8$, it gets caught by the critical point at the origin, $\mathbf{x}_1 = (0, 0)$. An orbit like this which starts at a critical point and returns back to it is called a homoclinic orbit. Similarly, a heteroclinic orbit is a trajectory which starts at one critical point and converges to another one. In fact, for $p < 0.8$, the stable manifold is a heterocliic orbit since it starts at $\mathbf{x}_2$ and ends at $\mathbf{x}_1$.
 
@@ -38,9 +38,9 @@ It turns out, that there is nothing special about our system in particular that 
 
 To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 64-66 >}}, but you can just click the "zoom" button below for the magic to happen.
 
-<!-- an animation of the zooming -->
+<!-- an animation of the zooming -->ś
 {{< plotly id="zoomAnim" >}}
-{{< button text="Zoom!" >}}
+{{< button text="Zoom!" id="zoomAnimButton" >}}
 
 Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and measure the signed distance between the stable and unstable manifolds along this line. 
 

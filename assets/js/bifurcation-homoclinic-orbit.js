@@ -1,7 +1,5 @@
 import Plotly from 'plotly.js-dist-min';
 
-import {linspace} from './modules/data_structures/iterables';
-import {Trajectory2D} from './modules/data_structures/trajectory';
 import {streamlines} from './modules/plotly/streamlines';
 import {solve_ode} from './modules/simulation/ode_solver';
 
@@ -10,6 +8,8 @@ const style = getComputedStyle(document.body)
 const stableManifoldColor = style.getPropertyValue('--green');
 const unstableManifoldColor = style.getPropertyValue('--red');
 
+// Color all instances of the words "stable" and "unstable" written within a
+// span tag in green and red.
 for (const span of document.getElementsByTagName('span')) {
   if (span.innerHTML == 'stable') {
     span.style.color = stableManifoldColor;
@@ -18,16 +18,8 @@ for (const span of document.getElementsByTagName('span')) {
   }
 }
 
-const layout = {
-  margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis: {range: [0, 2]},
-  yaxis: {range: [-1., 1.], scaleanchor: 'x1'},
-  showlegend: false,
-};
-
-const config = {
-  displayModeBar: false,
-};
+// ============================================================
+// Functions related to the ODE
 
 const qc = 0.06456;
 
@@ -53,6 +45,42 @@ function eigenvectors(q) {
   ];
 }
 
+// Map the (x,  y) coordinate from the original coordinate system to the system
+// in which the eigenvectors are parallel to the axes. Accepts vectors of x- and
+// y-coordinates and returns vectors of x- and y-coordinates back.
+function orthogonalize(xvec, yvec, q) {
+  let qmod = q + qc;
+  let [v1, v2] = eigenvectors(q);
+  let det = (v1[0] * v2[1] - v2[0] * v1[1]) * 0.2;
+
+  let newx = [];
+  let newy = [];
+
+  for (let i = 0; i < xvec.length; i++) {
+    newx.push((v2[1] * xvec[i] - v2[0] * yvec[i]) / det);
+    newy.push((-v1[1] * xvec[i] + v1[0] * yvec[i]) / det);
+  }
+  return [newx, newy];
+}
+
+// (end ODE functions)
+// ============================================================
+
+
+// ============================================================
+// Plotly declarations
+
+const layout = {
+  margin: {l: 40, r: 40, t: 40, b: 40},
+  xaxis: {range: [0, 2]},
+  yaxis: {range: [-1., 1.], scaleanchor: 'x'},
+  showlegend: false,
+};
+
+const config = {
+  displayModeBar: false,
+};
+
 const slider = document.getElementById('streamlinesSlider');
 const sliderManifolds = document.getElementById('streamlinesManifoldsSlider');
 const label = document.getElementById('streamlinesSliderLabel');
@@ -69,6 +97,9 @@ let qstep = parseFloat(slider.step);
 let streamlinesDiv = document.getElementById('streamlines');
 let streamlinesManifoldsDiv = document.getElementById('streamlinesManifolds');
 let limitCycleDiv = document.getElementById('limitCycle');
+let zoomAnimDiv = document.getElementById('zoomAnim');
+
+let zoomAnimButton = document.getElementById('zoomAnimButton');
 
 let streamlineCache = new Map();
 let streamlineManifoldCache = new Map();
@@ -95,6 +126,13 @@ let criticalPointTraces = [{
   name: 'critical point',
 }];
 
+// (end Plotly declarations)
+// ============================================================
+
+
+// ============================================================
+// Functions to calculate stuff
+
 function precomputeStreamlines(q) {
   let ind = Math.round((q - qmin) / qstep);
   if (!streamlineCache.has(ind)) {
@@ -107,8 +145,6 @@ function precomputeStreamlines(q) {
     // draw the stable/unstable manifolds
     let manifoldTraces = computeManifolds(q);
     streamlineManifoldCache.set(ind, manifoldTraces);
-
-    console.log(manifoldTraces);
   }
 }
 
@@ -246,7 +282,64 @@ async function drawLimitCycle(q) {
 
   Plotly.addTraces(limitCycleDiv, [limitCycleTrace]);
   Plotly.addTraces(limitCycleDiv, criticalPointTraces);
+};
+
+async function computeZoomFrames(q) {
+  let ind = Math.round((q - qmin) / qstep);
+
+  if (!streamlineCache.has(ind)) {
+    precomputeStreamlines(q);
+  }
+  let manifoldTraces = structuredClone(streamlineManifoldCache.get(ind));
+  let [stableLine, stableArrows, unstableLine, unstableArows] = manifoldTraces;
+
+  let globalFrame = {name: 'global', data: manifoldTraces};
+
+  let localManifoldTraces = manifoldTraces.map(trace => {
+    let localTrace = structuredClone(trace);
+    let localTrajectory = orthogonalize(trace.x, trace.y, q);
+
+    localTrace.x = localTrajectory[0];
+    localTrace.y = localTrajectory[1];
+
+    return localTrace;
+  });
+
+  let localFrame = {name: 'local', data: localManifoldTraces};
+
+  return [globalFrame, localFrame];
 }
+
+async function createZoomAnimation(plotlyDiv, q) {
+  let frames = await computeZoomFrames(q);
+
+  let firstFrame = structuredClone(frames[0].data);
+
+  Plotly.newPlot(plotlyDiv, firstFrame, layout, config).then(() => {
+    Plotly.addFrames(plotlyDiv, frames);
+  });
+
+  let currentFrame = 'global';
+
+  function startAnimation(frameNames) {
+    Plotly.animate(plotlyDiv, frameNames, {
+      transition: {duration: 500, easing: 'linear'},
+      frame: {
+        duration: 500,
+        redraw: true,
+      },
+      mode: 'immediate'
+    });
+  }
+
+  zoomAnimButton.addEventListener('click', () => {
+    currentFrame = (currentFrame == 'global') ? 'local' : 'global';
+    startAnimation([currentFrame]);
+  });
+}
+
+// trigger an empty update to set xrange in the layout to the actual values
+Plotly.newPlot(streamlinesDiv, [], layout, config);
 
 // draw the limit cycle at p = 0.9
 drawLimitCycle(0.9);
@@ -254,3 +347,5 @@ drawLimitCycle(0.9);
 // trigger the first update of the interactive plots manually
 var event = new Event('input');
 slider.dispatchEvent(event);
+
+createZoomAnimation(zoomAnimDiv, 0.84);
