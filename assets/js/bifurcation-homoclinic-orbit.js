@@ -34,7 +34,7 @@ const qc = 0.06456;
 function rhs(t, y, q) {
   let [y1, y2] = y;
   let qmod = q + qc;
-  return [-y2, qmod * y2 - y1 + y1 ** 2 - y1 * y2];
+  return [y2, -qmod * y2 + y1 - y1 ** 2 + y1 * y2];
 }
 
 function eigenvalues(q) {
@@ -85,7 +85,7 @@ let criticalPointTraces = [{
   mode: 'markers',
   x: [0, 1],
   y: [0, 0],
-  text: ['saddle point', 'stable point'],
+  text: ['saddle point', 'unstable focus'],
   type: 'scatter',
   marker: {
     size: 8,
@@ -235,11 +235,14 @@ async function drawLimitCycle(q) {
   Plotly.react(limitCycleDiv, manifoldTraces, layout, config);
 
   let limitCycleTrace = structuredClone(manifoldTraces.at(-2));
-  limitCycleTrace.x = limitCycleTrace.x.slice(0, 1250);
-  limitCycleTrace.y = limitCycleTrace.y.slice(0, 1250);
+  let length = limitCycleTrace.x.length
+  limitCycleTrace.x = limitCycleTrace.x.slice(length - 1250, length);
+  limitCycleTrace.y = limitCycleTrace.y.slice(length - 1250, length);
 
-  limitCycleTrace.line.color = 'orange';
-  limitCycleTrace.line.width = 3;
+  limitCycleTrace.line = {
+    color: 'orange',
+    width: 3,
+  };
 
   Plotly.addTraces(limitCycleDiv, [limitCycleTrace]);
   Plotly.addTraces(limitCycleDiv, criticalPointTraces);
