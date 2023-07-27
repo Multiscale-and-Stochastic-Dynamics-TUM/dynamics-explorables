@@ -42,12 +42,76 @@ To explore this effect, we will zoom in closely to the saddle point at $\mathbf{
 {{< plotly id="zoomAnim" >}}
 {{< button text="Zoom!" >}}
 
-Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and measure the distance between the stable and unstable manifolds along this line. 
+Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and measure the signed distance between the stable and unstable manifolds along this line. 
 
 {{< plotly id="localManifold" >}}
 {{< slider id="localSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
 
-We will call this signed distance $\beta(p)$. For $p = 0.02??$, the distance is equal to $\beta(p) = 0.02??$. 
+We will call this distance $\beta(p)$. For $p = 0.02??$, the distance is equal to $\beta(p) = 0.02??$. 
 
-You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we have an orbit (the homoclinic orbit at $p = 0.8$) and a cross-section to this orbit. Indeed, Poincaré maps will play a key role in the following. 
+You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we take an orbit, draw a cross-section to this orbit and look at how nearby trajectories return to this cross-section. Indeed, Poincaré maps will play a key role in the following. If we construct such a map and show that the map has a fixed point, i.e., a point which returns to itself after a full revolution, then this fixed point must correspond to a limit cycle of the system. 
 
+We will construct the Poincaré map in two steps: using a local and a global mapping. To define the local mapping, let's draw another cross-section $\Pi$, this time, perpendicular to the {{< span text="unstable" >}} manifold:
+
+{{< plotly id="secondCrossection" >}}
+
+We will define the Poincaré map $P$ as a composition of a local map $\Delta: \Sigma \rightarrow \Pi$, which evolves the points close to the saddle point, and a global map $Q: \Pi \rightarrow Q$, which does a big loop outside of our local view.
+
+$$
+P = Q \circ \Delta
+$$
+
+{{< plotly id="localGlobalMapAnim" >}}
+{{< button text="Local map" >}}
+
+Close to the saddle point, we can locally linearize the system by choosing new coordinates $(\xi, \eta)$, such that the system is simply given by
+
+$$
+\begin{align}
+\dot{\xi} &= \lambda_1 \xi \\\
+\dot{\eta} &= \lambda_2 \eta,
+\end{align}
+$$
+
+where $\lambda_{1/2}$ are the eigenvalues of the saddle point. This way, we can calculate the local map $\Delta$ explicitly. A point $(1, \eta)$ on the cross-section $\Sigma$ moves to $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau})$ after time $\tau$. We want to determine the time $\tau^*$, when this point hits the second cross-section $\Pi$. Solving $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau}) = (\xi, 1)$ for $\tau$, we get that 
+
+$$
+\tau^* = - \frac{\ln{\eta}}{\lambda_1}.
+$$
+
+Inserting this into the coordinates, we obtain that the point $(1, \eta)$ in $\Sigma$ is mapped to the point $(\eta^{-\frac{\lambda_1}{\lambda_2}}, 1)$ in $\Pi$. This gives us our first local map. 
+
+$$
+\Delta: \xi = \eta^{-\frac{\lambda_1}{\lambda_2}}.
+$$
+
+To define the global map, we can make use of the $\beta$ function we defined previously. (? how to explain this transition?)
+
+$$
+Q: \eta = \beta + a \xi + O(\xi^2).
+$$
+
+Therefore, the full Poincaré map can be written for small $|\eta|$ as 
+
+$$
+P: \eta \mapsto \beta + a \eta^{-\frac{\lambda_2}{\lambda_2}} + \dots
+$$
+
+<!-- Plots of P where you can change beta? -->
+
+
+---
+
+# Appendix
+
+## Numerical system
+The system from the example is given by the ODE {{< cite "strogatz_nonlinear_2019" 266 >}}
+
+$$
+\begin{align}
+\dot{x} &= y \\\
+\dot{y} &= -p y + x - x^2 + xy
+\end{align}
+$$
+
+The system of equations bifurcates at $p \approx 0.86456$. For the sake of example, we shifted the parameter to a nice value by defining $\tilde{p} := p - 0.06456$. 
