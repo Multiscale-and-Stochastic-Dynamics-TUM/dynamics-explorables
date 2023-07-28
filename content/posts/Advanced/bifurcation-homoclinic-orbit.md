@@ -23,8 +23,8 @@ Previously, a bifurcation occurred when a critical point changed its stability u
 And yet, the phase plot changes qualitatively as the parameter changes. Here is the same phase plot, but with the {{<span text="stable" >}} and {{<span text="unstable" >}} manifolds of $\mathbf{x}_1$ marked. Can you find the value of $p$ at which a bifurcation occurs?
 
 <!-- Same phase plot but with stable/unstable manifold in red -->
-{{< plotly id="streamlinesManifolds" >}}
-{{< slider id="streamlinesManifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.5" >}}
+{{< plotly id="manifolds" >}}
+{{< slider id="manifoldsSlider" min="0.5" max="0.9" step="0.02" value="0.5" >}}
 
 At $p = 0.8$, the stable and unstable manifolds meet and form a single orbit. Our visualization makes this sudden jump very apparent: at $p = 0.78$, the {{<span text="stable" >}} manifold spirals to the critical point at $\mathbf{x}_2 = (1, 0)$, but at $p = 0.8$, it gets caught by the critical point at the origin, $\mathbf{x}_1 = (0, 0)$. An orbit like this which starts at a critical point and returns back to it is called a homoclinic orbit. Similarly, a heteroclinic orbit is a trajectory which starts at one critical point and converges to another one. In fact, for $p < 0.8$, the stable manifold is a heterocliic orbit since it starts at $\mathbf{x}_2$ and ends at $\mathbf{x}_1$.
 
@@ -38,7 +38,7 @@ It turns out, that there is nothing special about our system in particular that 
 
 To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 64-66 >}}, but you can just click the "zoom" button below for the magic to happen.
 
-<!-- an animation of the zooming -->ś
+<!-- an animation of the zooming -->
 {{< plotly id="zoomAnim" >}}
 {{< button text="Zoom!" id="zoomAnimButton" >}}
 
