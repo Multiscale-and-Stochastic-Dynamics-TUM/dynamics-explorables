@@ -50,10 +50,17 @@ function eigenvalues(p) {
 
 function eigenvectors(p) {
   let pmod = p + pc;
-  return [
-    [-0.5 * (pmod - Math.sqrt(pmod ** 2 + 4)), -1],
-    [0.5 * (pmod + Math.sqrt(pmod ** 2 + 4)), 1]
-  ];
+
+  let v1 = [-0.5 * (pmod - Math.sqrt(pmod ** 2 + 4)), -1];
+  let v2 = [0.5 * (pmod + Math.sqrt(pmod ** 2 + 4)), 1];
+
+  for (let v in [v1, v2]) {
+    let vnorm = Math.sqrt(v[0] ** 2 + v[1] ** 2);
+    v[0] /= vnorm;
+    v[1] /= vnorm;
+  }
+
+  return [v1, v2];
 }
 
 /**
@@ -61,9 +68,10 @@ function eigenvectors(p) {
  * in which the eigenvectors are parallel to the axes. Accepts vectors of x- and
  * y-coordinates and returns vectors of x- and y-coordinates back.
  */
-function orthogonalize(xvec, yvec, p) {
+function orthogonalize(xvec, yvec, p, scale = 1) {
   let [v1, v2] = eigenvectors(p);
-  let det = (v1[0] * v2[1] - v2[0] * v1[1]) * 0.2;
+
+  let det = (v1[0] * v2[1] - v2[0] * v1[1]) / scale;
 
   let newx = [];
   let newy = [];
@@ -82,10 +90,17 @@ function orthogonalize(xvec, yvec, p) {
 // ============================================================
 // Plotly declarations
 
-let layout = {
+let layoutGlobal = {
+  margin: {l: 40, r: 20, t: 20, b: 30},
+  xaxis: {range: [-1, 2]},
+  yaxis: {range: [-1.5, 1.5]},
+  showlegend: false,
+};
+
+let layoutLocal = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {range: [0, 2]},
-  yaxis: {range: [-1., 1.], scaleanchor: 'x'},
+  yaxis: {range: [-0.2, 1.5], scaleanchor: 'x'},
   showlegend: false,
 };
 
@@ -104,15 +119,14 @@ manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
 let streamlinesDiv = document.getElementById('streamlines');
 let streamlinesManifoldsDiv = document.getElementById('manifolds');
 let limitCycleDiv = document.getElementById('limitCycle');
-let zoomAnimDiv = document.getElementById('zoomAnim');
+let zoomOutDiv = document.getElementById('zoomInOut1');
+let zoomInDiv = document.getElementById('zoomInOut2');
 
 // trigger an empty update to set xrange in the layout to the actual values
-Plotly.newPlot(streamlinesDiv, [], layout, config);
+Plotly.newPlot(zoomInDiv, [], layoutLocal, config);
 
-const xrange = layout.xaxis.range;
-const yrange = layout.yaxis.range;
-
-const zoomAnimButton = document.getElementById('zoomAnimButton');
+const xrange = layoutGlobal.xaxis.range;
+const yrange = layoutGlobal.yaxis.range;
 
 const pmin = parseFloat(streamlinesSlider.min);
 const pmax = parseFloat(streamlinesSlider.max);
@@ -120,7 +134,7 @@ const pstep = parseFloat(streamlinesSlider.step);
 
 const streamlineKwargs = {
   line: {width: 1, color: 'gray'},
-  layout: layout,
+  layout: layoutGlobal,
   config: config,
   density: 6,
   minlength: 0.5,
@@ -279,7 +293,7 @@ function runTaskQueue(deadline) {
 }
 
 /**
- * Generate the two frames for the zoom in/out animation.
+ * Generate the two frames for the zoom in/out view.
  */
 async function computeZoomFrames(p) {
   let [_, manifoldTraces] = getVectorfield(p, xrange, yrange);
@@ -287,9 +301,36 @@ async function computeZoomFrames(p) {
 
   let globalFrame = {name: 'global', data: globalTraces};
 
+  const zoom = 5;
+
+  // add a rectangle, which shows the zoom area
+  let [v1, v2] = eigenvectors(p);
+
+  for (let v of [v1, v2]) {
+    v[0] /= zoom;
+    v[1] /= zoom;
+  }
+
+  let recx = [0, v1[0], v1[0] + v2[0], v2[0], 0];
+  let recy = [0, v1[1], v1[1] + v2[1], v2[1], 0];
+
+  let rectangle = {
+    x: recx,
+    y: recy,
+    mode: 'lines',
+    fill: 'toself',
+    showlegend: false,
+    fillcolor: '#ffaa5e33',
+    line: {simplify: false, color: '#ffaa5e'},
+  };
+
+  globalTraces.push(rectangle);
+
+  // transform everything
+
   let localTraces = globalTraces.map(trace => {
     let localTrace = structuredClone(trace);
-    let localTrajectory = orthogonalize(trace.x, trace.y, p);
+    let localTrajectory = orthogonalize(trace.x, trace.y, p, zoom);
 
     localTrace.x = localTrajectory[0];
     localTrace.y = localTrajectory[1];
@@ -329,8 +370,8 @@ async function updatePlots(event, sliderId) {
 
   let [streamlineTraces, manifoldTraces] = getVectorfield(p, xrange, yrange);
 
-  Plotly.react(streamlinesDiv, streamlineTraces, layout, config);
-  Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layout, config);
+  Plotly.react(streamlinesDiv, streamlineTraces, layoutGlobal, config);
+  Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layoutGlobal, config);
 
   Plotly.addTraces(streamlinesDiv, criticalPointTraces);
   Plotly.addTraces(streamlinesManifoldsDiv, criticalPointTraces);
@@ -349,7 +390,7 @@ async function drawLimitCycle(p) {
   let [_, manifoldTraces] = getVectorfield(p, xrange, yrange);
   let traces = structuredClone(manifoldTraces);
 
-  Plotly.react(limitCycleDiv, traces, layout, config);
+  Plotly.react(limitCycleDiv, traces, layoutGlobal, config);
 
   let limitCycleTrace = structuredClone(traces.at(-2));
   let length = limitCycleTrace.x.length
@@ -365,32 +406,20 @@ async function drawLimitCycle(p) {
   Plotly.addTraces(limitCycleDiv, criticalPointTraces);
 };
 
-async function createZoomAnimation(plotlyDiv, p) {
+async function drawZoom(globalDiv, localDiv, p) {
   let frames = await computeZoomFrames(p);
 
-  let firstFrame = structuredClone(frames[0].data);
+  let globalTrace = structuredClone(frames[0].data);
+  let localTrace = structuredClone(frames[1].data);
 
-  Plotly.newPlot(plotlyDiv, firstFrame, layout, config).then(() => {
-    Plotly.addFrames(plotlyDiv, frames);
-  });
+  let locLayoutGlobal = structuredClone(layoutGlobal);
+  let locLayoutLocal = structuredClone(layoutLocal);
 
-  let currentFrame = 'global';
+  locLayoutGlobal.title = {text: 'global', automargin: true};
+  locLayoutLocal.title = {text: 'local', automargin: true};
 
-  function startAnimation(frameNames) {
-    Plotly.animate(plotlyDiv, frameNames, {
-      transition: {duration: 500, easing: 'linear'},
-      frame: {
-        duration: 500,
-        redraw: true,
-      },
-      mode: 'immediate'
-    });
-  }
-
-  zoomAnimButton.addEventListener('click', () => {
-    currentFrame = (currentFrame == 'global') ? 'local' : 'global';
-    startAnimation([currentFrame]);
-  });
+  Plotly.newPlot(globalDiv, globalTrace, locLayoutGlobal, config);
+  Plotly.newPlot(localDiv, localTrace, locLayoutLocal, config);
 }
 
 // (end draw stuff)
@@ -403,4 +432,4 @@ streamlinesSlider.dispatchEvent(event);
 // draw the limit cycle at p = 0.9
 drawLimitCycle(0.9);
 
-createZoomAnimation(zoomAnimDiv, 0.82);
+drawZoom(zoomOutDiv, zoomInDiv, 0.82);

@@ -36,11 +36,9 @@ If we push the slider even further to $p > 0.8$, something interesting happens. 
 
 It turns out, that there is nothing special about our system in particular that produces this limit cycle. In fact, the limit cycle appears in a wide variety of two-dimensional ODEs which undergo a homoclinic bifurcation. 
 
-To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 64-66 >}}, but you can just click the "zoom" button below for the magic to happen.
+To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 64-66 >}}.
 
-<!-- an animation of the zooming -->
-{{< plotly id="zoomAnim" >}}
-{{< button text="Zoom!" id="zoomAnimButton" >}}
+{{< plotly id="zoomInOut" cols=2 height="80%" >}}
 
 Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and measure the signed distance between the stable and unstable manifolds along this line. 
 
