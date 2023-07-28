@@ -32,6 +32,11 @@ export {streamlines};
  * @param startingCoords - a vector of custom starting points. Should be given
  *     as `[[x1, y1], [x2, y2], ... ]`. If not provided,
  *     the starting points will be generated automatically on a grid.
+ * @param criticalPoints - a vector of the critical points of the ODE. If given,
+ *     the streamlines will terminate if they come too close to the critical
+ *     points.
+ * @param {float} criticalPointSafeSpace - determines the minimum distance
+ *     between a streamline and a critical point.
  * @param {boolean} redraw - if true, a new plot is created, otherwise, the
  *     streamlines are drawn on top of existing lines.
  * @param {boolean} noDisplay - if true, the streamlines will only be
@@ -45,6 +50,8 @@ function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
   minlength = 0.1,
   brokenStreamlines = true,
   startingCoords = [],
+  criticalPoints = [],
+  criticalPointSafeSpace = 1e-3,
   redraw = true,
   noDisplay = false,
 } = {}) {
@@ -90,7 +97,8 @@ function streamlines(plotlyDiv, rhs, params, xrange, yrange, {
   // for every starting point, draw the streamline and add it to the vector
   for (const startingCoord of startingCoords) {
     [streamline, grid] = _getStreamline(
-        rhs, params, startingCoord, grid, brokenStreamlines, minlength);
+        rhs, params, startingCoord, grid, brokenStreamlines, minlength,
+        criticalPoints, criticalPointSafeSpace);
     if (streamline.x.length > 1) {
       streamlines.push(streamline);
     }
@@ -203,7 +211,8 @@ function _coordToGridCell(x, y, grid) {
 }
 
 function _getStreamline(
-    rhs, params, start, grid, brokenStreamlines, minlength) {
+    rhs, params, start, grid, brokenStreamlines, minlength, criticalPoints,
+    criticalPointSafeSpace) {
   // cells which were visited for the first time by this streamline
   let discovered = [];
   for (let i = 0; i < grid.size; i++) {
@@ -224,8 +233,9 @@ function _getStreamline(
   };
 
   try {
-    [forwardStreamline, discovered] =
-        _integrate(rhs, params, start, grid, discovered, 1, brokenStreamlines);
+    [forwardStreamline, discovered] = _integrate(
+        rhs, params, start, grid, discovered, 1, brokenStreamlines,
+        criticalPoints, criticalPointSafeSpace);
   } catch (error) {
     console.log('Error encountered during forward integration: ')
     console.log(error.message);
@@ -236,8 +246,9 @@ function _getStreamline(
   }
 
   try {
-    [backwardStreamline, discovered] =
-        _integrate(rhs, params, start, grid, discovered, -1, brokenStreamlines);
+    [backwardStreamline, discovered] = _integrate(
+        rhs, params, start, grid, discovered, -1, brokenStreamlines,
+        criticalPoints, criticalPointSafeSpace);
   } catch (error) {
     console.log('Error encountered during backward integration: ')
     console.log(error.message);
@@ -277,7 +288,8 @@ function _getStreamline(
 }
 
 function _integrate(
-    rhs, params, start, grid, discovered, timeSign, brokenStreamlines) {
+    rhs, params, start, grid, discovered, timeSign, brokenStreamlines,
+    criticalPoints, criticalPointSafeSpace) {
   let streamline = {
     x: [],
     y: [],
@@ -330,6 +342,16 @@ function _integrate(
         terminate = true;
         lastStep = step;
         break;
+      }
+
+      // stop the streamline if we are too close to one of the critical points
+      for (let point of criticalPoints) {
+        if ((point[0] - x) ** 2 + (point[1] - y) ** 2 <
+            criticalPointSafeSpace ** 2) {
+          terminate = true;
+          lastStep = step;
+          break;
+        }
       }
 
       if (brokenStreamlines) {
