@@ -100,18 +100,27 @@ let layoutGlobal = {
 let layoutLocal = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {range: [0, 2]},
-  yaxis: {range: [-0.2, 1.5], scaleanchor: 'x'},
+  yaxis: {range: [-0.6, 1.2], scaleanchor: 'x'},
   showlegend: false,
 };
 
 const config = {
   displayModeBar: false,
+  responsive: true,
 };
+
+const zoom = 5;
 
 const streamlinesSlider = document.getElementById('streamlinesSlider');
 const manifoldsSlider = document.getElementById('manifoldsSlider');
+const betaSlider = document.getElementById('betaSlider');
+
 const streamlinesLabel = document.getElementById('streamlinesSliderLabel');
 const manifoldsLabel = document.getElementById('manifoldsSliderLabel');
+const betaLabel = document.getElementById('betaSliderLabel');
+
+const pSliders = [streamlinesSlider, manifoldsSlider];
+const pLabels = [streamlinesLabel, manifoldsLabel];
 
 streamlinesLabel.innerHTML = `p = ${streamlinesSlider.value}`;
 manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
@@ -121,6 +130,7 @@ let streamlinesManifoldsDiv = document.getElementById('manifolds');
 let limitCycleDiv = document.getElementById('limitCycle');
 let zoomOutDiv = document.getElementById('zoomInOut1');
 let zoomInDiv = document.getElementById('zoomInOut2');
+let betaDiv = document.getElementById('beta');
 
 // trigger an empty update to set xrange in the layout to the actual values
 Plotly.newPlot(zoomInDiv, [], layoutLocal, config);
@@ -172,51 +182,46 @@ const criticalPointTraces = [{
 // Functions to calculate stuff
 
 /**
- * Compute the streamlines and the manifolds for the parameter p.
- * The traces are cached; if the function is called repeatedly with the same p,
- * it does not recompute the value.
+ * Cache the result of calling func(arg). If the function has not been called
+ * before with this argument, call the function and cache the result. Otherwise,
+ * return the cached result.
  *
- * TODO: can we somehow save the cache in the cache of the browser? Isn't it
- * what cache is for? Then the updates will take less time.
+ * For now, this really only works when arg is a float rounded to two digits.
  */
-function getVectorfield(p) {
-  let ind = Math.round((p - pmin) / pstep);
+function cacheFunc(func, arg) {
+  let key = Math.round(arg * 100);
 
-  let streamlineTraces;
-  let manifoldTraces;
+  let result;
 
-  // a hack to use streamlineCache and manifoldCache as "static" variables which
-  // save their value between function calls. See
+  // a hack to use the `cache` variable as a "static" variable which
+  // saves its value between function calls. See
   // https://stackoverflow.com/a/1535650
-  if (typeof getVectorfield.streamlineCache == 'undefined' ||
-      typeof getVectorfield.streamlineCache == 'undefined') {
-    getVectorfield.streamlineCache = new Map();
-    getVectorfield.manifoldCache = new Map();
+  if (typeof func.cache == 'undefined') {
+    func.cache = new Map();
   }
 
-  // Compute the gray streamlines
-  if (!getVectorfield.streamlineCache.has(ind)) {
-    streamlineTraces = precomputeStreamlines(p);
-    getVectorfield.streamlineCache.set(ind, streamlineTraces);
+  if (!func.cache.has(key)) {
+    result = func(arg);
+    func.cache.set(key, result);
   } else {
-    streamlineTraces = getVectorfield.streamlineCache.get(ind);
+    result = func.cache.get(key);
   }
 
-  // Compute the stable/unstable manifolds
-  if (!getVectorfield.manifoldCache.has(ind)) {
-    manifoldTraces = precomputeManifolds(p);
-    getVectorfield.manifoldCache.set(ind, manifoldTraces);
-  } else {
-    manifoldTraces = getVectorfield.manifoldCache.get(ind);
-  }
+  return result;
+}
 
-  return [streamlineTraces, manifoldTraces];
+function getStreamlines(p) {
+  return cacheFunc(precomputeStreamlines, p);
 }
 
 function precomputeStreamlines(p) {
   let kwargs = {noDisplay: true, ...streamlineKwargs};
   let traces = streamlines(undefined, rhs, [p], xrange, yrange, kwargs);
   return traces;
+}
+
+function getManifolds(p) {
+  return cacheFunc(precomputeManifolds, p);
 }
 
 function precomputeManifolds(p) {
@@ -261,6 +266,28 @@ function precomputeManifolds(p) {
   return traces;
 }
 
+/**
+ * Transform the global manifolds to a local view.
+ */
+async function getLocalManifolds(p) {
+  let manifoldTraces = getManifolds(p);
+  let globalTraces = structuredClone(manifoldTraces);
+
+  // transform everything
+
+  let localTraces = globalTraces.map(trace => {
+    let localTrace = structuredClone(trace);
+    let localTrajectory = orthogonalize(trace.x, trace.y, p, zoom);
+
+    localTrace.x = localTrajectory[0];
+    localTrace.y = localTrajectory[1];
+
+    return localTrace;
+  });
+
+  return [globalTraces, localTraces];
+}
+
 // Use idle tasks to precompute streamlines in the background while there are
 // resources available.
 
@@ -269,7 +296,10 @@ let taskHandle = null;
 
 for (let p = pmin; p <= pmax + 1e-5; p += pstep) {
   taskList.push({
-    handler: getVectorfield,
+    handler: (p) => {
+      getStreamlines(p);
+      getManifolds(p);
+    },
     data: [p],
   });
 
@@ -292,57 +322,6 @@ function runTaskQueue(deadline) {
   }
 }
 
-/**
- * Generate the two frames for the zoom in/out view.
- */
-async function computeZoomFrames(p) {
-  let [_, manifoldTraces] = getVectorfield(p, xrange, yrange);
-  let globalTraces = structuredClone(manifoldTraces);
-
-  let globalFrame = {name: 'global', data: globalTraces};
-
-  const zoom = 5;
-
-  // add a rectangle, which shows the zoom area
-  let [v1, v2] = eigenvectors(p);
-
-  for (let v of [v1, v2]) {
-    v[0] /= zoom;
-    v[1] /= zoom;
-  }
-
-  let recx = [0, v1[0], v1[0] + v2[0], v2[0], 0];
-  let recy = [0, v1[1], v1[1] + v2[1], v2[1], 0];
-
-  let rectangle = {
-    x: recx,
-    y: recy,
-    mode: 'lines',
-    fill: 'toself',
-    showlegend: false,
-    fillcolor: '#ffaa5e33',
-    line: {simplify: false, color: '#ffaa5e'},
-  };
-
-  globalTraces.push(rectangle);
-
-  // transform everything
-
-  let localTraces = globalTraces.map(trace => {
-    let localTrace = structuredClone(trace);
-    let localTrajectory = orthogonalize(trace.x, trace.y, p, zoom);
-
-    localTrace.x = localTrajectory[0];
-    localTrace.y = localTrajectory[1];
-
-    return localTrace;
-  });
-
-  let localFrame = {name: 'local', data: localTraces};
-
-  return [globalFrame, localFrame];
-}
-
 // (end calculate stuff)
 // ============================================================
 
@@ -358,36 +337,38 @@ async function computeZoomFrames(p) {
 async function updatePlots(event, sliderId) {
   let p = parseFloat(event.target.value);
 
-  if (sliderId == 0) {
-    manifoldsSlider.value = p;
-    streamlinesLabel.innerHTML = `p = ${streamlinesSlider.value}`;
-    manifoldsLabel.innerHTML = `p = ${streamlinesSlider.value}`;
-  } else if (sliderId == 1) {
-    streamlinesSlider.value = p;
-    streamlinesLabel.innerHTML = `p = ${manifoldsSlider.value}`;
-    manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
-  }
+  pSliders.map((slider, id) => {
+    if (id != sliderId) {
+      slider.value = p;
+    }
+    pLabels[id].innerHTML = `p = ${slider.value}`;
+  });
 
-  let [streamlineTraces, manifoldTraces] = getVectorfield(p, xrange, yrange);
+  let streamlineTraces = getStreamlines(p);
+  let manifoldTraces = getManifolds(p);
+
+  streamlineTraces = structuredClone(streamlineTraces);
+  manifoldTraces = structuredClone(manifoldTraces);
+
+  let [_, localTraces] = await getLocalManifolds(p);
 
   Plotly.react(streamlinesDiv, streamlineTraces, layoutGlobal, config);
   Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layoutGlobal, config);
+  Plotly.react(betaDiv, localTraces, layoutLocal, config);
 
   Plotly.addTraces(streamlinesDiv, criticalPointTraces);
   Plotly.addTraces(streamlinesManifoldsDiv, criticalPointTraces);
 }
 
-streamlinesSlider.oninput = async (event) => {
-  updatePlots(event, 0);
-};
-
-manifoldsSlider.oninput =
-    async (event) => {
-  updatePlots(event, 1);
+// Trigger the updatePlots function at the update of any p-slider.
+for (let i in pSliders) {
+  pSliders[i].oninput = async (event) => {
+    updatePlots(event, i);
+  };
 }
 
 async function drawLimitCycle(p) {
-  let [_, manifoldTraces] = getVectorfield(p, xrange, yrange);
+  let manifoldTraces = getManifolds(p);
   let traces = structuredClone(manifoldTraces);
 
   Plotly.react(limitCycleDiv, traces, layoutGlobal, config);
@@ -407,10 +388,37 @@ async function drawLimitCycle(p) {
 };
 
 async function drawZoom(globalDiv, localDiv, p) {
-  let frames = await computeZoomFrames(p);
+  let [globalTraces, localTraces] = await getLocalManifolds(p);
 
-  let globalTrace = structuredClone(frames[0].data);
-  let localTrace = structuredClone(frames[1].data);
+  // add a rectangle, which shows the zoom area
+  let [v1, v2] = eigenvectors(p);
+
+  for (let v of [v1, v2]) {
+    v[0] /= zoom;
+    v[1] /= zoom;
+  }
+
+  let rectangleKwargs = {
+    mode: 'lines',
+    fill: 'toself',
+    showlegend: false,
+    fillcolor: '#ffaa5e33',
+    line: {simplify: false, color: '#ffaa5e'},
+  };
+
+  let globalRectangle = {
+    x: [0, v1[0], v1[0] + v2[0], v2[0], 0],
+    y: [0, v1[1], v1[1] + v2[1], v2[1], 0],
+    ...rectangleKwargs
+  };
+  let localRectangle = {
+    x: [0, 0, 1, 1, 0],
+    y: [0, 1, 1, 0, 0],
+    ...rectangleKwargs
+  };
+
+  globalTraces.push(globalRectangle);
+  localTraces.push(localRectangle);
 
   let locLayoutGlobal = structuredClone(layoutGlobal);
   let locLayoutLocal = structuredClone(layoutLocal);
@@ -418,9 +426,32 @@ async function drawZoom(globalDiv, localDiv, p) {
   locLayoutGlobal.title = {text: 'global', automargin: true};
   locLayoutLocal.title = {text: 'local', automargin: true};
 
-  Plotly.newPlot(globalDiv, globalTrace, locLayoutGlobal, config);
-  Plotly.newPlot(localDiv, localTrace, locLayoutLocal, config);
+  Plotly.newPlot(globalDiv, globalTraces, locLayoutGlobal, config);
+  Plotly.newPlot(localDiv, localTraces, locLayoutLocal, config);
 }
+
+async function drawBetaFunc(plotlyDiv, p) {
+  let [_, localTraces] = await getLocalManifolds(p);
+
+  localTraces = structuredClone(localTraces);
+
+  Plotly.newPlot(plotlyDiv, localTraces, layoutLocal, config);
+
+  Plotly.addTraces(plotlyDiv, [{
+                     x: [1, 1],
+                     y: layoutLocal.yaxis.range,
+                     mode: 'lines',
+                     line: {
+                       color: 'blue',
+                     }
+                   }])
+}
+
+betaSlider.oninput = async (event) => {
+  let p = parseFloat(event.target.value);
+  betaLabel.innerHTML = `p = ${p}`;
+  drawBetaFunc(betaDiv, p);
+};
 
 // (end draw stuff)
 // ============================================================
@@ -428,6 +459,7 @@ async function drawZoom(globalDiv, localDiv, p) {
 // trigger the first update of the interactive plots manually
 var event = new Event('input');
 streamlinesSlider.dispatchEvent(event);
+betaSlider.dispatchEvent(event);
 
 // draw the limit cycle at p = 0.9
 drawLimitCycle(0.9);
