@@ -2,6 +2,10 @@
 /* Hugo-Cite.css
 /* ----------------------------------------------------------------------------- */
 
+.hugo-cite-intext {
+  white-space: nowrap;
+}
+
 .hugo-cite-group {
   display: inline-block;
   vertical-align: baseline;
@@ -25,6 +29,7 @@
   bottom: 140%;
   left: 0;
   margin-left: -50px;
+  white-space: normal;
 
   z-index: 2;
   transition:
