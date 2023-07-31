@@ -83,6 +83,56 @@ function orthogonalize(xvec, yvec, p, scale = 1) {
   return [newx, newy];
 }
 
+/**
+ * Straighten the manifolds so that they are parallel to the coordinate axes
+ * within the visible region.
+ */
+function straighten(trajectory, reverse, axis) {
+  let straightTrajectory = structuredClone(trajectory);
+
+  let shift = new Map();
+
+  let [x, y] = straightTrajectory;
+
+  // axis along which we want to straighten
+  let parallelAxis = axis == 'x' ? x : y;
+
+  // axis, perpendicular to the other
+  let perpAxis = axis == 'x' ? y : x;
+
+  let lastId = 0;
+  let lastdist = 0;
+  for (let i = 0; i < x.length; i++) {
+    lastId = i;
+
+    if (Math.abs(parallelAxis[i]) > 1.5) {
+      break;
+    }
+
+    if (reverse) {
+      let ind = perpAxis.length - i - 1;
+      dist = perpAxis[ind];
+      perpAxis[ind] = 0;
+      shift.set(Math.round(parallelAxis[ind] * 100), dist);
+    } else {
+      dist = perpAxis[i];
+      perpAxis[i] = 0;
+      shift.set(Math.round(parallelAxis[i] * 100), dist);
+    }
+
+    lastdist = dist;
+  }
+
+  for (let i = lastId; i < x.length; i++) {
+    let ind = Math.round(parallelAxis[i] * 100);
+
+    dist = shift.has(ind) ? shift.get(ind) : lastdist;
+    perpAxis[i] -= dist;
+  }
+
+  return straightTrajectory;
+}
+
 // (end ODE functions)
 // ============================================================
 
@@ -101,6 +151,8 @@ let layoutLocal = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {range: [0, 2]},
   yaxis: {range: [-0.2, 1.5], scaleanchor: 'x'},
+  // xaxis: {range: [-1, 3]},
+  // yaxis: {range: [-2, 5], scaleanchor: 'x'},
   showlegend: false,
 };
 
@@ -324,7 +376,7 @@ async function computeZoomFrames(p) {
     line: {simplify: false, color: '#ffaa5e'},
   };
 
-  globalTraces.push(rectangle);
+  // globalTraces.push(rectangle);
 
   // transform everything
 
@@ -332,8 +384,19 @@ async function computeZoomFrames(p) {
     let localTrace = structuredClone(trace);
     let localTrajectory = orthogonalize(trace.x, trace.y, p, zoom);
 
+    // straighten the manifolds
+    if (localTrace.mode == 'lines' && localTrace.x.length > 100) {
+      let stable = (localTrace.line.color == stableManifoldColor)
+      let reverse =
+          localTrajectory[0].at(-1) < 0.05 && localTrajectory[0].at(-1) < 0.05;
+      let axis = stable ? 'x' : 'y';
+
+      localTrajectory = straighten(localTrajectory, reverse, axis);
+    }
+
     localTrace.x = localTrajectory[0];
     localTrace.y = localTrajectory[1];
+
 
     return localTrace;
   });
