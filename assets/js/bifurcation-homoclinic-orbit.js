@@ -1,4 +1,4 @@
-import Plotly, {newPlot} from 'plotly.js-dist-min';
+import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
 import {streamlines} from './modules/plotly/streamlines';
@@ -65,6 +65,27 @@ function eigenvectors(p) {
 }
 
 /**
+ * Linearly interpolate between point1 = [x1, y1] and point2 = [x2, y2], to find
+ * the point where the coordinate along `axis` is equal to `value`.
+ */
+function interpolate(point1, point2, x = null, y = null) {
+  let [x1, y1] = point1;
+  let [x2, y2] = point2;
+
+  // If the linear interpolation is given by x(r) = x1 + (x2 - x1) * r.
+  // Set x(r) = value => r = (value - x1) / (x2 - x1).
+  // Then, y = y1 + (y2 - y1) * r = y1 + (y2 - y1) * (value - x1) / (x2 - x1)
+  if (y === null && x !== null) {
+    let y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+    return [x, y];
+  } else if ((x === null && y !== null)) {
+    let x = x1 + (x2 - x1) * (y - y1) / (y2 - y1);
+    return [x, y];
+  }
+  throw new Error('Either x or y has to be set for interpolation');
+}
+
+/**
  * Map the (x,  y) coordinate from the original coordinate system to the system
  * in which the eigenvectors are parallel to the axes. Accepts vectors of x- and
  * y-coordinates and returns vectors of x- and y-coordinates back.
@@ -86,52 +107,76 @@ function orthogonalize(xvec, yvec, p, scale = 1) {
 
 /**
  * Straighten the manifolds so that they are parallel to the coordinate axes
- * within the visible region.
+ * within the unit square, 0 <= x <= 1 and 0 <= y <= 1.
  */
-function straighten(trajectory, reverse, axis) {
-  let straightTrajectory = structuredClone(trajectory);
+function straighten(stableTrajectory, unstableTrajectory) {
+  // U(y) in the Kuznetzov notation
+  let xshift = new Map();
+  // S(x) in the Kuznetzov notation
+  let yshift = new Map();
+  const numbins = 20;
 
-  let shift = new Map();
+  let newStable = structuredClone(stableTrajectory);
+  let newUnstable = structuredClone(unstableTrajectory);
 
-  let [x, y] = straightTrajectory;
+  for (let axis of ['x', 'y']) {
+    // the direction of time has to be reversed for the stable manifold along
+    // the x-axis.
+    let reverse = (axis == 'x');
 
-  // axis along which we want to straighten
-  let parallelAxis = axis == 'x' ? x : y;
+    let currentParallel = axis == 'x' ? newStable.x : newUnstable.y;
+    let currentPerp = axis == 'x' ? newStable.y : newUnstable.x;
+    let otherParallel = axis == 'x' ? newUnstable.x : newStable.y;
+    let otherPerp = axis == 'x' ? newUnstable.y : newStable.x;
+    let shift = axis == 'x' ? xshift : yshift;
 
-  // axis, perpendicular to the other
-  let perpAxis = axis == 'x' ? y : x;
+    // Example for the stable manifold, which is straightened along the x-axis.
+    // We want to compute the function S(x) which gives the "height" of the
+    // stable manifold above the x-axis. For this, split the interval [0, 1] on
+    // the x-axis into `numbins` bins. For every bin, compute the y-coordinate
+    // of the stable manifold in the center of the bin using linear
+    // interpolation between nearest points. Save those values in xshift.
+    let binwidth = 1 / numbins;
+    for (let bin = 0; bin < numbins; bin++) {
+      let center = (bin + 0.5) * binwidth;
 
-  let lastId = 0;
-  let lastdist = 0;
-  for (let i = 0; i < x.length; i++) {
-    lastId = i;
+      let point1;
+      let point2;
+      if (reverse) {
+        index = currentParallel.findLastIndex(value => value > center);
+        point1 = [currentParallel[index], currentPerp[index]];
+        point2 = [currentParallel[index + 1], currentPerp[index + 1]];
+      } else {
+        index = currentParallel.findIndex(value => value > center);
+        point1 = [currentParallel[index], currentPerp[index]];
+        point2 = [currentParallel[index - 1], currentPerp[index - 1]];
+      }
 
-    if (Math.abs(parallelAxis[i]) > 1.5) {
-      break;
+      let [_, height] = interpolate(point1, point2, x = center);
+
+      shift.set(bin, height);
     }
 
-    if (reverse) {
-      let ind = perpAxis.length - i - 1;
-      dist = perpAxis[ind];
-      perpAxis[ind] = 0;
-      shift.set(Math.round(parallelAxis[ind] * 100), dist);
-    } else {
-      dist = perpAxis[i];
-      perpAxis[i] = 0;
-      shift.set(Math.round(parallelAxis[i] * 100), dist);
+    // Now shift everything according to the bins
+    for (let i = 0; i < currentParallel.length; i++) {
+      let bin = Math.floor(currentParallel[i] / binwidth);
+      if (0 < bin && bin < numbins) {
+        currentPerp[i] -= shift.get(bin);
+      } else if (bin >= numbins) {
+        currentPerp[i] -= shift.get(numbins - 1);
+      }
     }
-
-    lastdist = dist;
+    for (let i = 0; i < otherParallel.length; i++) {
+      let bin = Math.floor(otherParallel[i] / binwidth);
+      if (0 < bin && bin < numbins) {
+        otherPerp[i] -= shift.get(bin);
+      } else if (bin >= numbins) {
+        otherPerp[i] -= shift.get(numbins - 1);
+      }
+    }
   }
 
-  for (let i = lastId; i < x.length; i++) {
-    let ind = Math.round(parallelAxis[i] * 100);
-
-    dist = shift.has(ind) ? shift.get(ind) : lastdist;
-    perpAxis[i] -= dist;
-  }
-
-  return straightTrajectory;
+  return [newStable, newUnstable];
 }
 
 // (end ODE functions)
@@ -328,23 +373,26 @@ function getLocalManifolds(p) {
 
   let localTraces = globalTraces.map(trace => {
     let localTrace = structuredClone(trace);
-    let localTrajectory = orthogonalize(trace.x, trace.y, p, zoom);
-
-    // straighten the manifolds
-    if (localTrace.mode == 'lines' && localTrace.x.length > 100) {
-      let stable = (localTrace.line.color == stableManifoldColor)
-      let reverse =
-          localTrajectory[0].at(-1) < 0.05 && localTrajectory[0].at(-1) < 0.05;
-      let axis = stable ? 'x' : 'y';
-
-      localTrajectory = straighten(localTrajectory, reverse, axis);
-    }
-
-    localTrace.x = localTrajectory[0];
-    localTrace.y = localTrajectory[1];
+    [localTrace.x, localTrace.y] = orthogonalize(trace.x, trace.y, p, zoom);
 
     return localTrace;
   });
+
+
+  // straighten the manifolds
+  let stableId = localTraces.findIndex(trace => {
+    return trace.mode == 'lines' && trace.x.length > 100 &&
+        trace.line.color == stableManifoldColor && trace.x.at(-1) > 0;
+  });
+  let stableTrajectory = localTraces[stableId];
+  let unstableId = localTraces.findIndex(trace => {
+    return trace.mode == 'lines' && trace.x.length > 100 &&
+        trace.line.color == unstableManifoldColor && trace.y.at(0) > 0;
+  });
+  let unstableTrajectory = localTraces[unstableId];
+
+  [localTraces[stableId], localTraces[unstableId]] =
+      straighten(stableTrajectory, unstableTrajectory);
 
   return localTraces;
 }
@@ -373,19 +421,10 @@ function precomputeBeta(p) {
   let firstHit = unstableTrace.x.findIndex(
       (value, i) => (value > 1 && unstableTrace.x[i + 1] < 1));
 
-  // linearly interpolate between the point to the left and to the right of the
-  // vertical line to find the intersection point where x = 1.
-  // The point to the left of the x = 1 line has coordinates (x1, y1), the point
-  // to the right has coordinates (x2, y2).
-  let x1 = unstableTrace.x[firstHit + 1];
-  let y1 = unstableTrace.y[firstHit + 1];
-  let x2 = unstableTrace.x[firstHit];
-  let y2 = unstableTrace.y[firstHit];
+  let point1 = [unstableTrace.x[firstHit + 1], unstableTrace.y[firstHit + 1]];
+  let point2 = [unstableTrace.x[firstHit], unstableTrace.y[firstHit]];
 
-  // If the linear interpolation is given by x(r) = x1 + (x2 - x1) * r.
-  // Set x(r) = 1 => r = (1 - x1) / (x2 - x1).
-  // Then, y = y1 + (y2 - y1) * r = y1 + (y2 - y1) * (1 - x1) / (x2 - x1)
-  let beta = y1 + (y2 - y1) * (1 - x1) / (x2 - x1);
+  let [_, beta] = interpolate(point1, point2, x = 1);
   return beta;
 }
 
