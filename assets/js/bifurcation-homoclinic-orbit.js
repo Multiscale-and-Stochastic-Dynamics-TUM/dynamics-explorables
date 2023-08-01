@@ -1,5 +1,6 @@
-import Plotly from 'plotly.js-dist-min';
+import Plotly, {newPlot} from 'plotly.js-dist-min';
 
+import {linspace} from './modules/data_structures/iterables';
 import {streamlines} from './modules/plotly/streamlines';
 
 // Before we do anything, we need to color the words in the document nicely.
@@ -319,7 +320,7 @@ function precomputeManifolds(p) {
 /**
  * Transform the global manifolds to a local view.
  */
-async function getLocalManifolds(p) {
+function getLocalManifolds(p) {
   let manifoldTraces = getManifolds(p);
   let globalTraces = structuredClone(manifoldTraces);
 
@@ -345,7 +346,47 @@ async function getLocalManifolds(p) {
     return localTrace;
   });
 
-  return [globalTraces, localTraces];
+  return localTraces;
+}
+
+function computeBeta(p) {
+  return cacheFunc(precomputeBeta, p);
+}
+
+function precomputeBeta(p) {
+  let localTraces = getLocalManifolds(p);
+
+  // find the unstable trace which starts from the origin by going up along the
+  // (0, 1) vector.
+  let unstableTrace = localTraces.find((trace) => {
+    if (trace.mode == 'markers' || trace.line == 'undefined') {
+      return false;
+    }
+    if (trace.line.color != unstableManifoldColor) {
+      return false
+    }
+    return trace.y[0] > 0;
+  });
+
+  // find the first point where the unstable manifold intersects the vertical
+  // line from right to left
+  let firstHit = unstableTrace.x.findIndex(
+      (value, i) => (value > 1 && unstableTrace.x[i + 1] < 1));
+
+  // linearly interpolate between the point to the left and to the right of the
+  // vertical line to find the intersection point where x = 1.
+  // The point to the left of the x = 1 line has coordinates (x1, y1), the point
+  // to the right has coordinates (x2, y2).
+  let x1 = unstableTrace.x[firstHit + 1];
+  let y1 = unstableTrace.y[firstHit + 1];
+  let x2 = unstableTrace.x[firstHit];
+  let y2 = unstableTrace.y[firstHit];
+
+  // If the linear interpolation is given by x(r) = x1 + (x2 - x1) * r.
+  // Set x(r) = 1 => r = (1 - x1) / (x2 - x1).
+  // Then, y = y1 + (y2 - y1) * r = y1 + (y2 - y1) * (1 - x1) / (x2 - x1)
+  let beta = y1 + (y2 - y1) * (1 - x1) / (x2 - x1);
+  return beta;
 }
 
 // Use idle tasks to precompute streamlines in the background while there are
@@ -410,11 +451,8 @@ async function updatePlots(event, sliderId) {
   streamlineTraces = structuredClone(streamlineTraces);
   manifoldTraces = structuredClone(manifoldTraces);
 
-  let [_, localTraces] = await getLocalManifolds(p);
-
   Plotly.react(streamlinesDiv, streamlineTraces, layoutGlobal, config);
   Plotly.react(streamlinesManifoldsDiv, manifoldTraces, layoutGlobal, config);
-  Plotly.react(betaDiv, localTraces, layoutLocal, config);
 
   Plotly.addTraces(streamlinesDiv, criticalPointTraces);
   Plotly.addTraces(streamlinesManifoldsDiv, criticalPointTraces);
@@ -448,7 +486,11 @@ async function drawLimitCycle(p) {
 };
 
 async function drawZoom(globalDiv, localDiv, p) {
-  let [globalTraces, localTraces] = await getLocalManifolds(p);
+  let globalTraces = getManifolds(p);
+  let localTraces = getLocalManifolds(p);
+
+  globalTraces = structuredClone(globalTraces);
+  localTraces = structuredClone(localTraces);
 
   // add a rectangle, which shows the zoom area
   let [v1, v2] = eigenvectors(p);
@@ -491,20 +533,37 @@ async function drawZoom(globalDiv, localDiv, p) {
 }
 
 async function drawBetaFunc(plotlyDiv, p) {
-  let [_, localTraces] = await getLocalManifolds(p);
+  let localTraces = getLocalManifolds(p);
 
   localTraces = structuredClone(localTraces);
 
+  let beta = computeBeta(p);
+
   Plotly.newPlot(plotlyDiv, localTraces, layoutLocal, config);
 
+  // vertical line at x = 1
   Plotly.addTraces(plotlyDiv, [{
                      x: [1, 1],
                      y: layoutLocal.yaxis.range,
                      mode: 'lines',
-                     line: {
-                       color: 'blue',
-                     }
-                   }])
+                     line: {color: 'blue'}
+                   }]);
+
+  Plotly.addTraces(plotlyDiv, [{
+                     x: [1],
+                     y: [beta],
+                     mode: 'markers',
+                     marker: {size: 10, symbol: 'x', color: 'blue'}
+                   }]);
+
+  // change the values of p and β in the text
+  let pSpan = document.getElementById('pSpan');
+  pSpan.innerText = `$p = ${p.toFixed(2)}$`;
+
+  let betaSpan = document.getElementById('betaSpan');
+  betaSpan.innerText = `$\\beta(p) = ${beta.toFixed(2)}$`;
+
+  MathJax.typeset();
 }
 
 betaSlider.oninput = async (event) => {

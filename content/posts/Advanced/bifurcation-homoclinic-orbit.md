@@ -45,7 +45,7 @@ Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the mani
 {{< plotly id="beta" height="60%" >}}
 {{< slider id="betaSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
 
-For $p = 0.02??$, the distance is equal to $\beta(p) = 0.02??$. 
+For {{< span id="pSpan" text="$p = 0.02$" >}}, the distance is equal to {{< span id="betaSpan" text="$\beta(p) = 0.041$" >}}. 
 
 You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we take an orbit, draw a cross-section to this orbit and look at how nearby trajectories return to this cross-section. Indeed, Poincaré maps will play a key role in the following. If we construct such a map and show that the map has a fixed point, i.e., a point which returns to itself after a full revolution, then this fixed point must correspond to a limit cycle of the system. 
 
