@@ -40,12 +40,12 @@ To explore this effect, we will zoom in closely to the saddle point at $\mathbf{
 
 {{< plotly id="zoomInOut" cols=2 height="80%" >}}
 
-Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and measure the signed distance between the stable and unstable manifolds along this line. 
+Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and find the point where the unstable manifold intersects this line for the first time. The signed distance from the stable manifold to the intersection point will be called $\beta(p)$. 
 
-{{< plotly id="localManifold" >}}
-{{< slider id="localSlider" min="0.5" max="0.9" step="0.02" value="0.8" >}}
+{{< plotly id="beta" height="60%" >}}
+{{< slider id="betaSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
 
-We will call this distance $\beta(p)$. For $p = 0.02??$, the distance is equal to $\beta(p) = 0.02??$. 
+For $p = 0.02??$, the distance is equal to $\beta(p) = 0.02??$. 
 
 You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we take an orbit, draw a cross-section to this orbit and look at how nearby trajectories return to this cross-section. Indeed, Poincaré maps will play a key role in the following. If we construct such a map and show that the map has a fixed point, i.e., a point which returns to itself after a full revolution, then this fixed point must correspond to a limit cycle of the system. 
 
