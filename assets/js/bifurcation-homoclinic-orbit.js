@@ -249,6 +249,7 @@ let zoomOutDiv = document.getElementById('zoomInOut1');
 let zoomInDiv = document.getElementById('zoomInOut2');
 let betaDiv = document.getElementById('beta');
 let secondCrossectionDiv = document.getElementById('secondCrossection');
+let localGlobalMapAnimDiv = document.getElementById('localGlobalMapAnim');
 
 // trigger an empty update to set xrange in the layout to the actual values
 Plotly.newPlot(zoomInDiv, [], layoutLocal, config);
@@ -564,7 +565,7 @@ async function drawZoom(globalDiv, localDiv, p) {
   globalTraces = structuredClone(globalTraces);
   localTraces = structuredClone(localTraces);
 
-  // add a rectangle, which shows the zoom area
+  // add a rectangle which shows the zoom area
   let [v1, v2] = eigenvectors(p);
 
   for (let v of [v1, v2]) {
@@ -594,56 +595,73 @@ async function drawZoom(globalDiv, localDiv, p) {
   globalTraces.push(globalRectangle);
   localTraces.push(localRectangle);
 
-  let locLayoutGlobal = structuredClone(layoutGlobal);
-  let locLayoutLocal = structuredClone(layoutLocal);
+  let locLayoutGlobal = {
+    title: {text: 'global', automargin: true},
+    ...layoutGlobal,
+  };
 
-  locLayoutGlobal.title = {text: 'global', automargin: true};
-  locLayoutLocal.title = {text: 'local', automargin: true};
+  let locLayoutLocal = {
+    title: {text: 'local', automargin: true},
+    ...layoutLocal,
+  };
 
   Plotly.newPlot(globalDiv, globalTraces, locLayoutGlobal, config);
   Plotly.newPlot(localDiv, localTraces, locLayoutLocal, config);
 }
 
-async function drawBetaFunc(firstDiv, secondDiv, p) {
-  let localTraces = getLocalManifolds(p);
+function drawLocalView(plotlyDiv, p, vertLine = false, horizLine = false) {
+  let localTraces = structuredClone(getLocalManifolds(p));
 
-  vertLineTraces = structuredClone(localTraces);
-
-  let beta = computeBeta(p);
-
-  // add the vertical line at x = 1
-  vertLineTraces.push({
+  const vertLineTrace = {
     x: [1, 1],
     y: layoutLocal.yaxis.range,
     mode: 'lines',
     line: {color: 'blue', width: 1}
-  });
-  vertLineTraces.push({
-    x: [1, 1],
-    y: [0, beta],
-    mode: 'lines',
-    line: {color: 'blue', width: 3}
-  });
-  vertLineTraces.push({
-    x: [1, 1],
-    y: [0, beta],
-    mode: 'markers',
-    marker: {size: 10, symbol: 'x', color: 'blue'}
-  });
+  };
 
-  Plotly.newPlot(firstDiv, vertLineTraces, layoutLocal, config);
-
-  let horizLineTraces = structuredClone(vertLineTraces);
-
-  horizLineTraces.push({
+  const horizLineTrace = {
     x: layoutLocal.xaxis.range,
     y: [1, 1],
     mode: 'lines',
     line: {color: 'purple', width: 1}
-  });
+  };
 
-  Plotly.newPlot(secondDiv, horizLineTraces, layoutLocal, config);
+  if (vertLine) {
+    localTraces.push(vertLineTrace);
+  }
 
+  if (horizLine) {
+    localTraces.push(horizLineTrace);
+  }
+
+  let locLayoutLocal = structuredClone(layoutLocal);
+
+  Plotly.newPlot(plotlyDiv, localTraces, locLayoutLocal, config);
+
+  return localTraces;
+}
+
+async function drawBetaFunc(plotlyDiv, p) {
+  drawLocalView(plotlyDiv, p, vertLine = true);
+
+  let beta = computeBeta(p);
+
+  const betaIntervalTraces = [
+    {
+      x: [1, 1],
+      y: [0, beta],
+      mode: 'lines',
+      line: {color: 'blue', width: 3},
+    },
+    {
+      x: [1, 1],
+      y: [0, beta],
+      mode: 'markers',
+      marker: {size: 10, symbol: 'x', color: 'blue'}
+    }
+  ];
+
+  Plotly.addTraces(plotlyDiv, betaIntervalTraces);
 
   // change the values of p and β in the text
   let pSpan = document.getElementById('pSpan');
@@ -658,7 +676,7 @@ async function drawBetaFunc(firstDiv, secondDiv, p) {
 betaSlider.oninput = async (event) => {
   let p = parseFloat(event.target.value);
   betaLabel.innerHTML = `p = ${p}`;
-  drawBetaFunc(betaDiv, secondCrossectionDiv, p);
+  drawBetaFunc(betaDiv, p);
 };
 
 // (end draw stuff)
@@ -673,3 +691,7 @@ betaSlider.dispatchEvent(event);
 drawLimitCycle(0.9);
 
 drawZoom(zoomOutDiv, zoomInDiv, 0.82);
+
+// draw the static local views
+drawLocalView(secondCrossectionDiv, 0.82, vertLine = true, horizLine = true);
+drawLocalView(localGlobalMapAnimDiv, 0.82, vertLine = true, horizLine = true);
