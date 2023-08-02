@@ -196,7 +196,7 @@ let layoutGlobal = {
 let layoutLocal = {
   margin: {l: 40, r: 20, t: 20, b: 30},
   xaxis: {range: [0, 2]},
-  yaxis: {range: [-0.6, 1.2], scaleanchor: 'x'},
+  yaxis: {range: [-0.6, 1.5], scaleanchor: 'x'},
   showlegend: false,
 };
 
@@ -586,37 +586,37 @@ async function drawZoom(globalDiv, localDiv, p) {
 async function drawBetaFunc(firstDiv, secondDiv, p) {
   let localTraces = getLocalManifolds(p);
 
-  localTraces = structuredClone(localTraces);
+  vertLineTraces = structuredClone(localTraces);
 
   let beta = computeBeta(p);
 
-  Plotly.newPlot(firstDiv, localTraces, layoutLocal, config);
+  // add the vertical line at x = 1
+  vertLineTraces.push({
+    x: [1, 1],
+    y: layoutLocal.yaxis.range,
+    mode: 'lines',
+    line: {color: 'blue', width: 1}
+  });
+  vertLineTraces.push({
+    x: [1],
+    y: [beta],
+    mode: 'markers',
+    marker: {size: 10, symbol: 'x', color: 'blue'}
+  });
 
-  // vertical line at x = 1
-  Plotly.addTraces(firstDiv, [{
-                     x: [1, 1],
-                     y: layoutLocal.yaxis.range,
-                     mode: 'lines',
-                     line: {color: 'blue', width: 1}
-                   }]);
+  Plotly.newPlot(firstDiv, vertLineTraces, layoutLocal, config);
 
-  Plotly.addTraces(firstDiv, [{
-                     x: [1],
-                     y: [beta],
-                     mode: 'markers',
-                     marker: {size: 10, symbol: 'x', color: 'blue'}
-                   }]);
+  let horizLineTraces = structuredClone(vertLineTraces);
 
-  let secondTraces = structuredClone(localTraces);
-  Plotly.newPlot(secondDiv, secondTraces, layoutLocal, config);
+  horizLineTraces.push({
+    x: layoutLocal.xaxis.range,
+    y: [1, 1],
+    mode: 'lines',
+    line: {color: 'purple', width: 1}
+  });
 
-  // horizontal line at y = 1
-  Plotly.addTraces(secondDiv, [{
-                     x: layoutLocal.xaxis.range,
-                     y: [1, 1],
-                     mode: 'lines',
-                     line: {color: 'purple', width: 1}
-                   }]);
+  Plotly.newPlot(secondDiv, horizLineTraces, layoutLocal, config);
+
 
   // change the values of p and β in the text
   let pSpan = document.getElementById('pSpan');

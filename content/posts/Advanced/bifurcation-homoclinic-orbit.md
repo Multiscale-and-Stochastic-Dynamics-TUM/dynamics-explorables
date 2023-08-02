@@ -51,7 +51,7 @@ You might notice that this construction is very similar to a [Poincaré map]({{<
 
 We will construct the Poincaré map in two steps: using a local and a global mapping. To define the local mapping, let's draw another cross-section $\Pi$, this time, perpendicular to the {{< span text="unstable" >}} manifold:
 
-{{< plotly id="secondCrossection" >}}
+{{< plotly id="secondCrossection" height="60%" >}}
 
 We will define the Poincaré map $P$ as a composition of a local map $\Delta: \Sigma \rightarrow \Pi$, which evolves the points close to the saddle point, and a global map $Q: \Pi \rightarrow Q$, which does a big loop outside of our local view.
 
