@@ -394,6 +394,17 @@ function getLocalManifolds(p) {
   [localTraces[stableId], localTraces[unstableId]] =
       straighten(stableTrajectory, unstableTrajectory);
 
+  // move the arrows into the unit square
+  let stableArrowId = stableId + 1;
+  let unstableArrowId = unstableId + 1;
+  let stableArrows = localTraces[stableArrowId];
+  let unstableArrows = localTraces[unstableArrowId];
+  stableArrows.x = [0.5, 0.49];
+  stableArrows.y = [0, 0];
+
+  unstableArrows.x = [0, 0];
+  unstableArrows.y = [0.5, 0.51];
+
   return localTraces;
 }
 
@@ -585,7 +596,7 @@ async function drawBetaFunc(plotlyDiv, p) {
                      x: [1, 1],
                      y: layoutLocal.yaxis.range,
                      mode: 'lines',
-                     line: {color: 'blue'}
+                     line: {color: 'blue', width: 1}
                    }]);
 
   Plotly.addTraces(plotlyDiv, [{
