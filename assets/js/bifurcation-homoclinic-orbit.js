@@ -227,6 +227,7 @@ let limitCycleDiv = document.getElementById('limitCycle');
 let zoomOutDiv = document.getElementById('zoomInOut1');
 let zoomInDiv = document.getElementById('zoomInOut2');
 let betaDiv = document.getElementById('beta');
+let secondCrossectionDiv = document.getElementById('secondCrossection');
 
 // trigger an empty update to set xrange in the layout to the actual values
 Plotly.newPlot(zoomInDiv, [], layoutLocal, config);
@@ -582,28 +583,39 @@ async function drawZoom(globalDiv, localDiv, p) {
   Plotly.newPlot(localDiv, localTraces, locLayoutLocal, config);
 }
 
-async function drawBetaFunc(plotlyDiv, p) {
+async function drawBetaFunc(firstDiv, secondDiv, p) {
   let localTraces = getLocalManifolds(p);
 
   localTraces = structuredClone(localTraces);
 
   let beta = computeBeta(p);
 
-  Plotly.newPlot(plotlyDiv, localTraces, layoutLocal, config);
+  Plotly.newPlot(firstDiv, localTraces, layoutLocal, config);
 
   // vertical line at x = 1
-  Plotly.addTraces(plotlyDiv, [{
+  Plotly.addTraces(firstDiv, [{
                      x: [1, 1],
                      y: layoutLocal.yaxis.range,
                      mode: 'lines',
                      line: {color: 'blue', width: 1}
                    }]);
 
-  Plotly.addTraces(plotlyDiv, [{
+  Plotly.addTraces(firstDiv, [{
                      x: [1],
                      y: [beta],
                      mode: 'markers',
                      marker: {size: 10, symbol: 'x', color: 'blue'}
+                   }]);
+
+  let secondTraces = structuredClone(localTraces);
+  Plotly.newPlot(secondDiv, secondTraces, layoutLocal, config);
+
+  // horizontal line at y = 1
+  Plotly.addTraces(secondDiv, [{
+                     x: layoutLocal.xaxis.range,
+                     y: [1, 1],
+                     mode: 'lines',
+                     line: {color: 'purple', width: 1}
                    }]);
 
   // change the values of p and β in the text
@@ -619,7 +631,7 @@ async function drawBetaFunc(plotlyDiv, p) {
 betaSlider.oninput = async (event) => {
   let p = parseFloat(event.target.value);
   betaLabel.innerHTML = `p = ${p}`;
-  drawBetaFunc(betaDiv, p);
+  drawBetaFunc(betaDiv, secondCrossectionDiv, p);
 };
 
 // (end draw stuff)
