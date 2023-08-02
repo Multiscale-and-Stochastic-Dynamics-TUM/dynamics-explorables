@@ -60,7 +60,7 @@ P = Q \circ \Delta
 $$
 
 {{< plotly id="localGlobalMapAnim" height="60%" >}}
-{{< button text="Local map" >}}
+{{< button id="animButton" text="Local map" >}}
 
 Close to the saddle point, we can locally linearize the system by choosing new coordinates $(\xi, \eta)$, such that the system is simply given by
 

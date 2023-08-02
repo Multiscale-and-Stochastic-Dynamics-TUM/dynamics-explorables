@@ -242,6 +242,8 @@ const pLabels = [streamlinesLabel, manifoldsLabel];
 streamlinesLabel.innerHTML = `p = ${streamlinesSlider.value}`;
 manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
 
+const animButton = document.getElementById('animButton');
+
 let streamlinesDiv = document.getElementById('streamlines');
 let streamlinesManifoldsDiv = document.getElementById('manifolds');
 let limitCycleDiv = document.getElementById('limitCycle');
@@ -365,8 +367,8 @@ function precomputeManifolds(p) {
 
     // check if the line belongs to a stable or unstable manifold
     let vel = rhs(0, coord, p);
-    let line =
-        vel[0] * coord[0] + vel[1] * coord[1] > 0 ? unstableLine : stableLine;
+    let stable = vel[0] * coord[0] + vel[1] * coord[1] < 0
+    let line = stable ? stableLine : unstableLine;
     let kwargs = {
       ...streamlineKwargs,
       line: line,
@@ -378,9 +380,18 @@ function precomputeManifolds(p) {
       noDisplay: true
     };
 
-    let trace = streamlines(undefined, rhs, [p], xrange, yrange, kwargs);
+    let [lineTrace, arrowTrace] =
+        streamlines(undefined, rhs, [p], xrange, yrange, kwargs);
 
-    traces = traces.concat(trace);
+    let positive = stable ? coord[0] > 0 : coord[1] > 0;
+    lineTrace.meta = {
+      type: 'line',
+      stable: stable,
+      positive: positive,
+    };
+    arrowTrace.meta = {type: 'arrow', stable: stable, positive: positive};
+
+    traces = traces.concat([lineTrace, arrowTrace]);
   }
   return traces;
 }
@@ -401,16 +412,15 @@ function getLocalManifolds(p) {
     return localTrace;
   });
 
-
   // straighten the manifolds
   let stableId = localTraces.findIndex(trace => {
-    return trace.mode == 'lines' && trace.x.length > 100 &&
-        trace.line.color == stableManifoldColor && trace.x.at(-1) > 0;
+    return trace.meta.type == 'line' && trace.meta.stable &&
+        trace.meta.positive;
   });
   let stableTrajectory = localTraces[stableId];
   let unstableId = localTraces.findIndex(trace => {
-    return trace.mode == 'lines' && trace.x.length > 100 &&
-        trace.line.color == unstableManifoldColor && trace.y.at(0) > 0;
+    return trace.meta.type == 'line' && !trace.meta.stable &&
+        trace.meta.positive;
   });
   let unstableTrajectory = localTraces[unstableId];
 
@@ -441,13 +451,8 @@ function precomputeBeta(p) {
   // find the unstable trace which starts from the origin by going up along the
   // (0, 1) vector.
   let unstableTrace = localTraces.find((trace) => {
-    if (trace.mode == 'markers' || trace.line == 'undefined') {
-      return false;
-    }
-    if (trace.line.color != unstableManifoldColor) {
-      return false
-    }
-    return trace.y[0] > 0;
+    return trace.meta.type == 'line' && !trace.meta.stable &&
+        trace.meta.positive;
   });
 
   // find the first point where the unstable manifold intersects the vertical
@@ -494,6 +499,55 @@ function runTaskQueue(deadline) {
   } else {
     taskHandle = 0;
   }
+}
+
+function getAnimationFrames(p, type = 'local') {
+  let localTraces = getLocalManifolds(p);
+
+  let unstableManifold = localTraces.find(trace => {
+    return trace.meta.type == 'line' && !trace.meta.stable &&
+        trace.meta.positive;
+  })
+
+  let startId, finishId;
+
+  // local case
+  startId = unstableManifold.x.findIndex((x, i) => {
+    return x < 1 && unstableManifold.x[i - 1] > 1;
+  })
+  finishId = unstableManifold.y.findIndex((y, i) => {
+    return i > startId && y > 1 && unstableManifold.y[i - 1] < 1;
+  })
+
+  // global case
+  if (type == 'global') {
+    startId = finishId;
+    finishId = unstableManifold.x.findIndex((x, i) => {
+      return i > startId && x < 1 && unstableManifold.x[i - 1] > 1;
+    })
+  }
+
+  const tailLength = 50;
+
+  let trajectoryFrames = [];
+
+  for (let i = startId; i < finishId + tailLength; i += 10) {
+    let tailId = Math.max(startId, i - tailLength);
+    let headId = Math.min(finishId, i);
+    let tracedata = {
+      x: [unstableManifold.x.slice(tailId, headId)],
+      y: [unstableManifold.y.slice(tailId, headId)]
+    };
+    trajectoryFrames.push(tracedata);
+  }
+  // push the last datapoint
+  let tracedata = {
+    x: [[unstableManifold.x.at(-1)]],
+    y: [[unstableManifold.y.at(-1)]]
+  };
+  trajectoryFrames.push(tracedata);
+  console.log(trajectoryFrames);
+  return trajectoryFrames;
 }
 
 // (end calculate stuff)
@@ -679,6 +733,69 @@ betaSlider.oninput = async (event) => {
   drawBetaFunc(betaDiv, p);
 };
 
+
+async function createAnimation(plotlyDiv, p) {
+  let localFrames = getAnimationFrames(p, type = 'local');
+  let globalFrames = getAnimationFrames(p, type = 'global');
+
+  let data = new Map();
+  data.set('local', {
+    frames: localFrames,
+    buttonText: 'Local map',
+    numFrames: localFrames.length,
+  });
+  data.set('global', {
+    frames: globalFrames,
+    buttonText: 'Global map',
+    numFrames: globalFrames.length,
+  });
+
+  let animationPlaying = false;
+  let currentMap = 'local';
+
+  async function drawFrame(plotlyDiv, frames, currentFrame) {
+    if (!animationPlaying) {
+      return;
+    }
+    console.log('frame ', currentFrame);
+    if (currentFrame >= data.get(currentMap).numFrames) {
+      animationPlaying = false;
+      currentMap = currentMap == 'local' ? 'global' : 'local';
+      animButton.innerHTML = data.get(currentMap).buttonText;
+      animButton.disabled = false;
+      return;
+    }
+    await Plotly.restyle(plotlyDiv, frames[currentFrame], [0]);
+    setTimeout(drawFrame, 10, plotlyDiv, frames, currentFrame + 1);
+  }
+
+  animButton.addEventListener('click', () => {
+    animationPlaying = !animationPlaying;
+    if (animationPlaying) {
+      animButton.disabled = true;
+    }
+
+    let frames = data.get(currentMap).frames;
+
+    let initialTrace = {
+      x: frames[0].x[0],
+      y: frames[0].y[0],
+      mode: 'lines',
+      line: {
+        color: 'black',
+        width: 3,
+      }
+    };
+
+    if (animationPlaying) {
+      currentFrame = 0;
+      Plotly.deleteTraces(plotlyDiv, [0]);
+      Plotly.addTraces(plotlyDiv, initialTrace, [0]);
+      setTimeout(drawFrame, 10, plotlyDiv, frames, 0);
+    }
+  });
+}
+
 // (end draw stuff)
 // ============================================================
 
@@ -694,4 +811,6 @@ drawZoom(zoomOutDiv, zoomInDiv, 0.82);
 
 // draw the static local views
 drawLocalView(secondCrossectionDiv, 0.82, vertLine = true, horizLine = true);
-drawLocalView(localGlobalMapAnimDiv, 0.82, vertLine = true, horizLine = true);
+drawLocalView(localGlobalMapAnimDiv, 0.85, vertLine = true, horizLine = true);
+
+createAnimation(localGlobalMapAnimDiv, 0.85);
