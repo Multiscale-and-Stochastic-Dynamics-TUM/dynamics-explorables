@@ -114,7 +114,7 @@ function straighten(stableTrajectory, unstableTrajectory) {
   let xshift = new Map();
   // S(x) in the Kuznetzov notation
   let yshift = new Map();
-  const numbins = 20;
+  const numbins = 30;
 
   let newStable = structuredClone(stableTrajectory);
   let newUnstable = structuredClone(unstableTrajectory);
@@ -158,7 +158,28 @@ function straighten(stableTrajectory, unstableTrajectory) {
     }
 
     // Now shift everything according to the bins
+
+    // The index where the trajectory exists the unit square for the first time
+    let firstExit;
+    if (reverse) {
+      firstExit = currentParallel.findLastIndex(x => x > 1);
+    } else {
+      firstExit = currentParallel.findIndex(x => x > 1);
+    }
+
+    // Iterate over points and shift them according to bins.
     for (let i = 0; i < currentParallel.length; i++) {
+      if (reverse) {
+        if (i > firstExit) {
+          currentPerp[i] = 0;
+          continue;
+        }
+      } else {
+        if (i < firstExit) {
+          currentPerp[i] = 0;
+          continue;
+        }
+      }
       let bin = Math.floor(currentParallel[i] / binwidth);
       if (0 < bin && bin < numbins) {
         currentPerp[i] -= shift.get(bin);
@@ -598,8 +619,14 @@ async function drawBetaFunc(firstDiv, secondDiv, p) {
     line: {color: 'blue', width: 1}
   });
   vertLineTraces.push({
-    x: [1],
-    y: [beta],
+    x: [1, 1],
+    y: [0, beta],
+    mode: 'lines',
+    line: {color: 'blue', width: 3}
+  });
+  vertLineTraces.push({
+    x: [1, 1],
+    y: [0, beta],
     mode: 'markers',
     marker: {size: 10, symbol: 'x', color: 'blue'}
   });
