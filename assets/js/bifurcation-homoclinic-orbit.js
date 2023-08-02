@@ -527,11 +527,11 @@ function getAnimationFrames(p, type = 'local') {
     })
   }
 
-  const tailLength = 50;
+  const tailLength = 100;
 
   let trajectoryFrames = [];
 
-  for (let i = startId; i < finishId + tailLength; i += 10) {
+  for (let i = startId; i < finishId + tailLength; i += 15) {
     let tailId = Math.max(startId, i - tailLength);
     let headId = Math.min(finishId, i);
     let tracedata = {
@@ -546,7 +546,6 @@ function getAnimationFrames(p, type = 'local') {
     y: [[unstableManifold.y.at(-1)]]
   };
   trajectoryFrames.push(tracedata);
-  console.log(trajectoryFrames);
   return trajectoryFrames;
 }
 
@@ -757,7 +756,7 @@ async function createAnimation(plotlyDiv, p) {
     if (!animationPlaying) {
       return;
     }
-    console.log('frame ', currentFrame);
+
     if (currentFrame >= data.get(currentMap).numFrames) {
       animationPlaying = false;
       currentMap = currentMap == 'local' ? 'global' : 'local';
@@ -766,7 +765,7 @@ async function createAnimation(plotlyDiv, p) {
       return;
     }
     await Plotly.restyle(plotlyDiv, frames[currentFrame], [0]);
-    setTimeout(drawFrame, 10, plotlyDiv, frames, currentFrame + 1);
+    setTimeout(drawFrame, 20, plotlyDiv, frames, currentFrame + 1);
   }
 
   animButton.addEventListener('click', () => {
@@ -782,8 +781,8 @@ async function createAnimation(plotlyDiv, p) {
       y: frames[0].y[0],
       mode: 'lines',
       line: {
-        color: 'black',
-        width: 3,
+        color: '#f4ae0188',
+        width: 5,
       }
     };
 
@@ -791,7 +790,7 @@ async function createAnimation(plotlyDiv, p) {
       currentFrame = 0;
       Plotly.deleteTraces(plotlyDiv, [0]);
       Plotly.addTraces(plotlyDiv, initialTrace, [0]);
-      setTimeout(drawFrame, 10, plotlyDiv, frames, 0);
+      setTimeout(drawFrame, 20, plotlyDiv, frames, 0);
     }
   });
 }
