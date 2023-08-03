@@ -21,4 +21,4 @@ Before you push any changes, please read our short guideline on [git workflows](
 
 Noticed any bugs or errors? Found a typo in the text? The simulations do not work on your browser or look weird on mobile? Please post a new issue here on GitHub. Feel free to post even about minor tweaks or suggestions – this helps us make the project better! 
 
-We don't have a template for new issues, but it is usually helpful to include a detailed description of the problem, some information about your system and browser, and a few screenshots. However, use your best judjement -- if you are simply pointing out a typo, none of this is required. :)
+We don't have a template for new issues, but it is usually helpful to include a detailed description of the problem, some information about your system and browser, and a few screenshots. However, use your best judgement -- if you are simply pointing out a typo, none of this is required. :)
