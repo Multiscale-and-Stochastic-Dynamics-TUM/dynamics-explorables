@@ -36,22 +36,24 @@ If we push the slider even further to $p > 0.8$, something interesting happens. 
 
 It turns out, that there is nothing special about our system in particular that produces this limit cycle. In fact, the limit cycle appears in a wide variety of two-dimensional ODEs which undergo a homoclinic bifurcation. 
 
-To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 64-66 >}}.
+To explore this effect, we will zoom in closely to the saddle point at $\mathbf{x}_1$. We will also bend and wiggle the system around the origin to make the stable and unstable manifolds locally parallel to the axes. The mathematical details of this coordinate change are described in {{< cite "kuznetsov_elements_1998" 234-238 >}}.
 
 {{< plotly id="zoomInOut" cols=2 height="80%" >}}
 
 Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and find the point where the unstable manifold intersects this line for the first time. The signed distance from the stable manifold to the intersection point will be called $\beta(p)$. 
 
-{{< plotly id="beta" height="60%" >}}
-{{< slider id="betaSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
+{{< plotly id="firstCrosssection" height="60%" >}}
+{{< slider id="firstCrosssectionSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
 
 For {{< span id="pSpan" text="$p = 0.02$" >}}, the distance is equal to {{< span id="betaSpan" text="$\beta(p) = 0.041$" >}}. 
 
-You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we take an orbit, draw a cross-section to this orbit and look at how nearby trajectories return to this cross-section. Indeed, Poincaré maps will play a key role in the following. If we construct such a map and show that the map has a fixed point, i.e., a point which returns to itself after a full revolution, then this fixed point must correspond to a limit cycle of the system. 
+You might notice that this construction is very similar to a [Poincaré map]({{< ref "poincare-map" >}}), in that we take an orbit, draw a cross-section to this orbit and look at how nearby trajectories return to this cross-section. Indeed, Poincaré maps will play a key role in the following discussion. 
+
+Our goal is to show that the system has a limit cycle above the bifurcation point. We can show this by constructing a Poincaré map on the cross-section $\Sigma$. If the map has a fixed point, i.e., a point which returns to itself after a full revolution, then this fixed point must correspond to a limit cycle of the system. 
 
 We will construct the Poincaré map in two steps: using a local and a global mapping. To define the local mapping, let's draw another cross-section $\Pi$, this time, perpendicular to the {{< span text="unstable" >}} manifold:
 
-{{< plotly id="secondCrossection" height="60%" >}}
+{{< plotly id="secondCrosssection" height="60%" >}}
 
 We will define the Poincaré map $P$ as a composition of a local map $\Delta: \Sigma \rightarrow \Pi$, which evolves the points close to the saddle point, and a global map $Q: \Pi \rightarrow Q$, which does a big loop outside of our local view.
 
@@ -71,7 +73,9 @@ $$
 \end{align}
 $$
 
-where $\lambda_{1/2}$ are the eigenvalues of the saddle point. This way, we can calculate the local map $\Delta$ explicitly. A point $(1, \eta)$ on the cross-section $\Sigma$ moves to $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau})$ after time $\tau$. We want to determine the time $\tau^*$, when this point hits the second cross-section $\Pi$. Solving $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau}) = (\xi, 1)$ for $\tau$, we get that 
+where $\lambda_{1/2}$ are the eigenvalues of the saddle point with $\lambda_1 < 0$ and $\lambda_2 > 0$. This way, we can calculate the local map $\Delta$ explicitly. 
+
+A point $(1, \eta)$ on the cross-section $\Sigma$ moves to the point $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau})$ after time $\tau$. We want to determine the time $\tau^*$, when this point hits the second cross-section $\Pi$. Solving $(e^{\lambda_1 \tau}, \eta e^{\lambda_2 \tau}) = (\xi, 1)$ for $\tau$, we get that 
 
 $$
 \tau^* = - \frac{\ln{\eta}}{\lambda_1}.
@@ -83,20 +87,40 @@ $$
 \Delta: \xi = \eta^{-\frac{\lambda_1}{\lambda_2}}.
 $$
 
-To define the global map, we can make use of the $\beta$ function we defined previously. (? how to explain this transition?)
+To define the global map, we can make use of the $\beta(p)$ function we defined previously. We know that the point $(0, 1) \in \Pi$ is mapped to the point $(1, \beta(p)) \in \Sigma$, since this point lies on the unstable manifold. We can Taylor the map around $\xi = 0$ to obtain
 
 $$
-Q: \eta = \beta + a \xi + O(\xi^2).
+Q: \eta = \beta + a \xi + O(\xi^2)
 $$
 
-Therefore, the full Poincaré map can be written for small $|\eta|$ as 
+where $a$ is the first-order coefficient. Note that $a$ has to be positive, since the orbits cannot intersect. 
+
+Now, we can write the full Poincaré map for small $|\eta|$
 
 $$
 P: \eta \mapsto \beta + a \eta^{-\frac{\lambda_2}{\lambda_2}} + \dots
 $$
 
-<!-- Plots of P where you can change beta? -->
+To prove that the system has a limit cycle, we need to show that the Poincaré map has a fixed point, $P(\eta) = \eta$. Note that the qualitative behavior of the map depends on two quantities: $\beta(p)$ and the ratio between the eigenvalues $\lambda_1 / \lambda_2$. In our numerical example we had $\beta(p) > 0$ above the bifurcation point and $\lambda_1 / \lambda_2 < -1$, but those quantities might be different in other systems. Here is a visualization of the Poincaré map where you can adjust the values of $\beta(p)$ and the ratio $\lambda_1 / \lambda_2$. Try to find such values for which a fixed point exists!
 
+<!-- Plots of P where you can change beta? -->
+{{< plotly id="poincareMap" >}}
+{{< slider id="betaSlider" min="-0.5" max="0.5" step="0.01" value="0.5" >}}
+{{< slider id="eigenvalueRatioSlider" min="-2" max="-0.5" step="0.01" value="-0.5" >}}
+
+If $\lambda_1 / \lambda_2 < -1$, the fixed point exists for $\beta > 0$, and if $\lambda_1 / \lambda_2 > -1$, the fixed point exists for $\beta < 0$. Therefore, a limit cycle must exist to one of the sides of the bifurcation point. 
+
+The arguments above can be summarized in the following theorem {{< cite "kuznetsov_elements_1998" 234 >}}:
+
+> **Andronov-Leontovich Theorem**
+>
+> Consider a two-dimensional system
+> $$ \dot{\mathbf{x}} = f(\mathbf{x}, p), \mathbf{x} \in \mathbb{R}^2, p \in \mathbb{R} $$
+> with smooth $f$, having at $p = 0$ a saddle equilibrium point $\mathbf{x}_0 = 0$ with eigenvalues $\lambda_1(0) < 0 < \lambda_2(0)$ and a homoclinic orbit $\Gamma_0$. Assume that the following genericity conditions hold:
+> * $\sigma_0 = \lambda_1(0) + \lambda_2(0) \neq 0$
+> * $\beta(0) \neq 0$, where $\beta(p)$ is the previously defined split function. 
+> 
+> Then, for all sufficiently small $|p|$, there exists a neighborhood $U_0$ of $\Gamma_0 \cup \mathbf{x}\_0$ in which a unique limit cycle $L_\beta$ bifurcates from $\Gamma_0$. Moreover, the cycle is stable and exists for $\beta > 0$ if $\sigma_0 < 0$ and is unstable and exists for $\beta < 0$ if $\sigma_0 > 0$. 
 
 ---
 

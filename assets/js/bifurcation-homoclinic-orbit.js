@@ -221,6 +221,26 @@ let layoutLocal = {
   showlegend: false,
 };
 
+let layoutPoincare = {
+  margin: {l: 40, r: 20, t: 20, b: 30},
+  xaxis: {
+    range: [0, 2],
+    title: {
+      text: 'starting point η',
+      standoff: 0,
+    }
+  },
+  yaxis: {
+    range: [-0.2, 1],
+    scaleanchor: 'x',
+    title: {
+      text: 'return point P(η)',
+      standoff: 0,
+    }
+  },
+  showlegend: false,
+};
+
 const config = {
   displayModeBar: false,
   responsive: true,
@@ -230,17 +250,27 @@ const zoom = 5;
 
 const streamlinesSlider = document.getElementById('streamlinesSlider');
 const manifoldsSlider = document.getElementById('manifoldsSlider');
+const firstCrosssectionSlider =
+    document.getElementById('firstCrosssectionSlider');
 const betaSlider = document.getElementById('betaSlider');
+const eigenvalueRatioSlider = document.getElementById('eigenvalueRatioSlider');
 
 const streamlinesLabel = document.getElementById('streamlinesSliderLabel');
 const manifoldsLabel = document.getElementById('manifoldsSliderLabel');
+const firstCrosssectionLabel =
+    document.getElementById('firstCrosssectionSliderLabel');
 const betaLabel = document.getElementById('betaSliderLabel');
+const eigenvalueRatioLabel =
+    document.getElementById('eigenvalueRatioSliderLabel');
 
 const pSliders = [streamlinesSlider, manifoldsSlider];
 const pLabels = [streamlinesLabel, manifoldsLabel];
 
 streamlinesLabel.innerHTML = `p = ${streamlinesSlider.value}`;
 manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
+firstCrosssectionLabel.innerHTML = `p = ${firstCrosssectionSlider.value}`;
+betaLabel.innerHTML = `β = ${betaSlider.value}`;
+eigenvalueRatioLabel.innerHTML = `λ₁ / λ₂ = ${eigenvalueRatioSlider.value}`;
 
 const animButton = document.getElementById('animButton');
 
@@ -249,9 +279,10 @@ let streamlinesManifoldsDiv = document.getElementById('manifolds');
 let limitCycleDiv = document.getElementById('limitCycle');
 let zoomOutDiv = document.getElementById('zoomInOut1');
 let zoomInDiv = document.getElementById('zoomInOut2');
-let betaDiv = document.getElementById('beta');
-let secondCrossectionDiv = document.getElementById('secondCrossection');
+let firstCrosssectionDiv = document.getElementById('firstCrosssection');
+let secondCrosssectionDiv = document.getElementById('secondCrosssection');
 let localGlobalMapAnimDiv = document.getElementById('localGlobalMapAnim');
+let poincareMapDiv = document.getElementById('poincareMap');
 
 // trigger an empty update to set xrange in the layout to the actual values
 Plotly.newPlot(zoomInDiv, [], layoutLocal, config);
@@ -726,10 +757,10 @@ async function drawBetaFunc(plotlyDiv, p) {
   MathJax.typeset();
 }
 
-betaSlider.oninput = async (event) => {
+firstCrosssectionSlider.oninput = async (event) => {
   let p = parseFloat(event.target.value);
-  betaLabel.innerHTML = `p = ${p}`;
-  drawBetaFunc(betaDiv, p);
+  firstCrosssectionLabel.innerHTML = `p = ${p}`;
+  drawBetaFunc(firstCrosssectionDiv, p);
 };
 
 
@@ -800,12 +831,73 @@ async function createAnimation(plotlyDiv, p) {
   });
 }
 
+function drawPoincare(plotlyDiv, beta, eigenvalueRatio) {
+  let x = linspace(0, 1, 100);
+  let y = x.map(x => beta + x ** (-eigenvalueRatio));
+
+  let poincare = {x: x, y: y, mode: 'lines', line: {color: 'purple'}};
+  let diagonal = {
+    x: x,
+    y: x,
+    mode: 'lines',
+    line: {color: 'gray', dash: 'dot'},
+  };
+
+  let intersection = {
+    x: [],
+    y: [],
+    mode: 'markers',
+    marker: {color: 'purple', symbol: 'x', size: '15'}
+  }
+
+  // if an intersection exists
+  if ((beta > 0 && eigenvalueRatio < -1) ||
+      (beta < 0 && eigenvalueRatio > -1)) {
+    let intersectionId;
+    if (beta > 0 && eigenvalueRatio < -1) {
+      intersectionId = y.findIndex((y, i) => y < x[i]);
+    } else if (beta < 0 && eigenvalueRatio > -1) {
+      intersectionId = y.findIndex((y, i) => y > x[i]);
+    }
+    let x1 = x[intersectionId - 1];
+    let y1 = y[intersectionId - 1];
+    let x2 = x[intersectionId];
+    let y2 = y[intersectionId];
+    let xint = x1 + (x2 - x1) * (x1 - y1) / (y2 - y1 - x2 + x1);
+    intersection.x = [xint];
+    intersection.y = [xint];
+  }
+  else if (Math.abs(beta) < 1e-4) {
+    intersection.x = [0];
+    intersection.y = [0];
+  }
+
+
+  Plotly.newPlot(
+      plotlyDiv, [diagonal, poincare, intersection], layoutPoincare, config);
+}
+
+betaSlider.oninput = async (event) => {
+  let beta = parseFloat(event.target.value);
+  betaLabel.innerHTML = `β = ${beta}`;
+  let eigenvalueRatio = parseFloat(eigenvalueRatioSlider.value);
+  drawPoincare(poincareMapDiv, beta, eigenvalueRatio);
+};
+
+eigenvalueRatioSlider.oninput = async (event) => {
+  let eigenvalueRatio = parseFloat(event.target.value);
+  eigenvalueRatioLabel.innerHTML = `λ₁ / λ₂ = ${eigenvalueRatio}`;
+  let beta = parseFloat(betaSlider.value);
+  drawPoincare(poincareMapDiv, beta, eigenvalueRatio);
+};
+
 // (end draw stuff)
 // ============================================================
 
 // trigger the first update of the interactive plots manually
 var event = new Event('input');
 streamlinesSlider.dispatchEvent(event);
+firstCrosssectionSlider.dispatchEvent(event);
 betaSlider.dispatchEvent(event);
 
 // draw the limit cycle at p = 0.9
@@ -814,7 +906,7 @@ drawLimitCycle(0.9);
 drawZoom(zoomOutDiv, zoomInDiv, 0.82);
 
 // draw the static local views
-drawLocalView(secondCrossectionDiv, 0.82, vertLine = true, horizLine = true);
+drawLocalView(secondCrosssectionDiv, 0.82, vertLine = true, horizLine = true);
 drawLocalView(localGlobalMapAnimDiv, 0.85, vertLine = true, horizLine = true);
 
 createAnimation(localGlobalMapAnimDiv, 0.85);
