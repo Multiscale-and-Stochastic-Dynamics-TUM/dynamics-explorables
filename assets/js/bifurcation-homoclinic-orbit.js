@@ -752,6 +752,8 @@ async function createAnimation(plotlyDiv, p) {
   let animationPlaying = false;
   let currentMap = 'local';
 
+  Plotly.addTraces(plotlyDiv, [{}]);
+
   async function drawFrame(plotlyDiv, frames, currentFrame) {
     if (!animationPlaying) {
       return;
@@ -764,8 +766,9 @@ async function createAnimation(plotlyDiv, p) {
       animButton.disabled = false;
       return;
     }
-    await Plotly.restyle(plotlyDiv, frames[currentFrame], [0]);
-    setTimeout(drawFrame, 20, plotlyDiv, frames, currentFrame + 1);
+    let numTraces = plotlyDiv.data.length - 1;
+    await Plotly.restyle(plotlyDiv, frames[currentFrame], [numTraces]);
+    setTimeout(drawFrame, 15, plotlyDiv, frames, currentFrame + 1);
   }
 
   animButton.addEventListener('click', () => {
@@ -788,9 +791,11 @@ async function createAnimation(plotlyDiv, p) {
 
     if (animationPlaying) {
       currentFrame = 0;
-      Plotly.deleteTraces(plotlyDiv, [0]);
-      Plotly.addTraces(plotlyDiv, initialTrace, [0]);
-      setTimeout(drawFrame, 20, plotlyDiv, frames, 0);
+      let numTraces = plotlyDiv.data.length - 1;
+
+      Plotly.deleteTraces(plotlyDiv, numTraces);
+      Plotly.addTraces(plotlyDiv, initialTrace, numTraces);
+      setTimeout(drawFrame, 15, plotlyDiv, frames, 0);
     }
   });
 }
