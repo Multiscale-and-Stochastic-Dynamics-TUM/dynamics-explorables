@@ -55,7 +55,7 @@ We will construct the Poincaré map in two steps: using a local and a global map
 
 {{< plotly id="secondCrosssection" height="60%" >}}
 
-We will define the Poincaré map $P$ as a composition of a local map $\Delta: \Sigma \rightarrow \Pi$, which evolves the points close to the saddle point, and a global map $Q: \Pi \rightarrow Q$, which does a big loop outside of our local view.
+We will define the Poincaré map $P$ as a composition of a local map $\Delta: \Sigma \rightarrow \Pi$, which evolves the points close to the saddle point, and a global map $Q: \Pi \rightarrow Q$, which does a big loop outside of our local view. Click the button below for an animation of both maps!
 
 $$
 P = Q \circ \Delta
@@ -87,7 +87,7 @@ $$
 \Delta: \xi = \eta^{-\frac{\lambda_1}{\lambda_2}}.
 $$
 
-To define the global map, we can make use of the $\beta(p)$ function we defined previously. We know that the point $(0, 1) \in \Pi$ is mapped to the point $(1, \beta(p)) \in \Sigma$, since this point lies on the unstable manifold. We can Taylor the map around $\xi = 0$ to obtain
+To define the global map, we can make use of the $\beta(p)$ function we defined previously. We know that the point $(0, 1) \in \Pi$ is mapped to the point $(1, \beta(p)) \in \Sigma$ since this point lies on the unstable manifold. We can Taylor the map around $\xi = 0$ to obtain
 
 $$
 Q: \eta = \beta + a \xi + O(\xi^2)
@@ -101,24 +101,28 @@ $$
 P: \eta \mapsto \beta + a \eta^{-\frac{\lambda_2}{\lambda_2}} + \dots
 $$
 
-To prove that the system has a limit cycle, we need to show that the Poincaré map has a fixed point, $P(\eta) = \eta$. Note that the qualitative behavior of the map depends on two quantities: $\beta(p)$ and the ratio between the eigenvalues $\lambda_1 / \lambda_2$. In our numerical example we had $\beta(p) > 0$ above the bifurcation point and $\lambda_1 / \lambda_2 < -1$, but those quantities might be different in other systems. Here is a visualization of the Poincaré map where you can adjust the values of $\beta(p)$ and the ratio $\lambda_1 / \lambda_2$. Try to find such values for which a fixed point exists!
+To prove that the system has a limit cycle, we need to show that the Poincaré map has a fixed point, $P(\eta) = \eta$. Note that the qualitative behavior of the map depends on two quantities: $\beta(p)$ and the relative magnitude of the eigenvalues $\lambda_1$ and $\lambda_2$. To compare the eigenvalues, we can define 
+
+$$\sigma\_0 := \lambda\_1(0) + \lambda\_2(0),$$
+
+which is the so-called saddle quantity. In our numerical example we had $\beta(p) > 0$ and $\sigma\_0 < 0$ above the bifurcation point, but those quantities might be different in other systems. Here is a visualization of the Poincaré map where you can adjust the values of $\beta(p)$ and $\sigma\_0$. Try to find such values for which a fixed point exists!
 
 <!-- Plots of P where you can change beta? -->
 {{< plotly id="poincareMap" >}}
 {{< slider id="betaSlider" min="-0.5" max="0.5" step="0.01" value="0.5" >}}
-{{< slider id="eigenvalueRatioSlider" min="-2" max="-0.5" step="0.01" value="-0.5" >}}
+{{< slider id="sigmaSlider" min="-0.5" max="0.5" step="0.01" value="-0.5" >}}
 
-If $\lambda_1 / \lambda_2 < -1$, the fixed point exists for $\beta > 0$, and if $\lambda_1 / \lambda_2 > -1$, the fixed point exists for $\beta < 0$. Therefore, a limit cycle must exist to one of the sides of the bifurcation point. 
+If $\sigma\_0 < 0$, the fixed point exists for $\beta > 0$, and if $\sigma\_0 > 0$, the fixed point exists for $\beta < 0$. This proves the existence of a unique limit cycle, which bifurcates from the homoclinic orbit!
 
 The arguments above can be summarized in the following theorem {{< cite "kuznetsov_elements_1998" 234 >}}:
 
 > **Andronov-Leontovich Theorem**
 >
 > Consider a two-dimensional system
-> $$ \dot{\mathbf{x}} = f(\mathbf{x}, p), \mathbf{x} \in \mathbb{R}^2, p \in \mathbb{R} $$
-> with smooth $f$, having at $p = 0$ a saddle equilibrium point $\mathbf{x}_0 = 0$ with eigenvalues $\lambda_1(0) < 0 < \lambda_2(0)$ and a homoclinic orbit $\Gamma_0$. Assume that the following genericity conditions hold:
+> $$ \dot{\mathbf{x}} = f(\mathbf{x}, p) $$
+> with smooth $f$ which has at $p = 0$ a saddle equilibrium point $\mathbf{x}_0 = 0$ with eigenvalues $\lambda_1(0) < 0 < \lambda_2(0)$ and a homoclinic orbit $\Gamma_0$. Assume that the following genericity conditions hold:
 > * $\sigma_0 = \lambda_1(0) + \lambda_2(0) \neq 0$
-> * $\beta(0) \neq 0$, where $\beta(p)$ is the previously defined split function. 
+> * $\beta(0) \neq 0$
 > 
 > Then, for all sufficiently small $|p|$, there exists a neighborhood $U_0$ of $\Gamma_0 \cup \mathbf{x}\_0$ in which a unique limit cycle $L_\beta$ bifurcates from $\Gamma_0$. Moreover, the cycle is stable and exists for $\beta > 0$ if $\sigma_0 < 0$ and is unstable and exists for $\beta < 0$ if $\sigma_0 > 0$. 
 

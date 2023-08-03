@@ -253,15 +253,14 @@ const manifoldsSlider = document.getElementById('manifoldsSlider');
 const firstCrosssectionSlider =
     document.getElementById('firstCrosssectionSlider');
 const betaSlider = document.getElementById('betaSlider');
-const eigenvalueRatioSlider = document.getElementById('eigenvalueRatioSlider');
+const sigmaSlider = document.getElementById('sigmaSlider');
 
 const streamlinesLabel = document.getElementById('streamlinesSliderLabel');
 const manifoldsLabel = document.getElementById('manifoldsSliderLabel');
 const firstCrosssectionLabel =
     document.getElementById('firstCrosssectionSliderLabel');
 const betaLabel = document.getElementById('betaSliderLabel');
-const eigenvalueRatioLabel =
-    document.getElementById('eigenvalueRatioSliderLabel');
+const sigmaLabel = document.getElementById('sigmaSliderLabel');
 
 const pSliders = [streamlinesSlider, manifoldsSlider];
 const pLabels = [streamlinesLabel, manifoldsLabel];
@@ -270,7 +269,7 @@ streamlinesLabel.innerHTML = `p = ${streamlinesSlider.value}`;
 manifoldsLabel.innerHTML = `p = ${manifoldsSlider.value}`;
 firstCrosssectionLabel.innerHTML = `p = ${firstCrosssectionSlider.value}`;
 betaLabel.innerHTML = `β = ${betaSlider.value}`;
-eigenvalueRatioLabel.innerHTML = `λ₁ / λ₂ = ${eigenvalueRatioSlider.value}`;
+sigmaLabel.innerHTML = `σ₀ = ${sigmaSlider.value}`;
 
 const animButton = document.getElementById('animButton');
 
@@ -831,9 +830,9 @@ async function createAnimation(plotlyDiv, p) {
   });
 }
 
-function drawPoincare(plotlyDiv, beta, eigenvalueRatio) {
-  let x = linspace(0, 1, 100);
-  let y = x.map(x => beta + x ** (-eigenvalueRatio));
+function drawPoincare(plotlyDiv, beta, sigma) {
+  let x = linspace(0, layoutPoincare.xaxis.range[1], 100);
+  let y = x.map(x => beta + x ** (-sigma + 1));
 
   let poincare = {x: x, y: y, mode: 'lines', line: {color: 'purple'}};
   let diagonal = {
@@ -851,12 +850,11 @@ function drawPoincare(plotlyDiv, beta, eigenvalueRatio) {
   }
 
   // if an intersection exists
-  if ((beta > 0 && eigenvalueRatio < -1) ||
-      (beta < 0 && eigenvalueRatio > -1)) {
+  if ((beta > 0 && sigma < 0) || (beta < 0 && sigma > 0)) {
     let intersectionId;
-    if (beta > 0 && eigenvalueRatio < -1) {
+    if (beta > 0 && sigma < 0) {
       intersectionId = y.findIndex((y, i) => y < x[i]);
-    } else if (beta < 0 && eigenvalueRatio > -1) {
+    } else if (beta < 0 && sigma > 0) {
       intersectionId = y.findIndex((y, i) => y > x[i]);
     }
     let x1 = x[intersectionId - 1];
@@ -872,7 +870,6 @@ function drawPoincare(plotlyDiv, beta, eigenvalueRatio) {
     intersection.y = [0];
   }
 
-
   Plotly.newPlot(
       plotlyDiv, [diagonal, poincare, intersection], layoutPoincare, config);
 }
@@ -880,15 +877,15 @@ function drawPoincare(plotlyDiv, beta, eigenvalueRatio) {
 betaSlider.oninput = async (event) => {
   let beta = parseFloat(event.target.value);
   betaLabel.innerHTML = `β = ${beta}`;
-  let eigenvalueRatio = parseFloat(eigenvalueRatioSlider.value);
-  drawPoincare(poincareMapDiv, beta, eigenvalueRatio);
+  let sigma = parseFloat(sigmaSlider.value);
+  drawPoincare(poincareMapDiv, beta, sigma);
 };
 
-eigenvalueRatioSlider.oninput = async (event) => {
-  let eigenvalueRatio = parseFloat(event.target.value);
-  eigenvalueRatioLabel.innerHTML = `λ₁ / λ₂ = ${eigenvalueRatio}`;
+sigmaSlider.oninput = async (event) => {
+  let sigma = parseFloat(event.target.value);
+  sigmaLabel.innerHTML = `σ₀ = ${sigma}`;
   let beta = parseFloat(betaSlider.value);
-  drawPoincare(poincareMapDiv, beta, eigenvalueRatio);
+  drawPoincare(poincareMapDiv, beta, sigma);
 };
 
 // (end draw stuff)
