@@ -5,6 +5,11 @@ draft: false
 js: "bifurcation-homoclinic-orbit"
 keywords: ["discrete_map", "bifurcation"]
 bibFile: static/bibliography.json
+cover:
+    image: "images/homoclinic-bifurcation-cover.png"
+    alt: "Global and local view of the homoclinic bifurcation."
+    caption: ""
+featured: true
 ---
 
 In the [previous]({{< ref "pitchfork" >}}) [posts]({{< ref "hopf" >}}) we looked at systems in which subtle changes in a parameter lead to drastic changes the phase space -- an effect called a bifurcation. However, all those bifurcations were local, in that they only considered the phase portrait in a small neighborhood around a critical point. Now, we will zoom out and look at the whole phase space.
