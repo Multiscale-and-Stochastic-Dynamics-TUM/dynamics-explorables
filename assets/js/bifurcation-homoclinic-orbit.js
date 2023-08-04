@@ -628,19 +628,39 @@ async function drawLimitCycle(p) {
   let manifoldTraces = getManifolds(p);
   let traces = structuredClone(manifoldTraces);
 
-  Plotly.react(limitCycleDiv, traces, layoutGlobal, config);
+  let unstableManifold = traces.find(
+      trace => trace.meta.type == 'line' && trace.meta.positive &&
+          !trace.meta.stable);
+  let limitCycle = structuredClone(unstableManifold);
+  let limitCycleArrows =
+      structuredClone(traces.find(trace => trace.meta.type == 'arrow'));
 
-  let limitCycleTrace = structuredClone(traces.at(-2));
-  let length = limitCycleTrace.x.length
-  limitCycleTrace.x = limitCycleTrace.x.slice(length - 1250, length);
-  limitCycleTrace.y = limitCycleTrace.y.slice(length - 1250, length);
+  let length = limitCycle.x.length;
+  limitCycle.x = limitCycle.x.slice(length - 1250, length);
+  limitCycle.y = limitCycle.y.slice(length - 1250, length);
 
-  limitCycleTrace.line = {
+  // find the positions of the arrows
+  let firstArrowId = limitCycle.x.findIndex(x => x > 0.7);
+  let secondArrowId =
+      limitCycle.x.findIndex((x, i) => x < 1.2 && limitCycle.y[i] < 0);
+  limitCycleArrows.x = [
+    limitCycle.x[firstArrowId], limitCycle.x[firstArrowId + 1],
+    limitCycle.x[secondArrowId], limitCycle.x[secondArrowId + 1]
+  ];
+  limitCycleArrows.y = [
+    limitCycle.y[firstArrowId], limitCycle.y[firstArrowId + 1],
+    limitCycle.y[secondArrowId], limitCycle.y[secondArrowId + 1]
+  ];
+
+  limitCycle.line = {
     color: limitCycleColor,
-    width: 3,
+    width: 2.5,
   };
+  limitCycleArrows.marker.color = limitCycleColor;
+  limitCycleArrows.marker.size = 10;
 
-  Plotly.addTraces(limitCycleDiv, [limitCycleTrace]);
+  Plotly.newPlot(limitCycleDiv, traces, layoutGlobal, config);
+  Plotly.addTraces(limitCycleDiv, [limitCycle, limitCycleArrows]);
   Plotly.addTraces(limitCycleDiv, criticalPointTraces);
 };
 

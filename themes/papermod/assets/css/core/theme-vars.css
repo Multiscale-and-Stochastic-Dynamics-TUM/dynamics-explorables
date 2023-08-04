@@ -13,19 +13,19 @@
     --primary: rgb(30, 30, 30);
     --secondary: rgb(108, 108, 108);
     --tertiary: rgb(214, 214, 214);
-    --accent1: hsl(6, 53%, 36%);
-    --accent2: rgb(70, 167, 182);
+    --accent1: #8c352b;
+    --accent2: #46a7b6;
     --accent3: #de7b34;
     --content: rgb(31, 31, 31);
     --hljs-bg: rgb(28, 29, 33);
     --code-bg: rgb(245, 245, 245);
     --border: rgb(238, 238, 238);
     --disabled: #efefef;
-    --red: rgb(221, 42, 30);
+    --red: #dd2a1e;
     --orange: #f09125;
     --yellow: #ebca28;
     --green: #7cb44e;
-    --blue: rgb(43, 150, 212);
+    --blue: #2b96d4;
     --purple: #812bb3;
 }
 
