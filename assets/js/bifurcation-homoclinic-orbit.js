@@ -975,10 +975,10 @@ betaSlider.dispatchEvent(event);
 // draw the limit cycle at p = 0.9
 drawLimitCycle(0.9);
 
-drawZoom(zoomOutDiv, zoomInDiv, 0.82);
+drawZoom(zoomOutDiv, zoomInDiv, 0.85);
 
 // draw the static local views
-drawLocalView(secondCrosssectionDiv, 0.82, vertLine = true, horizLine = true);
+drawLocalView(secondCrosssectionDiv, 0.85, vertLine = true, horizLine = true);
 drawLocalView(localGlobalMapAnimDiv, 0.85, vertLine = true, horizLine = true);
 
 createAnimation(localGlobalMapAnimDiv, 0.85);

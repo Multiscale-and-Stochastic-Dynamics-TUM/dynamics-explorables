@@ -43,7 +43,7 @@ To explore this effect, we will zoom in closely to the saddle point at $\mathbf{
 Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and find the point where the unstable manifold intersects this line for the first time. The signed {{< span text="distance" >}} from the stable manifold to the intersection point will be called $\beta(p)$. 
 
 {{< plotly id="firstCrosssection" height="60%" >}}
-{{< slider id="firstCrosssectionSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
+{{< slider id="firstCrosssectionSlider" min="0.75" max="0.85" step="0.01" value="0.85" >}}
 
 For {{< span id="pSpan" text="$p = 0.02$" >}}, the distance is equal to {{< span id="betaSpan" text="$\beta(p) = 0.041$" >}}. 
 
@@ -109,7 +109,7 @@ which is the so-called saddle quantity. In our numerical example we had $\beta(p
 
 <!-- Plots of P where you can change beta? -->
 {{< plotly id="poincareMap" >}}
-{{< slider id="betaSlider" min="-0.5" max="0.5" step="0.01" value="0.5" >}}
+{{< slider id="betaSlider" min="-0.5" max="0.5" step="0.01" value="0.35" >}}
 {{< slider id="sigmaSlider" min="-0.5" max="0.5" step="0.01" value="-0.5" >}}
 
 If $\sigma\_0 < 0$, the fixed point exists for $\beta > 0$, and if $\sigma\_0 > 0$, the fixed point exists for $\beta < 0$. This proves the existence of a unique limit cycle, which bifurcates from the homoclinic orbit!
