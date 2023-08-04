@@ -10,7 +10,9 @@ const style = getComputedStyle(document.body)
 
 const stableManifoldColor = style.getPropertyValue('--green');
 const unstableManifoldColor = style.getPropertyValue('--red');
-const limitCycleColor = style.getPropertyValue('--orange');
+const limitCycleColor = style.getPropertyValue('--purple');
+const betaColor = style.getPropertyValue('--blue');
+const poincareColor = style.getPropertyValue('--orange');
 
 // Color all instances of the words "stable" and "unstable" written within a
 // span tag in green and red.
@@ -25,7 +27,8 @@ function colorWords(colorMap) {
 const wordColorMap = new Map([
   ['stable', stableManifoldColor],
   ['unstable', unstableManifoldColor],
-  ['orange', limitCycleColor],
+  ['limit cycle', limitCycleColor],
+  ['distance', betaColor],
 ]);
 
 colorWords(wordColorMap);
@@ -561,7 +564,7 @@ function getAnimationFrames(p, type = 'local') {
 
   let trajectoryFrames = [];
 
-  for (let i = startId; i < finishId + tailLength; i += 15) {
+  for (let i = startId; i < finishId + tailLength; i += 40) {
     let tailId = Math.max(startId, i - tailLength);
     let headId = Math.min(finishId, i);
     let tracedata = {
@@ -694,32 +697,67 @@ async function drawZoom(globalDiv, localDiv, p) {
 
 function drawLocalView(plotlyDiv, p, vertLine = false, horizLine = false) {
   let localTraces = structuredClone(getLocalManifolds(p));
+  let layout = structuredClone(layoutLocal);
+
+  // trigger an empty update to change the layout
+  Plotly.newPlot(plotlyDiv, [], layout, config);
 
   const vertLineTrace = {
     x: [1, 1],
-    y: layoutLocal.yaxis.range,
+    y: layout.yaxis.range,
     mode: 'lines',
-    line: {color: 'blue', width: 1}
+    line: {color: 'gray', width: 1, dash: 'dot'}
+  };
+
+  const vertAnnotation = {
+    x: 1,
+    y: 1.25,
+    xref: 'x',
+    yref: 'y',
+    text: 'Σ',
+    showarrow: true,
+    arrowhead: 6,
+    ax: 20,
+    ay: 0,
+    arrowwidth: 1,
   };
 
   const horizLineTrace = {
-    x: layoutLocal.xaxis.range,
+    x: layout.xaxis.range,
     y: [1, 1],
     mode: 'lines',
-    line: {color: 'purple', width: 1}
+    line: {color: 'gray', width: 1, dash: 'dot'}
   };
+
+  const horizAnnotation = {
+    x: 1.75,
+    y: 1,
+    xref: 'x',
+    yref: 'y',
+    text: 'Π',
+    showarrow: true,
+    arrowhead: 6,
+    ax: 0,
+    ay: -20,
+    arrowwidth: 1
+  };
+
+  let annotations = {annotations: []};
+
 
   if (vertLine) {
     localTraces.push(vertLineTrace);
+    annotations.annotations.push(vertAnnotation);
   }
 
   if (horizLine) {
     localTraces.push(horizLineTrace);
+    annotations.annotations.push(horizAnnotation);
   }
 
-  let locLayoutLocal = structuredClone(layoutLocal);
+  Plotly.relayout(plotlyDiv, annotations);
 
-  Plotly.newPlot(plotlyDiv, localTraces, locLayoutLocal, config);
+  Plotly.addTraces(plotlyDiv, localTraces);
 
   return localTraces;
 }
@@ -734,15 +772,32 @@ async function drawBetaFunc(plotlyDiv, p) {
       x: [1, 1],
       y: [0, beta],
       mode: 'lines',
-      line: {color: 'blue', width: 3},
+      line: {color: betaColor, width: 3},
     },
     {
       x: [1, 1],
       y: [0, beta],
       mode: 'markers',
-      marker: {size: 10, symbol: 'x', color: 'blue'}
+      marker: {size: 10, symbol: 'x', color: betaColor}
     }
   ];
+
+  const betaAnnotation = {
+    x: 1,
+    y: beta / 2,
+    xref: 'x',
+    yref: 'y',
+    text: 'β(p)',
+    showarrow: true,
+    arrowhead: 6,
+    ax: 25,
+    ay: 0,
+    arrowwidth: 1,
+  };
+
+  let annotations = plotlyDiv.layout.annotations;
+
+  annotations.push(betaAnnotation);
 
   Plotly.addTraces(plotlyDiv, betaIntervalTraces);
 
@@ -798,7 +853,7 @@ async function createAnimation(plotlyDiv, p) {
     }
     let numTraces = plotlyDiv.data.length - 1;
     await Plotly.restyle(plotlyDiv, frames[currentFrame], [numTraces]);
-    setTimeout(drawFrame, 15, plotlyDiv, frames, currentFrame + 1);
+    setTimeout(drawFrame, 30, plotlyDiv, frames, currentFrame + 1);
   }
 
   animButton.addEventListener('click', () => {
@@ -825,7 +880,7 @@ async function createAnimation(plotlyDiv, p) {
 
       Plotly.deleteTraces(plotlyDiv, numTraces);
       Plotly.addTraces(plotlyDiv, initialTrace, numTraces);
-      setTimeout(drawFrame, 15, plotlyDiv, frames, 0);
+      setTimeout(drawFrame, 30, plotlyDiv, frames, 0);
     }
   });
 }
@@ -834,7 +889,7 @@ function drawPoincare(plotlyDiv, beta, sigma) {
   let x = linspace(0, layoutPoincare.xaxis.range[1], 100);
   let y = x.map(x => beta + x ** (-sigma + 1));
 
-  let poincare = {x: x, y: y, mode: 'lines', line: {color: 'purple'}};
+  let poincare = {x: x, y: y, mode: 'lines', line: {color: poincareColor}};
   let diagonal = {
     x: x,
     y: x,
@@ -846,7 +901,7 @@ function drawPoincare(plotlyDiv, beta, sigma) {
     x: [],
     y: [],
     mode: 'markers',
-    marker: {color: 'purple', symbol: 'x', size: '15'}
+    marker: {color: limitCycleColor, symbol: 'x', size: '10'}
   }
 
   // if an intersection exists

@@ -30,7 +30,7 @@ At $p = 0.8$, the stable and unstable manifolds meet and form a single orbit. Ou
 
 {{< figure src="/images/homo-heteroclinic_orbit.png" caption="**Left**: heteroclinic orbit, **right**: homoclinic orbit" width=400 alt="An image of a hetero- and homoclinic orbit" align="center" >}}
 
-If we push the slider even further to $p > 0.8$, something interesting happens. The {{<span text="unstable" >}} manifold splits from the homoclinic orbit and instead spirals to a limit cycle, visible as an oval-ish shape in the middle of the plot. Here's the vector space at $p = 0.9$ with the limit cycle marked in {{<span style="color:orange" text="orange" >}}:
+If we push the slider even further to $p > 0.8$, something interesting happens. The {{<span text="unstable" >}} manifold splits from the homoclinic orbit and instead spirals to a limit cycle, visible as an oval-ish shape in the middle of the plot. Here's the vector space at $p = 0.9$ with the {{<span text="limit cycle" >}} drawn:
 
 {{< plotly id="limitCycle" >}}
 
@@ -40,7 +40,7 @@ To explore this effect, we will zoom in closely to the saddle point at $\mathbf{
 
 {{< plotly id="zoomInOut" cols=2 height="80%" >}}
 
-Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and find the point where the unstable manifold intersects this line for the first time. The signed distance from the stable manifold to the intersection point will be called $\beta(p)$. 
+Let's reiterate what we know about this zoomed-in system. At $p = 0.8$, the manifolds meet and form a single homoclinic orbit. If we step aside from $p = 0.8$, the manifolds split, but they will still remain close to each other (given that the RHS is sufficiently smooth). To quantify this idea of "close", let's draw a vertical line $\Sigma$ at $x = 1$, perpendicular to the {{< span text="stable" >}} manifold, and find the point where the unstable manifold intersects this line for the first time. The signed {{< span text="distance" >}} from the stable manifold to the intersection point will be called $\beta(p)$. 
 
 {{< plotly id="firstCrosssection" height="60%" >}}
 {{< slider id="firstCrosssectionSlider" min="0.75" max="0.85" step="0.01" value="0.75" >}}
