@@ -21,7 +21,7 @@
     --code-bg: rgb(245, 245, 245);
     --border: rgb(238, 238, 238);
     --disabled: #efefef;
-    --red: #dd2a1e;
+    --red: #dd1e1e;
     --orange: #f09125;
     --yellow: #ebca28;
     --green: #7cb44e;
@@ -41,7 +41,12 @@
     --border: rgb(51, 51, 51);
     --disabled: #111;
     --accent1: #b55044;
-    --red: var(--accent1);
+    --red: #e65555;
+    --orange: #f09125;
+    --yellow: #f5d848;
+    --green: #92cf60;
+    --blue: var(--accent2);
+    --purple: #cc7efa;
 }
 
 .list {
