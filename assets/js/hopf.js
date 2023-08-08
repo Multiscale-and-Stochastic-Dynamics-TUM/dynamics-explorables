@@ -72,8 +72,12 @@ const LAYOUT_3D = {
     },
     dragmode: 'orbit',
   },
-  modebar: {remove: ['pan3d']},
   paper_bgcolor: '#ffffff00',
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 // Generate data for the 3D parabola of stability
@@ -208,7 +212,7 @@ var plotData = [
   trace3Dcone, traceStableLineEq, traceUnstableLineEq, traceCuttingPlane,
   traceIntersectionRing, traceIntersectionPoint
 ];
-Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D);
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D, CONFIG);
 
 // TODO Implement the two bottom plots
 var traceEigenvals = {
@@ -296,7 +300,7 @@ var layout = {
   ]
 };
 
-Plotly.newPlot(multiplotDiv, data, layout);
+Plotly.newPlot(multiplotDiv, data, layout, CONFIG);
 
 const parampSlider = document.getElementById('parampSlider');
 const parampLabel = document.getElementById('parampSliderLabel');

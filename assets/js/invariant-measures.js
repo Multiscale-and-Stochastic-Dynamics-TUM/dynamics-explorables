@@ -59,8 +59,12 @@ const LAYOUT = {
     title: 'y',
     range: [-0.1, 1.5],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 let GLOBAL_INTERVAL_DRAWED = false;
@@ -251,8 +255,8 @@ let plotDataArea = [
   preimageIntervalArea1, preimageIntervalArea2
 ];
 
-Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT);
-Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT);
+Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT, CONFIG);
+Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT, CONFIG);
 
 drawIntervalButton.addEventListener('click', () => {
   GLOBAL_INTERVAL_DRAWED = true;

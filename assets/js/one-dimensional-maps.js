@@ -46,8 +46,12 @@ const LAYOUT = {
     title: '',
     range: [-0.2, 1.2],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00'
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 // Global variable to know the current value for the next step, initialized at
@@ -117,7 +121,7 @@ var plotData = [
   traceLogisticMap, traceDiagonal, traceTrackOfPoints, traceCurrentPoint,
   traceAnimationLine
 ];
-Plotly.newPlot(plotlyMap, plotData, LAYOUT);
+Plotly.newPlot(plotlyMap, plotData, LAYOUT, CONFIG);
 
 var trackValuesX = [];
 var trackValuesY = [];

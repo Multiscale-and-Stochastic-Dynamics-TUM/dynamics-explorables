@@ -17,7 +17,6 @@ const LAYOUT_PITCHFORK = {
     title: 'x',
     range: [-2, 2],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
 };
 
@@ -31,9 +30,13 @@ const LAYOUT_STABILITY = {
     title: '',
     range: [-0.5, 0.5],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
   paper_bgcolor: '#ffffff00',
   annotations: [getArrowH(-0.2, true), getArrowH(0.2, false)],
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 const STABLE_LINE_STYLE = {
@@ -184,14 +187,14 @@ var plotData = [
   traceLowerBranch, traceVLine, traceStableEqPoints, traceUnstableEqPoints
 ];
 
-Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK);
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK, CONFIG);
 Plotly.newPlot(
     stabilityDiv,
     [
       traceBaseStability, traceStabilityStablePoints,
       traceStabilityUnstablePoints
     ],
-    LAYOUT_STABILITY);
+    LAYOUT_STABILITY, CONFIG);
 
 parampSlider.oninput = () => {
   var param_value = parampSlider.value;
