@@ -78,7 +78,6 @@ const layout = {
     dragmode: 'turntable',
   },
   modebar: {remove: ['pan3d', 'resetCameraDefault3d', 'zoom', 'toimage']},
-  paper_bgcolor: '#ffffff00',
   uirevision: 'true',
 };
 

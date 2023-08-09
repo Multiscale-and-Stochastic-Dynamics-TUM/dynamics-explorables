@@ -1,6 +1,12 @@
 import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
+
+const RED = getCSSColor('--red');
+const BLUE = getCSSColor('--blue');
+const GREEN = getCSSColor('--green');
+const STROKE_COLOR = getCSSColor('--content');
 
 // Number of points of the logistic map
 const NUM_POINTS = 10000;
@@ -9,24 +15,24 @@ const NUM_DECIMALS_DISPLAY = 3;
 
 // Style of the plot
 const LOGISTIC_MAP_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 3
 };
 const DIAGONAL_LINE_STYLE = {
-  color: 'black',
+  color: STROKE_COLOR,
   width: 1
 };
 const CURRENT_POINT_STYLE = {
-  color: 'Green',
+  color: GREEN,
   size: 7
 };
 const ANIMATION_LINE_STYLE = {
-  color: 'Green',
+  color: GREEN,
   with: 2,
   dash: 'dash'
 };
 const TRACKED_POINT_STYLE = {
-  color: 'Red',
+  color: RED,
   size: 7
 };
 
@@ -46,7 +52,6 @@ const LAYOUT = {
     title: '',
     range: [-0.2, 1.2],
   },
-  paper_bgcolor: '#ffffff00'
 };
 
 const CONFIG = {
