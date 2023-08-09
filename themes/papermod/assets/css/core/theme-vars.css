@@ -13,7 +13,7 @@
     --primary: #1e1e1e;
     --secondary: #6c6c6c;
     --tertiary: #d6d6d6;
-    --accent1: #8D342B;
+    --accent1: #8c352b;
     --accent2: #46a7b6;
     --accent3: #de7b34;
     --content: #1f1f1f;
@@ -21,12 +21,12 @@
     --code-bg: #f5f5f5;
     --border: #eeeeee;
     --disabled: #efefef;
-    --red: var(--accent1);
-    --orange: var(--accent3);
+    --red: #dd1e1e;
+    --orange: #f09125;
     --yellow: #ebca28;
-    --green: #8ac74d;
-    --blue: var(--accent2);
-    --purple: #a6486e;
+    --green: #7cb44e;
+    --blue: #2b96d4;
+    --purple: #812bb3;
 }
 
 .dark {
@@ -41,7 +41,12 @@
     --border: #333333;
     --disabled: #111;
     --accent1: #b55044;
-    --red: var(--accent1);
+    --red: #e65555;
+    --orange: #f09125;
+    --yellow: #f5d848;
+    --green: #92cf60;
+    --blue: var(--accent2);
+    --purple: #cc7efa;
 }
 
 .list {
