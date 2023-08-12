@@ -1,21 +1,24 @@
 import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
 import {streamlines} from './modules/plotly/streamlines';
+
 
 // Before we do anything, we need to color the words in the document nicely.
 // Priorities.
 
-const style = getComputedStyle(document.body)
+const stableManifoldColor = getCSSColor('--green');
+const unstableManifoldColor = getCSSColor('--red');
+const limitCycleColor = getCSSColor('--purple');
+const betaColor = getCSSColor('--blue');
+const poincareColor = getCSSColor('--orange');
+const streamlineColor = getCSSColor('--secondary');
+const strokeColor = getCSSColor('--content');
+const zoomAreaColor = getCSSColor('--orange');
 
-const stableManifoldColor = style.getPropertyValue('--green');
-const unstableManifoldColor = style.getPropertyValue('--red');
-const limitCycleColor = style.getPropertyValue('--purple');
-const betaColor = style.getPropertyValue('--blue');
-const poincareColor = style.getPropertyValue('--orange');
-
-// Color all instances of the words "stable" and "unstable" written within a
-// span tag in green and red.
+// Color all instances of the words given by the keys of the colorMap into the
+// corresponding color.
 function colorWords(colorMap) {
   for (const span of document.getElementsByTagName('span')) {
     if (colorMap.has(span.innerHTML)) {
@@ -297,7 +300,7 @@ const pmax = parseFloat(streamlinesSlider.max);
 const pstep = parseFloat(streamlinesSlider.step);
 
 const streamlineKwargs = {
-  line: {width: 1, color: 'gray'},
+  line: {width: 1, color: streamlineColor},
   layout: layoutGlobal,
   config: config,
   density: 6,
@@ -323,7 +326,7 @@ const criticalPointTraces = [{
   marker: {
     size: 8,
     symbol: 'x',
-    color: 'black',
+    color: strokeColor,
   },
   name: 'critical point',
 }];
@@ -683,8 +686,8 @@ async function drawZoom(globalDiv, localDiv, p) {
     mode: 'lines',
     fill: 'toself',
     showlegend: false,
-    fillcolor: '#ffaa5e33',
-    line: {simplify: false, color: '#ffaa5e'},
+    fillcolor: `${zoomAreaColor}33`,
+    line: {simplify: false, color: zoomAreaColor},
   };
 
   let globalRectangle = {
@@ -726,7 +729,7 @@ function drawLocalView(plotlyDiv, p, vertLine = false, horizLine = false) {
     x: [1, 1],
     y: layout.yaxis.range,
     mode: 'lines',
-    line: {color: 'gray', width: 1, dash: 'dot'}
+    line: {color: strokeColor, width: 1, dash: 'dot'}
   };
 
   const vertAnnotation = {
@@ -746,7 +749,7 @@ function drawLocalView(plotlyDiv, p, vertLine = false, horizLine = false) {
     x: layout.xaxis.range,
     y: [1, 1],
     mode: 'lines',
-    line: {color: 'gray', width: 1, dash: 'dot'}
+    line: {color: strokeColor, width: 1, dash: 'dot'}
   };
 
   const horizAnnotation = {
@@ -914,7 +917,7 @@ function drawPoincare(plotlyDiv, beta, sigma) {
     x: x,
     y: x,
     mode: 'lines',
-    line: {color: 'gray', dash: 'dot'},
+    line: {color: strokeColor, dash: 'dot'},
   };
 
   let intersection = {

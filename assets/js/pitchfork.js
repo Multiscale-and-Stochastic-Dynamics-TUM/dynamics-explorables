@@ -1,6 +1,12 @@
 import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
+
+const RED = getCSSColor('--red');
+const ORANGE = getCSSColor('--orange');
+const GREEN = getCSSColor('--green');
+const BLUE = getCSSColor('--blue');
 
 const X_LIMINF = -2.2;
 const x_LIMSUP = 2.2;
@@ -17,8 +23,6 @@ const LAYOUT_PITCHFORK = {
     title: 'x',
     range: [-2, 2],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
 };
 
 const LAYOUT_STABILITY = {
@@ -31,34 +35,37 @@ const LAYOUT_STABILITY = {
     title: '',
     range: [-0.5, 0.5],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
   annotations: [getArrowH(-0.2, true), getArrowH(0.2, false)],
 };
 
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
+};
+
 const STABLE_LINE_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 2
 };
 const UNSTABLE_LINE_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 2,
   dash: 'dash'
 };
 const VERTICAL_INTERSECTION_STYLE = {
-  color: 'Red',
+  color: RED,
   width: 2
 };
 const BASE_STABILITY_LINE = {
-  color: 'Red',
+  color: RED,
   width: 2
 };
 const STABLE_MARKER = {
-  color: 'Green',
+  color: GREEN,
   size: 10
 };
 const UNSTABLE_MARKER = {
-  color: 'Orange',
+  color: ORANGE,
   size: 10
 };
 
@@ -78,7 +85,7 @@ function getArrowH(point, right = true) {
     arrowhead: 2,
     arrowsize: 1.1,
     arrowwidth: 2.2,
-    arrowcolor: 'red',
+    arrowcolor: RED,
     ax: ax,
     ay: 0,
     opacity: 1.0
@@ -184,14 +191,14 @@ var plotData = [
   traceLowerBranch, traceVLine, traceStableEqPoints, traceUnstableEqPoints
 ];
 
-Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK);
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_PITCHFORK, CONFIG);
 Plotly.newPlot(
     stabilityDiv,
     [
       traceBaseStability, traceStabilityStablePoints,
       traceStabilityUnstablePoints
     ],
-    LAYOUT_STABILITY);
+    LAYOUT_STABILITY, CONFIG);
 
 parampSlider.oninput = () => {
   var param_value = parampSlider.value;

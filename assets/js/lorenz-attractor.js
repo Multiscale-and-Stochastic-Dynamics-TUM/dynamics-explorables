@@ -77,8 +77,13 @@ const layout = {
     camera: {eye: {x: 0.4, y: -0.4, z: -0.1}, center: {z: -0.2}},
     dragmode: 'turntable',
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
+  modebar: {remove: ['pan3d', 'resetCameraDefault3d', 'zoom', 'toimage']},
+  uirevision: 'true',
+};
+
+const config = {
+  responsive: true,
+  displaylogo: false,
 };
 
 var plotly3D = document.getElementById('plotly3D');
@@ -95,7 +100,7 @@ Plotly.newPlot(
         colorscale: 'Greens',
       }
     }],
-    layout)
+    layout, config);
 
 function lorenz(t, y0, sigma, beta, rho) {
   let [x, y, z] = y0;

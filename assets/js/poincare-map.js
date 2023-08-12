@@ -1,6 +1,7 @@
 import Plotly from 'plotly.js-dist-min'
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
 import {solve_ode} from './modules/simulation/ode_solver';
 
 const RED = getCSSColor('--red');
@@ -93,8 +94,6 @@ const layout = {
       standoff: 0,
     }
   },
-  //  paper_bgcolor: '#ffffff00',
-  //  plot_bgcolor: '#ffffff00',
   showlegend: false,
 };
 
@@ -151,7 +150,7 @@ for (const point of startingPoints) {
     x: xvalues,
     y: yvalues,
     mode: 'lines',
-    line: {color: 'lightgray', width: 1}
+    line: {color: STREAMLINE_COLOR, width: 1}
   });
   streamlineTraces.push({
     x: midx,
@@ -163,7 +162,7 @@ for (const point of startingPoints) {
       angleref: 'previous',
       symbol: 'triangle-up',
       size: 8,
-      color: 'lightgray'
+      color: STREAMLINE_COLOR
     },
   });
 }
@@ -191,7 +190,7 @@ for (let i = 0; i < 5; i++) {
 }
 
 let cycleTrace = [
-  {x: xcycle, y: ycycle, mode: 'lines', line: {color: 'red'}}, {
+  {x: xcycle, y: ycycle, mode: 'lines', line: {color: RED}}, {
     x: xarrows,
     y: yarrows,
     xaxis: 'x1',
@@ -202,7 +201,7 @@ let cycleTrace = [
       symbol: 'triangle-up',
       size: 8,
       color: markermask,
-      colorscale: [[0, '#ffffff00'], [1, 'red']]
+      colorscale: [[0, '#ffffff00'], [1, RED]]
     },
   }
 ];
@@ -263,7 +262,7 @@ let raceTrackLayout = {
       y0: -1.4,
       x1: 1,
       y1: 1.4,
-      fillcolor: 'gray',
+      fillcolor: '#666666',
       opacity: 1,
       line: {width: 0},
       layer: 'below',
@@ -378,28 +377,28 @@ let carPoincareMap = {
   x: linspace(-1.1, 1.1, 100),
   y: linspace(-1.1, 1.1, 100).map(getCarReturnY),
   mode: 'lines',
-  line: {color: 'purple'},
+  line: {color: PURPLE},
 };
 
 let carPoincareMapMarker = {
   x: [startPos],
   y: [returnPos],
   mode: 'markers',
-  marker: {size: 10, color: 'purple', symbol: 'x'},
+  marker: {size: 10, color: PURPLE, symbol: 'x'},
 };
 
 let carTrajectory1 = {
   x: [-5, carX],
   y: [startPos, startPos],
   mode: 'lines',
-  line: {color: 'purple'},
+  line: {color: PURPLE},
 };
 
 let carTrajectory2 = {
   x: [5, carX],
   y: [returnPos, returnPos],
   mode: 'lines',
-  line: {color: 'purple'},
+  line: {color: PURPLE},
 };
 
 let carTrajectoryMarker = {
@@ -408,7 +407,7 @@ let carTrajectoryMarker = {
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'markers',
-  marker: {size: 10, color: 'purple', symbol: 'triangle-left'},
+  marker: {size: 10, color: PURPLE, symbol: 'triangle-left'},
 };
 
 console.log('a');
@@ -425,8 +424,6 @@ const plotLayout = {
     nticks: 5
   },
   yaxis: {range: [-1.1, 1.1], title: 'return position', nticks: 5},
-  paper_bgcolor: '#ffffff00',
-  plot_bgcolor: '#ffffff00',
   showlegend: false,
 };
 
@@ -434,6 +431,7 @@ console.log('b');
 Plotly.newPlot(
     'carPoincareMap', [carPoincareMap, carPoincareMapMarker], plotLayout,
     config);
+
 
 carPoincareSlider.oninput = () => {
   startPos = parseFloat(carPoincareSlider.value);
@@ -504,8 +502,8 @@ let crossectionTrace = {
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'lines+markers',
-  marker: {symbol: 'line-ew-open', size: 10, color: 'orange', line: {width: 2}},
-  line: {color: 'orange', width: 2}
+  marker: {symbol: 'line-ew-open', size: 10, color: ORANGE, line: {width: 2}},
+  line: {color: ORANGE, width: 2}
 };
 
 Plotly.addTraces(singleTrajectory, crossectionTrace);
@@ -529,7 +527,7 @@ let initialCondition = {
   y: [p[1]],
   xaxis: 'x1',
   yaxis: 'y1',
-  line: {color: 'purple', width: 2},
+  line: {color: PURPLE, width: 2},
   mode: 'lines',
 };
 Plotly.addTraces(singleTrajectory, initialCondition);
@@ -540,7 +538,7 @@ let poincareAnimTrace = {
   xaxis: 'x2',
   yaxis: 'y2',
   mode: 'markers',
-  marker: {size: 8, color: 'purple', symbol: 'x'},
+  marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
 
 let startFinishAnimTrace = {
@@ -549,7 +547,7 @@ let startFinishAnimTrace = {
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'markers',
-  marker: {size: 8, color: 'purple', symbol: 'x'},
+  marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
 Plotly.addTraces(singleTrajectory, startFinishAnimTrace);
 
@@ -621,7 +619,7 @@ let trajectoryTrace = {
   y: [],
   xaxis: 'x1',
   yaxis: 'y1',
-  line: {color: 'purple', width: 2},
+  line: {color: PURPLE, width: 2},
   mode: 'lines',
 };
 Plotly.addTraces(allTrajectories, trajectoryTrace);  // trace 11
@@ -632,7 +630,7 @@ let startFinishTrace = {
   xaxis: 'x1',
   yaxis: 'y1',
   mode: 'markers',
-  marker: {size: 8, color: 'purple', symbol: 'x'},
+  marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
 Plotly.addTraces(allTrajectories, startFinishTrace);  // trace 12
 
@@ -642,7 +640,7 @@ let poincareLineTrace = {
   xaxis: 'x2',
   yaxis: 'y2',
   mode: 'lines',
-  line: {width: 2, color: 'purple'},
+  line: {width: 2, color: PURPLE},
 };
 Plotly.addTraces(allTrajectories, poincareLineTrace);  // trace 13
 
@@ -652,7 +650,7 @@ let poincareMarkerTrace = {
   xaxis: 'x2',
   yaxis: 'y2',
   mode: 'markers',
-  marker: {size: 8, color: 'purple', symbol: 'x'},
+  marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
 Plotly.addTraces(allTrajectories, poincareMarkerTrace);  // trace 14
 

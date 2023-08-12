@@ -72,8 +72,11 @@ const layout = {
     title: 'y',
     range: [0, 2],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
+};
+
+const config = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 var initialData = [];
@@ -88,7 +91,7 @@ for (var i = 0; i < 4; i++) {
   })
 };
 
-Plotly.newPlot(plotlyDiv, initialData, layout).then(function() {
+Plotly.newPlot(plotlyDiv, initialData, layout, config).then(function() {
   // Add the frames so we can animate them:
   Plotly.addFrames(plotlyDiv, frames);
 });
