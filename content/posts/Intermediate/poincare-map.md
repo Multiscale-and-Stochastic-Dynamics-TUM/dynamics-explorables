@@ -10,18 +10,18 @@ featured: true
 Imagine you are a spectator at a car race. You are sitting in front of a race track and you watch racing cars roar past you as they do their laps. You can't see the whole race track at once, only a small piece of it in front of you. Nevertheless, is there something you can deduce about the trajectories of the cars just by observing how they pass in front of you? Press the button below to animate the car!
 <!-- more -->
 
-{{< plotly id="carExample" >}}
+{{< plotly id="carExample" height="60%" >}}
 {{< button id="carButton" text="Lap" >}}
 
-{{< slider id="carSlider" min="-1.0" max="1.0" step="0.1" value="0.8" label="starting position" >}}
+{{< slider id="carSlider" min="-1.0" max="1.0" step="0.1" value="0.8" label="start height" >}}
 
 It looks like the car gets attracted to a certain point on the track even if it starts closer to one of the sides. We can speculate that maybe there is one optimal trajectory around the lap that gives the best results, so the driver wants to get as close to this trajectory as possible. 
 
 Let's put some numbers on this. Every time a car passes us, we will record its distance from the center of the track (the y-coordinate in the image). When the same car returns, we will record its position again. What we get is a function that maps the starting position to the return position.
 
-{{< plotly id="carTrajectory" >}}
+{{< plotly id="carTrajectory" height="60%" >}}
 
-{{< slider id="carSlider2" min="-1.0" max="1.0" step="0.1" value="0.8" label="starting position" >}}
+{{< slider id="carSlider2" min="-1.0" max="1.0" step="0.1" value="0.8" label="start height" >}}
 
 {{< plotly id="carPoincareMap" >}}
 

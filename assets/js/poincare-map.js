@@ -19,12 +19,19 @@ const config = {
 // =====================================================================
 // ---------------------------- RACING EXAMPLE -------------------------
 
-const carX = 0.7;
+const carX = 0.9;
 let carY = 0.5
 
 function carReturnHeight(y0) {
   return 0.1 * y0 * ((y0 - 1) ** 2 + 4);
 }
+
+let windowWidth = window.screen.width;
+let emojiSize = windowWidth > 440 ? 30 : 22;
+let roadHeight = windowWidth > 440 ? 2.8 : 3.6;
+let checkboardStart = -(roadHeight / 2 - 0.2);
+let checkboardEnd = roadHeight / 2 - 0.2;
+let yellowLineWidth = 0.05;
 
 let carTraces = [
   {
@@ -34,7 +41,7 @@ let carTraces = [
     y: [carY],
     text: ['🏎️'],
     type: 'scatter',
-    textfont: {size: 35},
+    textfont: {size: emojiSize},
     opacity: 0.3
   },
   {
@@ -44,24 +51,24 @@ let carTraces = [
     y: [carY],
     text: ['🏎️'],
     type: 'scatter',
-    textfont: {size: 35}
+    textfont: {size: emojiSize}
   },
   {
     // an observer
     mode: 'text',
     x: [0],
-    y: [1.6],
-    text: ['🙇'],
+    y: [roadHeight / 2 + 0.2],
+    text: ['🙇‍♀️'],
     type: 'scatter',
-    textfont: {size: 35}
+    textfont: {size: emojiSize}
   },
 ];
 
 let raceTrackLayout = {
   showlegend: false,
   xaxis: {range: [-4, 4], zeroline: false, showgrid: false, visible: false},
-  yaxis: {range: [-2, 2], zeroline: false, showgrid: false, visible: false},
-  margin: {l: 30, r: 0, t: 30, b: 30},
+  yaxis: {range: [-2.0, 2.6], zeroline: false, showgrid: false, visible: false},
+  margin: {l: 0, r: 0, t: 0, b: 20},
   shapes: [
     {
       // the gray track
@@ -69,24 +76,10 @@ let raceTrackLayout = {
       xref: 'paper',
       yref: 'y',
       x0: 0,
-      y0: -1.4,
+      y0: -roadHeight / 2,
       x1: 1,
-      y1: 1.4,
+      y1: roadHeight / 2,
       fillcolor: '#666666',
-      opacity: 1,
-      line: {width: 0},
-      layer: 'below',
-    },
-    {
-      // yellow line above
-      type: 'rect',
-      xref: 'paper',
-      yref: 'y',
-      x0: 0,
-      y0: 1.2,
-      x1: 1,
-      y1: 1.25,
-      fillcolor: '#EFC14C',
       opacity: 1,
       line: {width: 0},
       layer: 'below',
@@ -97,9 +90,23 @@ let raceTrackLayout = {
       xref: 'paper',
       yref: 'y',
       x0: 0,
-      y0: -1.2,
+      y0: checkboardStart,
       x1: 1,
-      y1: -1.25,
+      y1: checkboardStart - yellowLineWidth,
+      fillcolor: '#EFC14C',
+      opacity: 1,
+      line: {width: 0},
+      layer: 'below',
+    },
+    {
+      // yellow line above
+      type: 'rect',
+      xref: 'paper',
+      yref: 'y',
+      x0: 0,
+      y0: checkboardEnd + yellowLineWidth,
+      x1: 1,
+      y1: checkboardEnd,
       fillcolor: '#EFC14C',
       opacity: 1,
       line: {width: 0},
@@ -108,6 +115,7 @@ let raceTrackLayout = {
   ]
 };
 
+let boxHeight = (checkboardEnd - checkboardStart) / 8;
 // add the checkboard starting line
 for (let i = 0; i < 8; i++) {
   let firstColor = i % 2 == 0 ? 'white' : 'black'
@@ -117,10 +125,10 @@ for (let i = 0; i < 8; i++) {
     type: 'rect',
     xref: 'x',
     yref: 'y',
-    x0: 0.3,
-    y0: -1.2 + i * 0.3,
+    x0: boxHeight,
+    y0: checkboardStart + i * boxHeight,
     x1: 0,
-    y1: -1.2 + (i + 1) * 0.3,
+    y1: checkboardStart + (i + 1) * boxHeight,
     fillcolor: firstColor,
     opacity: 1,
     line: {width: 0},
@@ -132,9 +140,9 @@ for (let i = 0; i < 8; i++) {
     xref: 'x',
     yref: 'y',
     x0: 0,
-    y0: -1.2 + i * 0.3,
-    x1: -0.3,
-    y1: -1.2 + (i + 1) * 0.3,
+    y0: checkboardStart + i * boxHeight,
+    x1: -boxHeight,
+    y1: checkboardStart + (i + 1) * boxHeight,
     fillcolor: secondColor,
     opacity: 1,
     line: {width: 0},
