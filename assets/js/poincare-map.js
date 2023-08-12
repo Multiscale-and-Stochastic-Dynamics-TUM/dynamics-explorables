@@ -3,6 +3,12 @@ import Plotly from 'plotly.js-dist-min'
 import {linspace} from './modules/data_structures/iterables';
 import {solve_ode} from './modules/simulation/ode_solver';
 
+const RED = getCSSColor('--red');
+const ORANGE = getCSSColor('--orange');
+const PURPLE = getCSSColor('--purple');
+const STREAMLINE_COLOR = `${getCSSColor('--secondary')}44`;
+const STROKE_COLOR = getCSSColor('--content');
+
 function rhsPolar(r, theta) {
   return [r - r ** 3, 10];
 }
@@ -327,7 +333,7 @@ for (let i = 0; i < 8; i++) {
   })
 }
 
-Plotly.newPlot('carExample', carTraces, raceTrackLayout, {staticPlot: true});
+Plotly.newPlot('carExample', carTraces, raceTrackLayout, config);
 
 carButton = document.getElementById('carButton')
 
@@ -405,10 +411,11 @@ let carTrajectoryMarker = {
   marker: {size: 10, color: 'purple', symbol: 'triangle-left'},
 };
 
+console.log('a');
 Plotly.newPlot(
     'carTrajectory',
     [carTrajectory1, carTrajectory2, carTrajectoryMarker, carTraces[2]],
-    raceTrackLayout, {staticPlot: true});
+    raceTrackLayout, config);
 
 const plotLayout = {
   margin: {l: 80, r: 40, t: 40, b: 70},
@@ -423,14 +430,15 @@ const plotLayout = {
   showlegend: false,
 };
 
+console.log('b');
 Plotly.newPlot(
     'carPoincareMap', [carPoincareMap, carPoincareMapMarker], plotLayout,
-    {staticPlot: true});
+    config);
 
 carPoincareSlider.oninput = () => {
-  startPos = carPoincareSlider.value
+  startPos = parseFloat(carPoincareSlider.value);
   returnPos = getCarReturnY(startPos);
-  Plotly.update(
+  Plotly.restyle(
       'carTrajectory', {
         x: [[-5, carX], [5, carX], [carX, carX - 3, carX, carX + 3]],
         y: [
@@ -438,8 +446,8 @@ carPoincareSlider.oninput = () => {
           [startPos, startPos, returnPos, returnPos]
         ]
       },
-      {}, [0, 1, 2]);
-  Plotly.update('carPoincareMap', {x: [[startPos]], y: [[returnPos]]}, {}, [1]);
+      [0, 1, 2]);
+  Plotly.restyle('carPoincareMap', {x: [[startPos]], y: [[returnPos]]}, [1]);
 };
 
 // =====================================================================
@@ -683,46 +691,3 @@ slider.oninput = () => {
           returnValue.toFixed(2)} \\end{pmatrix}^T$`
   MathJax.typeset();
 };
-
-// =====================================================================
-// ---------------------------- forth figure ---------------------------
-
-
-let poincarePlot = document.getElementById('poincarePlot');
-
-const layout2 = {
-  margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis2: {
-    range: [0, 2.1],
-    title: 'starting position',
-    domain: [0.2, 0.8],
-    nticks: 3
-  },
-  yaxis2:
-      {range: [0, 2.1], title: 'return position', domain: [0, 1], nticks: 3},
-  //  paper_bgcolor: '#ffffff00',
-  //  plot_bgcolor: '#ffffff00',
-  showlegend: false,
-};
-
-let unityLine = {
-  x: [0, 2],
-  y: [0, 2],
-  xaxis: 'x2',
-  yaxis: 'y2',
-  line: {color: 'lightgray', width: 1},
-  mode: 'lines',
-};
-
-let fixpoint = {
-  x: [1],
-  y: [1],
-  xaxis: 'x2',
-  yaxis: 'y2',
-  mode: 'markers',
-  marker: {symbol: 'circle', size: 8, color: 'purple'},
-};
-
-Plotly.newPlot(poincarePlot, [unityLine], layout2, config);
-Plotly.addTraces(poincarePlot, poincareLineTrace);
-Plotly.addTraces(poincarePlot, fixpoint);
