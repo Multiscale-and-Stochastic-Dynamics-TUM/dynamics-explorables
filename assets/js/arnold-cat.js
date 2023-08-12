@@ -72,7 +72,6 @@ const layout = {
     title: 'y',
     range: [0, 2],
   },
-  paper_bgcolor: '#ffffff00',
 };
 
 const config = {
