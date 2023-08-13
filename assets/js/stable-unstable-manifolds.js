@@ -123,8 +123,8 @@ makeLinSteps = (start, end, n_steps) => {
   return linspace;
 };
 
-let xLinspace = makeLinSteps(linEnds['x'][0], linEnds['x'][1], 100)
-let yLinspace = makeLinSteps(linEnds['y'][0], linEnds['y'][1], 100)
+let xLinspace = makeLinSteps(linEnds['x'][0], linEnds['x'][1], 100);
+let yLinspace = makeLinSteps(linEnds['y'][0], linEnds['y'][1], 100);
 let indUnstableManifold = linear_system_plot.data.length;
 Plotly.addTraces(linear_system_plot, {
   x: simpleManifUnstab(xLinspace)[0],
