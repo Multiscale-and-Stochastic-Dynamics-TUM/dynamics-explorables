@@ -33,18 +33,22 @@ Mathematically, to define a Poincaré map, we need a continuous-time dynamical s
 
 The sketch below shows a simple vector field on an ODE that has a periodic orbit drawn in red. 
 
-{{< plotly id="vectorPlot">}}
+{{< plotly id="vectorPlot" height="70%" >}}
 
 Consider any point $\mathbf{y}$ on the orbit. This will be the position of the viewer. Here, we have $\mathbf{y} = \begin{pmatrix}0 & 1\end{pmatrix}^T$. Let 
   $$\Sigma = \\{x \in \mathbb{R} \mid (x - y) \cdot f(y) = 0 \\}$$
 be a cross-section which contains $y$ and is perpendicular to the flow at $y$. In the sketch below, $\Sigma$ is drawn in {{< span style="color:orange" text="orange" >}}. Let's choose a point $x \in \Sigma$ close to $y$, for and track how it evolves. Press "play" to start the simulation. 
 
-{{< plotly id="singleTrajectory" >}}
+{{< plotly id="singleTrajectory" height="70%" >}}
 {{< button id="stepButton" text="Play" >}}
 
 We started at the point {{< span id="startingPointSpan" text="$\mathbf{x} = \begin{pmatrix} x_1 & x_2 \end{pmatrix}^T = \begin{pmatrix} 0 & 1.3 \end{pmatrix}^T$" >}} and hit the cross-section again at the point {{< span id="returnPointSpan" text="$\mathbf{x}' = \begin{pmatrix} x_1' & x_2' \end{pmatrix}^T = \begin{pmatrix} 0 & 1.06 \end{pmatrix}^T$" >}}. Try changing the y-coordinate $x_2$ of the starting point below to explore how the return point $\mathbf{x}'$ changes.
 
-{{< plotly id="allTrajectories" >}}
+{{< plotly id="allTrajectories" height="70%" >}}
 {{< slider id="x2Slider" min="0.0" max="2.0" step="0.1" value="1.3" >}}
 
-The map $P(\mathbf{x})$ which maps the starting point $\mathbf{x}$ to the return point $\mathbf{x}'$ is called the Poincaré map. It can be shown that the map is locally well-defined and $C^1$ on $\mathcal{B}(y, \delta) \cap \Sigma$. The Poincaré map is a helpful tool in analyzing dynamical systems with periodic orbits because it reduces the dimensionality of the system by one -- in our case, from two dimensions to one. 
+Similarly to our racing example, we can define a Poincare map $P(\mathbf{x})$ which maps the starting point $\mathbf{x}$ on the cross-section to the return point $\mathbf{x}'$.
+
+{{< plotly id="poincareMap" >}}
+
+It can be shown that the map is locally well-defined and $C^1$ on $\mathcal{B}(y, \delta) \cap \Sigma$. The Poincaré map is a helpful tool in analyzing dynamical systems with periodic orbits because it reduces the dimensionality of the system by one -- in our case, from two dimensions to one. 

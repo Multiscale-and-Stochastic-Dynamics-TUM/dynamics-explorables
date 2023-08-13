@@ -9,6 +9,7 @@ const RED = getCSSColor('--red');
 const ORANGE = getCSSColor('--orange');
 const PURPLE = getCSSColor('--purple');
 const STREAMLINE_COLOR = `${getCSSColor('--secondary')}44`;
+const STROKE_COLOR = getCSSColor('--content');
 
 const config = {
   responsive: true,
@@ -225,6 +226,13 @@ let carTrajectory2 = {
   line: {color: PURPLE},
 };
 
+let carDiagonal = {
+  x: [-1, 1],
+  y: [-1, 1],
+  mode: 'lines',
+  line: {color: 'gray', dash: 'dot'},
+};
+
 let carTrajectoryMarker = {
   x: [carX, carX - 3, carX, carX + 3],
   y: [startPos, startPos, returnPos, returnPos],
@@ -234,12 +242,19 @@ let carTrajectoryMarker = {
   marker: {size: 10, color: PURPLE, symbol: 'triangle-left'},
 };
 
+let carPoincareStablePoints = {
+  x: [0],
+  y: [0],
+  mode: 'markers',
+  marker: {size: 8, color: PURPLE, symbol: 'o'},
+};
+
 Plotly.newPlot(
     'carTrajectory',
     [carTrajectory1, carTrajectory2, carTrajectoryMarker, carTraces[2]],
     raceTrackLayout, config);
 
-const plotLayout = {
+const carPoincareLayout = {
   margin: {l: 40, r: 20, t: 20, b: 50},
   xaxis: {range: [-1.1, 1.1], title: {text: 'start height', standoff: 5}},
   yaxis:
@@ -248,8 +263,11 @@ const plotLayout = {
 };
 
 Plotly.newPlot(
-    'carPoincareMap', [carPoincareMap, carPoincareMapMarker], plotLayout,
-    config);
+    'carPoincareMap',
+    [
+      carDiagonal, carPoincareMap, carPoincareStablePoints, carPoincareMapMarker
+    ],
+    carPoincareLayout, config);
 
 carPoincareSlider.oninput = () => {
   startPos = parseFloat(carPoincareSlider.value);
@@ -263,7 +281,7 @@ carPoincareSlider.oninput = () => {
         ]
       },
       [0, 1, 2]);
-  Plotly.restyle('carPoincareMap', {x: [[startPos]], y: [[returnPos]]}, [1]);
+  Plotly.restyle('carPoincareMap', {x: [[startPos]], y: [[returnPos]]}, [3]);
 };
 
 // =====================================================================
@@ -358,31 +376,22 @@ function getStartingPoints() {
 }
 
 const ODELayout = {
-  margin: {l: 40, r: 40, t: 40, b: 30},
-  xaxis: {range: [-2, 2], domain: [0.05, 0.50], showgrid: false},
-  yaxis: {range: [-2, 2.1], scaleanchor: 'x1', domain: [0, 1], showgrid: false},
-  xaxis2: {
-    range: [0, 2.1],
-    anchor: 'y2',
-    domain: [0.7, 1.],
-    nticks: 3,
-    title: {
-      text: 'starting point',
-      standoff: 0,
-    }
-  },
-  yaxis2: {
-    anchor: 'x2',
-    range: [0, 2.1],
-    domain: [0.5, 1],
-    nticks: 3,
-    title: {
-      text: 'return point',
-      standoff: 0,
-    }
-  },
+  margin: {l: 20, r: 20, t: 20, b: 50},
+  xaxis:
+      {range: [-2, 2], domain: [0.1, 0.9], scaleanchor: 'y', showgrid: false},
+  yaxis: {range: [-2, 2.1], showgrid: false},
   showlegend: false,
 };
+
+const poincareLayout = {
+  margin: {l: 40, r: 40, t: 20, b: 50},
+  xaxis: {range: [0, 2], title: {text: 'x', standoff: 5}},
+  yaxis: {range: [0, 2.1], title: 'x\'', automargin: true, nticks: 3},
+  showlegend: false,
+};
+
+// trigger the update of the ODELayout
+Plotly.newPlot('vectorPlot', [], ODELayout);
 
 let startingPoints = getStartingPoints();
 
@@ -437,8 +446,6 @@ let cycleTrace = [
   {x: xcycle, y: ycycle, mode: 'lines', line: {color: RED}}, {
     x: xarrows,
     y: yarrows,
-    xaxis: 'x1',
-    yaxis: 'y1',
     mode: 'markers',
     marker: {
       angleref: 'previous',
@@ -504,8 +511,6 @@ Plotly.relayout(singleTrajectory, annotations);
 let crossectionTrace = {
   x: [0, 0],
   y: [0.0, 2.],
-  xaxis: 'x1',
-  yaxis: 'y1',
   mode: 'lines+markers',
   marker: {symbol: 'line-ew-open', size: 10, color: ORANGE, line: {width: 2}},
   line: {color: ORANGE, width: 2}
@@ -534,8 +539,6 @@ const numFrames = trajectoryFrames.length;
 let animTrajectoryLineTrace = {
   x: [x0],
   y: [y0],
-  xaxis: 'x1',
-  yaxis: 'y1',
   line: {color: PURPLE, width: 2},
   mode: 'lines',
 };
@@ -547,8 +550,6 @@ let animTrajectoryLineId = singleTrajectory.data.length - 1;
 let animTrajectoryMarkersTrace = {
   x: [x0],
   y: [y0],
-  xaxis: 'x1',
-  yaxis: 'y1',
   mode: 'markers',
   marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
@@ -556,15 +557,6 @@ Plotly.addTraces(singleTrajectory, animTrajectoryMarkersTrace);
 
 // The id of the markers to reference it later
 let animTrajectoryMarkersId = singleTrajectory.data.length - 1;
-
-let poincareMapTrace = {
-  x: [y0],
-  y: trajectoryFrames.at(-1).y[0],
-  xaxis: 'x2',
-  yaxis: 'y2',
-  mode: 'markers',
-  marker: {size: 8, color: PURPLE, symbol: 'x'},
-};
 
 let currentFrame = 0;
 let animationPlaying = false;
@@ -580,7 +572,6 @@ async function drawFrame() {
       await Plotly.extendTraces(
           singleTrajectory, trajectoryFrames[numFrames - 1],
           [animTrajectoryMarkersId]);
-      await Plotly.addTraces(singleTrajectory, poincareMapTrace);
       finishedFirstTime = true;
     }
     document.getElementById('stepButton').innerHTML = 'Play';
@@ -612,6 +603,7 @@ stepButton.addEventListener('click', () => {
 // ------------------ full trajectory with a slider --------------------
 
 let allTrajectories = document.getElementById('allTrajectories');
+let poincareMapDiv = document.getElementById('poincareMap');
 
 Plotly.newPlot(
     allTrajectories, structuredClone(streamlineTraces), ODELayout, config);
@@ -634,8 +626,6 @@ for (let y0 = 0.0; y0 < 2.05; y0 += dy) {
 let fullTrajectoryLineTrace = {
   x: [],
   y: [],
-  xaxis: 'x1',
-  yaxis: 'y1',
   line: {color: PURPLE, width: 2},
   mode: 'lines',
 };
@@ -646,8 +636,6 @@ let fullLineId = allTrajectories.data.length - 1;
 let fullTrajectoryMarkerTrace = {
   x: [],
   y: [],
-  xaxis: 'x1',
-  yaxis: 'y1',
   mode: 'markers',
   marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
@@ -658,24 +646,36 @@ let fullMarkerId = allTrajectories.data.length - 1;
 let poincareLineTrace = {
   x: yStart,
   y: yFinal,
-  xaxis: 'x2',
-  yaxis: 'y2',
   mode: 'lines',
   line: {width: 2, color: PURPLE},
 };
-Plotly.addTraces(allTrajectories, poincareLineTrace);
 
 let poincareMarkerTrace = {
   x: [],
   y: [],
-  xaxis: 'x2',
-  yaxis: 'y2',
   mode: 'markers',
   marker: {size: 8, color: PURPLE, symbol: 'x'},
 };
-Plotly.addTraces(allTrajectories, poincareMarkerTrace);
 
-let poincareMarkerTraceId = allTrajectories.data.length - 1;
+let poincareStablePoints = {
+  x: [0, 1],
+  y: [0, 1],
+  mode: 'markers',
+  marker: {size: 8, color: PURPLE, symbol: 'o'},
+};
+
+let diagonal = {
+  x: [0, 2],
+  y: [0, 2],
+  mode: 'lines',
+  line: {color: 'gray', dash: 'dot'},
+};
+
+Plotly.newPlot(
+    poincareMapDiv,
+    [diagonal, poincareLineTrace, poincareStablePoints, poincareMarkerTrace],
+    poincareLayout, config);
+let poincareMarkerId = poincareMapDiv.data.length - 1;
 
 setPoincareTrajectory(1.3);
 
@@ -686,8 +686,7 @@ function setPoincareTrajectory(y0) {
   Plotly.update(allTrajectories, trace, {}, [fullLineId]);
   Plotly.update(
       allTrajectories, {x: [[0, 0]], y: [[y0, y1]]}, {}, [fullMarkerId]);
-  Plotly.update(
-      allTrajectories, {x: [[y0]], y: [[y1]]}, {}, [poincareMarkerTraceId]);
+  Plotly.update(poincareMapDiv, {x: [[y0]], y: [[y1]]}, {}, [poincareMarkerId]);
   return y1;
 }
 
