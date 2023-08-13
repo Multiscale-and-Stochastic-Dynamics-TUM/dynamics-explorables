@@ -16,6 +16,9 @@ const config = {
   displayModeBar: false,
 };
 
+let windowWidth = window.screen.width;
+let mobile = windowWidth < 440;
+
 // =====================================================================
 // ---------------------------- RACING EXAMPLE -------------------------
 
@@ -26,9 +29,8 @@ function carReturnHeight(y0) {
   return 0.1 * y0 * ((y0 - 1) ** 2 + 4);
 }
 
-let windowWidth = window.screen.width;
-let emojiSize = windowWidth > 440 ? 30 : 22;
-let roadHeight = windowWidth > 440 ? 2.8 : 3.6;
+let emojiSize = mobile ? 22 : 30;
+let roadHeight = mobile ? 3.6 : 2.8;
 let checkboardStart = -(roadHeight / 2 - 0.2);
 let checkboardEnd = roadHeight / 2 - 0.2;
 let yellowLineWidth = 0.05;
@@ -238,13 +240,10 @@ Plotly.newPlot(
     raceTrackLayout, config);
 
 const plotLayout = {
-  margin: {l: 80, r: 40, t: 40, b: 70},
-  xaxis: {
-    range: [-1.1, 1.1],
-    title: {text: 'starting position', standoff: 10},
-    nticks: 5
-  },
-  yaxis: {range: [-1.1, 1.1], title: 'return position', nticks: 5},
+  margin: {l: 40, r: 20, t: 20, b: 50},
+  xaxis: {range: [-1.1, 1.1], title: {text: 'start height', standoff: 5}},
+  yaxis:
+      {range: [-1.1, 1.1], title: 'return height', automargin: true, nticks: 3},
   showlegend: false,
 };
 
