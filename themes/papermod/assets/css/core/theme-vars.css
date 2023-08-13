@@ -1,0 +1,54 @@
+:root {
+    --large-gap: 34px;
+    --gap: 24px;
+    --small-gap: 10px;
+    --content-gap: 20px;
+    --nav-width: 1024px;
+    --main-width: 720px;
+    --header-height: 60px;
+    --footer-height: 60px;
+    --radius: 8px;
+    --theme: #ffffff;
+    --entry: #ffffff;
+    --primary: #1e1e1e;
+    --secondary: #6c6c6c;
+    --tertiary: #d6d6d6;
+    --accent1: #8c352b;
+    --accent2: #46a7b6;
+    --accent3: #de7b34;
+    --content: #1f1f1f;
+    --hljs-bg: #1c1d21;
+    --code-bg: #f5f5f5;
+    --border: #eeeeee;
+    --disabled: #efefef;
+    --red: #dd1e1e;
+    --orange: #f09125;
+    --yellow: #ebca28;
+    --green: #7cb44e;
+    --blue: #2b96d4;
+    --purple: #812bb3;
+}
+
+.dark {
+    --theme: #37383e;
+    --entry: #2e2e33;
+    --primary: #dadadb;
+    --secondary: #9b9c9d;
+    --tertiary: #414244;
+    --content: #c4c4c5;
+    --hljs-bg: #2e2e33;
+    --code-bg: #1d1e20;
+    --border: #333333;
+    --disabled: #111;
+    --accent1: #b55044;
+    --red: #e65555;
+    --orange: #f09125;
+    --yellow: #f5d848;
+    --green: #92cf60;
+    --blue: var(--accent2);
+    --purple: #cc7efa;
+}
+
+.list {
+    background: var(--code-bg);
+}

@@ -1,0 +1,240 @@
+[
+	{
+		"id": "kuznetsov_elements_1998",
+		"type": "book",
+		"collection-title": "Applied Mathematical Sciences",
+		"event-place": "New York, NY",
+		"ISBN": "978-0-387-98382-0",
+		"language": "en",
+		"note": "DOI: 10.1007/b98848",
+		"publisher": "Springer",
+		"publisher-place": "New York, NY",
+		"source": "DOI.org (Crossref)",
+		"title": "Elements of Applied Bifurcation Theory",
+		"URL": "http://link.springer.com/10.1007/b98848",
+		"volume": "112",
+		"author": [
+			{
+				"family": "Kuznetsov",
+				"given": "Yuri"
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2023",
+					7,
+					26
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"1998"
+				]
+			]
+		}
+	},
+	{
+		"id": "chow_methods_1982",
+		"type": "book",
+		"collection-title": "Grundlehren der mathematischen Wissenschaften",
+		"event-place": "New York, NY",
+		"ISBN": "978-1-4613-8161-7",
+		"note": "DOI: 10.1007/978-1-4613-8159-4",
+		"publisher": "Springer",
+		"publisher-place": "New York, NY",
+		"source": "DOI.org (Crossref)",
+		"title": "Methods of Bifurcation Theory",
+		"URL": "http://link.springer.com/10.1007/978-1-4613-8159-4",
+		"volume": "251",
+		"author": [
+			{
+				"family": "Chow",
+				"given": "Shui-Nee"
+			},
+			{
+				"family": "Hale",
+				"given": "Jack K."
+			}
+		],
+		"collection-editor": [
+			{
+				"family": "Artin",
+				"given": "M."
+			},
+			{
+				"family": "Chern",
+				"given": "S. S."
+			},
+			{
+				"family": "Doob",
+				"given": "J. L."
+			},
+			{
+				"family": "Grothendieck",
+				"given": "A."
+			},
+			{
+				"family": "Heinz",
+				"given": "E."
+			},
+			{
+				"family": "Hirzebruch",
+				"given": "F."
+			},
+			{
+				"family": "Hörmander",
+				"given": "L."
+			},
+			{
+				"family": "Mac Lane",
+				"given": "S."
+			},
+			{
+				"family": "Magnus",
+				"given": "W."
+			},
+			{
+				"family": "Moore",
+				"given": "C. C."
+			},
+			{
+				"family": "Moser",
+				"given": "J. K."
+			},
+			{
+				"family": "Nagata",
+				"given": "M."
+			},
+			{
+				"family": "Schmidt",
+				"given": "W."
+			},
+			{
+				"family": "Scott",
+				"given": "D. S."
+			},
+			{
+				"family": "Tits",
+				"given": "J."
+			},
+			{
+				"family": "Van Der Waerden",
+				"given": "B. L."
+			},
+			{
+				"family": "Eckmann",
+				"given": "B."
+			},
+			{
+				"family": "Varadhan",
+				"given": "S. R. S."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2023",
+					7,
+					26
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"1982"
+				]
+			]
+		}
+	},
+	{
+		"id": "wiggins_introduction_1990",
+		"type": "book",
+		"collection-title": "Texts in Applied Mathematics",
+		"event-place": "New York, NY",
+		"ISBN": "978-1-4757-4069-1",
+		"note": "DOI: 10.1007/978-1-4757-4067-7",
+		"publisher": "Springer",
+		"publisher-place": "New York, NY",
+		"source": "DOI.org (Crossref)",
+		"title": "Introduction to Applied Nonlinear Dynamical Systems and Chaos",
+		"URL": "http://link.springer.com/10.1007/978-1-4757-4067-7",
+		"volume": "2",
+		"author": [
+			{
+				"family": "Wiggins",
+				"given": "Stephen"
+			}
+		],
+		"collection-editor": [
+			{
+				"family": "John",
+				"given": "F."
+			},
+			{
+				"family": "Marsden",
+				"given": "J. E."
+			},
+			{
+				"family": "Sirovich",
+				"given": "L."
+			},
+			{
+				"family": "Golubitsky",
+				"given": "M."
+			},
+			{
+				"family": "Jäger",
+				"given": "W."
+			}
+		],
+		"accessed": {
+			"date-parts": [
+				[
+					"2023",
+					7,
+					26
+				]
+			]
+		},
+		"issued": {
+			"date-parts": [
+				[
+					"1990"
+				]
+			]
+		}
+	},
+	{
+		"id": "strogatz_nonlinear_2019",
+		"type": "book",
+		"abstract": "This textbook is aimed at newcomers to nonlinear dynamics and chaos, especially students taking a first course in the subject. The presentation stresses analytical methods, concrete examples, and geometric intuition. The theory is developed systematically, starting with first-order differential equations and their bifurcations, followed by phase plane analysis, limit cycles and their bifurcations, and culminating with the Lorenz equations, chaos, iterated maps, period doubling, renormalization, fractals, and strange attractors.",
+		"edition": "2",
+		"event-place": "Boca Raton",
+		"ISBN": "978-0-429-49256-3",
+		"note": "DOI: 10.1201/9780429492563",
+		"number-of-pages": "532",
+		"publisher": "CRC Press",
+		"publisher-place": "Boca Raton",
+		"title": "Nonlinear Dynamics and Chaos",
+		"title-short": "Nonlinear Dynamics and Chaos",
+		"author": [
+			{
+				"family": "Strogatz",
+				"given": "Steven H."
+			}
+		],
+		"issued": {
+			"date-parts": [
+				[
+					"2019",
+					5,
+					23
+				]
+			]
+		}
+	}
+]

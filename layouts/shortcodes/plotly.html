@@ -1,0 +1,39 @@
+{{/*
+A component for a plotly div.
+
+Parameters:
+- `id`: the id of the div
+- `height`: the height of the div as a percentage of width, should be given, e.g., as "20%"
+- `cols`: the number of columns to draw subplots. Should be given as an integer number, e.g., cols=3. If this parameter
+is set, multiple divs will be generated for every subplot, and the divs will have numbered ids. For example, if you set
+id="myPlotlyDiv" and cols=3, three divs will be generated with ids myPlotlyDiv1, myPlotlyDiv2 and myPlotlyDiv3. If it is
+not set, or set to cols=1, the id will be equal to the provided id.
+
+Note on subplots:
+Subplots can also be created through plotly too, but the HTML approach is better, because this way, subplots scale
+nicely on mobile devices. For example, if the screen is too narrow to fit in multiple subplots on the same line, the
+subplots will be displayed one after the other.
+*/}}
+<div class="plotly-flexbox">
+    {{ $cols := 1}}
+    {{ if isset .Params "cols" }}
+    {{ $cols = .Get "cols" }}
+    {{ end }}
+
+    {{- $colWidth := (printf "%d%%" (div 100 $cols)) -}}
+
+
+    {{ range $i := seq $cols }}
+    <div class="plotly-container" , style="width: {{ $colWidth }};">
+        {{ $id := $.Get `id` }}
+        {{ if gt $cols 1 }}
+        {{ $id = (printf "%v%d" $id $i) }}
+        {{ end }}
+        {{ if isset $.Params "height" }}
+        <div id="{{ $id }}" class="plotly" , style="padding-bottom: {{ $.Get `height` }};"></div>
+        {{- else }}
+        <div id="{{ $id }}" class="plotly"></div>
+        {{- end }}
+    </div>
+    {{ end }} {{/* end range */}}
+</div>
