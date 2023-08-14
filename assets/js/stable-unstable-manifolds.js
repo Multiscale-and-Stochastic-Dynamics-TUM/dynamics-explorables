@@ -37,6 +37,12 @@ const LAYOUT = {
   showlegend: true,
   margin: {l: 20, t: 20, b: 20, r: 20}
 };
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
+};
+
 function startAnimation(plot, frames, no_transition = false) {
   let transition, duration;
   transition = {duration: duration, easing: 'linear'};
@@ -54,6 +60,7 @@ function startAnimation(plot, frames, no_transition = false) {
     mode: 'next',
   });
 }
+
 function makeTrajectory(rhs, t, x0) {
   let x_clone = [...x0];
   let sol = solve_ode(rhs, [0, t], x_clone).y;
@@ -112,7 +119,7 @@ let CURRENT_SYSTEM = simpleLinOriginRHS;
 let TRACKED_POINT = [0.0, 0.0];
 let TRACKED_TRAJECTORY = [[TRACKED_POINT[0]], [TRACKED_POINT[1]]];
 ///// Main plot and traces
-Plotly.newPlot(linear_system_plot, [], LAYOUT);
+Plotly.newPlot(linear_system_plot, [], LAYOUT, CONFIG);
 linEnds_f = (plot) => {
   let x_range = plot.layout['xaxis']['range'];
   let y_range = plot.layout['xaxis']['range'];
