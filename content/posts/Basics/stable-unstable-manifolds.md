@@ -23,6 +23,7 @@ keywords: ["manifold"]
 {{< checkbox id = "showTrajectory" name = "plotElements" value = true label = "Show Trajectory">}}
 {{< checkbox id = "showEigenspaces" name = "plotElements" value = true label = "Show Eigenspaces">}}
 {{< checkbox id = "showManifolds" name = "plotElements" value = true label = "Show Manifolds">}}
+{{< checkbox id = "showStreamlines" name = "plotElements" value = false label = "Show Streamlines">}}
 
 Let us first consider a time-continuous linear system, $\dot X = AX$, where $A$ is a matrix with an equilibrium point $x_*$ at the origin. Further, assume that $A$ has no eigenvalues with zero real parts. In general, equilibrium points close to which the system (or its linearization) has this property are called **hyperbolic**. The widget above gives an example of such a system. Click on the phase-space to place a point (initial condition) and evolve it by pressing "Play" or just "{{< span id="trajectoryText" style="cursor:pointer" text="Show trajectory" >}}" if you do not want to waste your time with animations. Also, try to identify any patterns. You might also need to observe what happens if the point is propagated backwards in time (click the respective "Backwards" radio button for that).
 

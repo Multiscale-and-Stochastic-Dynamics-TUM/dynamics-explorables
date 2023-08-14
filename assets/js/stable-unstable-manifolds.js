@@ -115,6 +115,7 @@ let linSysReset = document.getElementById('linResetButton');
 let showTrajectory = document.getElementById('showTrajectory');
 let showEigenspaces = document.getElementById('showEigenspaces');
 let showManifolds = document.getElementById('showManifolds');
+let showStreamlines = document.getElementById('showStreamlines');
 
 let textSetX = document.getElementById('setPointX')
 let textSetY = document.getElementById('setPointY')
@@ -127,7 +128,7 @@ let TRACKED_TRAJECTORY = [[TRACKED_POINT[0]], [TRACKED_POINT[1]]];
 Plotly.newPlot(linear_system_plot, [], LAYOUT, CONFIG);
 linEnds_f = (plot) => {
   let x_range = plot.layout['xaxis']['range'];
-  let y_range = plot.layout['xaxis']['range'];
+  let y_range = plot.layout['yaxis']['range'];
   return {
     x: x_range, y: y_range
   }
@@ -183,7 +184,6 @@ Plotly.addTraces(linear_system_plot, {
   name: 'Stable Manifold',
 });
 
-/////streamline here
 // movable stuff
 let indTrackedTrajectory = linear_system_plot.data.length
 Plotly.addTraces(linear_system_plot, {
@@ -201,6 +201,60 @@ Plotly.addTraces(linear_system_plot, {
   marker: {color: contentColor},
   name: 'Tracked Point'
 });
+
+
+// streamlines
+let streamlineKwargs = {
+  noDisplay: true,
+  line: {width: 1, color: streamlineColor},
+  config: CONFIG,
+  layout: LAYOUT,
+  density: 9,
+  minlength: 0.5,
+  redraw: false,
+  showlegend: false,
+};
+
+let indLinSteamlineStart = linear_system_plot.data.length;
+let streamlineLinTraces = streamlines(
+    undefined, simpleLinOriginRHS, [], linEnds['x'], linEnds['y'],
+    streamlineKwargs);
+for (let trace in streamlineLinTraces) {
+  streamlineLinTraces[trace].showlegend = false;
+}
+Plotly.addTraces(linear_system_plot, streamlineLinTraces);
+let indLinSteamlineEnd = linear_system_plot.data.length;
+
+let indGenSteamlineStart = linear_system_plot.data.length;
+let streamlineGenTraces = streamlines(
+    undefined, simpleGeneralRHS, [], linEnds['x'], linEnds['y'],
+    streamlineKwargs);
+for (let trace in streamlineGenTraces) {
+  streamlineGenTraces[trace].showlegend = false;
+}
+Plotly.addTraces(linear_system_plot, streamlineGenTraces);
+let indGenSteamlineEnd = linear_system_plot.data.length;
+
+
+let indLinStreamlineTraces = Array.from(
+    Array(indLinSteamlineEnd - indLinSteamlineStart),
+    (x, i) => i + indLinSteamlineStart);
+
+let indGenStreamlineTraces = Array.from(
+    Array(indGenSteamlineEnd - indGenSteamlineStart),
+    (x, i) => i + indGenSteamlineStart);
+
+function updateStreamlines() {
+  let stLinVisible = Boolean(showStreamlines.checked * sysRadio_l.checked)
+  let stGenVisible = Boolean(showStreamlines.checked * sysRadio_g.checked);
+
+  Plotly.restyle(
+      linear_system_plot, {visible: [stLinVisible]},
+      [...indLinStreamlineTraces]);
+  Plotly.restyle(
+      linear_system_plot, {visible: [stGenVisible]},
+      [...indGenStreamlineTraces]);
+}
 
 
 /// Clickable plot
@@ -287,12 +341,14 @@ function clickHandler_RadioSys() {
     showManifolds.disabled = 0;
   }  // put here when should be enabled with +, *
   updateLinPlot_pt(TRACKED_POINT);
+  updateStreamlines();
   return;
 }
 sysRadio_l.addEventListener('click', clickHandler_RadioSys);
 sysRadio_g.addEventListener('click', clickHandler_RadioSys);
 sysRadio_l.click()
 /// Checkboxes
+
 function clickHandler_showPlotElements(event) {
   Plotly.restyle(
       linear_system_plot, {
@@ -305,11 +361,13 @@ function clickHandler_showPlotElements(event) {
         indTrackedTrajectory, indUnstableEigenspace, indStableEigenspace,
         indUnstableManifold, indStableManifold
       ]);
+  updateStreamlines();
   return;
 }
 showTrajectory.addEventListener('click', clickHandler_showPlotElements);
 showEigenspaces.addEventListener('click', clickHandler_showPlotElements);
 showManifolds.addEventListener('click', clickHandler_showPlotElements);
+showStreamlines.addEventListener('click', clickHandler_showPlotElements);
 clickHandler_showPlotElements();
 /// Manuslly setting the point
 function inputHandler_setPoint(event) {
