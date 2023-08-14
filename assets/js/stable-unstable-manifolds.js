@@ -1,7 +1,34 @@
 import Plotly from 'plotly.js-dist-min'
 
+import {getCSSColor} from './modules/design/colors';
 import {getXYFromClick} from './modules/plotting/plotly_click';
 import {solve_ode} from './modules/simulation/ode_solver';
+
+const stableManifoldColor = getCSSColor('--red');
+const unstableManifoldColor = getCSSColor('--blue');
+const trajectoryColor = getCSSColor('--purple');
+const contentColor = getCSSColor('--content');
+
+// Color all instances of the words given by the keys of the colorMap into the
+// corresponding color.
+function colorWords(colorMap) {
+  for (const span of document.getElementsByTagName('span')) {
+    if (colorMap.has(span.innerHTML)) {
+      span.style.color = colorMap.get(span.innerHTML);
+    }
+  }
+}
+
+const wordColorMap = new Map([
+  ['stable', stableManifoldColor],
+  ['unstable', unstableManifoldColor],
+  ['convergence', stableManifoldColor],
+  ['divergence', unstableManifoldColor],
+  ['forwards', stableManifoldColor],
+  ['backwards', unstableManifoldColor],
+]);
+
+colorWords(wordColorMap);
 
 /////Functions for plots and coordinates/////
 const LAYOUT = {
@@ -101,7 +128,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleEigenUnstab(linEnds['x'])[0],
   y: simpleEigenUnstab(linEnds['x'])[1],
   mode: 'lines',
-  marker: {color: '#0000ff50'},
+  marker: {color: unstableManifoldColor},
   name: 'Unstable Eigenspace',
 });
 
@@ -110,7 +137,7 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleEigenStable(linEnds['y'])[0],
   y: simpleEigenStable(linEnds['y'])[1],
   mode: 'lines',
-  marker: {color: '#ff000050'},
+  marker: {color: stableManifoldColor},
   name: 'Stable Eigenspace',
 });
 
@@ -130,7 +157,8 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleManifUnstab(xLinspace)[0],
   y: simpleManifUnstab(xLinspace)[1],
   mode: 'lines',
-  marker: {color: '#4040ff50'},
+  marker: {color: unstableManifoldColor},
+  line: {dash: 'dot'},
   name: 'Unstable Manifold',
 });
 let indStableManifold = linear_system_plot.data.length;
@@ -138,7 +166,8 @@ Plotly.addTraces(linear_system_plot, {
   x: simpleManifStable(yLinspace)[0],
   y: simpleManifStable(yLinspace)[1],
   mode: 'lines',
-  marker: {color: '#ff404050'},
+  marker: {color: stableManifoldColor},
+  line: {dash: 'dot'},
   name: 'Stable Manifold',
 });
 // movable stuff
@@ -147,7 +176,7 @@ Plotly.addTraces(linear_system_plot, {
   x: TRACKED_TRAJECTORY[0],
   y: TRACKED_TRAJECTORY[1],
   mode: 'lines',
-  marker: {color: '#ff00ff50'},
+  marker: {color: trajectoryColor},
   name: 'Trajectory',
 });
 let indTrackedPoint = linear_system_plot.data.length
@@ -155,7 +184,7 @@ Plotly.addTraces(linear_system_plot, {
   x: [TRACKED_POINT[0]],
   y: [TRACKED_POINT[1]],
   mode: 'markers',
-  marker: {color: 'black'},
+  marker: {color: contentColor},
   name: 'Tracked Point'
 });
 
