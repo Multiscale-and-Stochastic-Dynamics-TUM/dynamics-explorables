@@ -223,7 +223,6 @@ input {
 .action.active .openable {
     position: absolute;
     bottom: 50px;
-    min-width: 400px;
     display: grid;
     transition: 0.3s;
 }

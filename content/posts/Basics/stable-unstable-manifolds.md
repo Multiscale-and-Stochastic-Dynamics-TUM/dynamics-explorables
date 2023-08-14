@@ -12,8 +12,8 @@ keywords: ["manifold"]
 {{< plotly id="plotlyDiv">}}
 {{< button id="linPlayButton" text="Play" >}}
 {{< button id="linResetButton" text="Reset" >}}
-{{< textfield id = "setPointX" name = "setPoint" label = "x:" width = "50px">}}
-{{< textfield id = "setPointY" name = "setPoint" label = "y:" width = "50px">}}
+{{< textfield id = "setPointX" name = "setPoint" label = "x:" width = "63px">}}
+{{< textfield id = "setPointY" name = "setPoint" label = "y:" width = "63px">}}
 
 {{< radio_button id = "time_forwards" name = "time" value = 5 label = "Forwards">}}
 {{< radio_button id = "time_backwards" name = "time" value = -5 label = "Backwards">}}

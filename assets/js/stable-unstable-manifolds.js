@@ -1,6 +1,7 @@
 import Plotly from 'plotly.js-dist-min'
 
 import {getCSSColor} from './modules/design/colors';
+import {streamlines} from './modules/plotly/streamlines';
 import {getXYFromClick} from './modules/plotting/plotly_click';
 import {solve_ode} from './modules/simulation/ode_solver';
 
@@ -8,6 +9,7 @@ const stableManifoldColor = getCSSColor('--red');
 const unstableManifoldColor = getCSSColor('--blue');
 const trajectoryColor = getCSSColor('--purple');
 const contentColor = getCSSColor('--content');
+const streamlineColor = getCSSColor('--secondary');
 
 // Color all instances of the words given by the keys of the colorMap into the
 // corresponding color.
@@ -35,8 +37,11 @@ const LAYOUT = {
   xaxis: {range: [-10, 10]},
   yaxis: {range: [-10, 10]},
   showlegend: true,
-  margin: {l: 20, t: 20, b: 20, r: 20}
+  margin: {l: 20, t: 20, b: 20, r: 20},
 };
+if (window.screen.width <= 500) {
+  LAYOUT.showlegend = false
+}
 
 const CONFIG = {
   displayModeBar: false,
@@ -177,6 +182,8 @@ Plotly.addTraces(linear_system_plot, {
   line: {dash: 'dot'},
   name: 'Stable Manifold',
 });
+
+/////streamline here
 // movable stuff
 let indTrackedTrajectory = linear_system_plot.data.length
 Plotly.addTraces(linear_system_plot, {
@@ -194,6 +201,7 @@ Plotly.addTraces(linear_system_plot, {
   marker: {color: contentColor},
   name: 'Tracked Point'
 });
+
 
 /// Clickable plot
 // function updating point, trajectory, traces
@@ -225,8 +233,8 @@ clickHandler_LinPlot = (event) => {
   point_temp = getXYFromClick(
       linear_system_plot, event);  //!!!returns false if clicked out of bounds
   if (point_temp) {
-    textSetX.value = point_temp[0];
-    textSetY.value = point_temp[1];
+    textSetX.value = Number(Math.round(point_temp[0] + 'e3') + 'e-3');
+    textSetY.value = Number(Math.round(point_temp[1] + 'e3') + 'e-3');
   }
   updateLinPlot_pt(point_temp);
   return;
@@ -266,15 +274,18 @@ timeRadio_f.addEventListener('click', clickHandler_RadioTime);
 timeRadio_b.addEventListener('click', clickHandler_RadioTime);
 timeRadio_f.click()
 /// Systems
+showManifolds.disabled =
+    1;  // remove this and change the function below if one wants to disable the
+        // showManifolds when linear system
 function clickHandler_RadioSys() {
   if (sysRadio_l.checked) {
     CURRENT_SYSTEM = simpleLinOriginRHS;
   } else if (sysRadio_g.checked) {
     CURRENT_SYSTEM = simpleGeneralRHS;
   }
-  showManifolds.disabled =
-      !sysRadio_g.checked;  // put here when should be enabled with +
-  ;
+  if (sysRadio_g.checked) {
+    showManifolds.disabled = 0;
+  }  // put here when should be enabled with +, *
   updateLinPlot_pt(TRACKED_POINT);
   return;
 }
@@ -309,6 +320,8 @@ function inputHandler_setPoint(event) {
       return;
     }
     updateLinPlot_pt([valX, valY]);
+    textSetX.value = Number(Math.round(textSetX.value + 'e3') + 'e-3');
+    textSetY.value = Number(Math.round(textSetY.value + 'e3') + 'e-3');
     return;
   }
 }
@@ -326,6 +339,17 @@ buttonopen.addEventListener('click', () => {
 
   if (action.classList.contains('active')) {
     plottingopen.appendChild(linear_system_plot);
+    // plottingopen.hight = linear_system_plot.hight;
+    plottingopen.style.height =
+        linear_system_plot.getElementsByClassName('main-svg')[0]
+            .height.animVal.value +
+        2 + 'px';  // That is a bit retarded if somone knows how to make the
+                   // height of the pop-out auto-definable wrt appended child
+                   // feel free to change
+    plottingopen.style.width =
+        linear_system_plot.getElementsByClassName('main-svg')[0]
+            .width.animVal.value +
+        1 + 'px';  // Same here
   } else {
     post.insertBefore(linear_system_plot, post.childNodes[1]);
   }
