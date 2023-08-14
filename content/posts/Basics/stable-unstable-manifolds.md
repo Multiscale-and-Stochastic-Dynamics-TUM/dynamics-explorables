@@ -24,37 +24,37 @@ keywords: ["manifold"]
 {{< checkbox id = "showEigenspaces" name = "plotElements" value = true label = "Show Eigenspaces">}}
 {{< checkbox id = "showManifolds" name = "plotElements" value = true label = "Show Manifolds">}}
 
-Let us first consider a time-continuous linear system, $\dot X = AX$, where $A$ is a matrix, with an equilibrium point $x_\*$ at the origin. Further, assume that $A$ has no eigenvalues with zero real parts. In genearl, equilibrium point near which the system (its linearization) has that propetry is called **hyperbolic**. The widget above gives an example of such system. Try clicking on the phase-space to put a point (initial condition) and evolving it by pressing "Play" (or just "{{< span id="trajectoryText" style="cursor:pointer" text="Show trajectory" >}}" if you do not want to waste your time with animations), and try to find some patterns. You might also need to see what happens if the point is propagated backwards in time (click the respective "Backwards" radiobutton for that).
+Let us first consider a time-continuous linear system, $\dot X = AX$, where $A$ is a matrix with an equilibrium point $x_*$ at the origin. Further, assume that $A$ has no eigenvalues with zero real parts. In general, equilibrium points close to which the system (or its linearization) has this property are called **hyperbolic**. The widget above gives an example of such a system. Click on the phase-space to place a point (initial condition) and evolve it by pressing "Play" or just "{{< span id="trajectoryText" style="cursor:pointer" text="Show trajectory" >}}" if you do not want to waste your time with animations. Also, try to identify any patterns. You might also need to observe what happens if the point is propagated backwards in time (click the respective "Backwards" radio button for that).
 
-As one might have noticed the system has defined directions of {{< span style="color:#ff0000" text="convergence" >}} and/or {{< span style="color:#0000ff" text="divergence" >}}. The "nice" eigenvaluse of $A$ are the reason for that (one can study the explicit solution of the ODE and see that more precisely). Those directions will be called {{< span style="color:#ff0000" text="stable" >}} and {{< span style="color:#0000ff" text="unstable" >}} **eigenspaces** respectively ($E_s$ and $E_u$). Let us visualise them by clicking {{< span id="eigenspacesText" style="cursor:pointer" text="\"Show Eigenspaces\"">}} checkbox (or the text in quotes). These eigenspaces have a property that the trajectories starting in them are fully contained in the respective eigenspace (backwards and forwards), called **invariance**. Also, they give a bit more information about the structure of the system. You can check the invariance, as well as convergence in the {{< span style="color:#ff0000" text="forwards" >}}/{{< span style="color:#0000ff" text="backwards" >}} time propagation for the {{< span style="color:#ff0000" text="stable" >}}/{{< span style="color:#0000ff" text="unstable" >}} eigenspace, by sampling a few points on the eigenspaces (text field for x any y coordinate might be of help).
+As one might have noticed, the system has defined directions of {{< span style="color:#ff0000" text="convergence" >}} and/or {{< span style="color:#0000ff" text="divergence" >}}. The reason for this are the "nice" eigenvalues of $A$ (one can study the explicit solution of the ODE and see that more precisely). Those directions will be called {{< span style="color:#ff0000" text="stable" >}} and {{< span style="color:#0000ff" text="unstable" >}} **eigenspaces**, respectively ($E_s$ and $E_u$). Let us visualize them by clicking {{< span id="eigenspacesText" style="cursor:pointer" text="\"Show Eigenspaces\"">}} checkbox (or the text in quotes). These eigenspaces have a property called **invariance**, which means that all trajectories starting in an eigenspace are fully contained in it (backwards and forwards). Also, the eigenspaces give a bit more information about the structure of the system. You can check the invariance as well as convergence in the {{< span style="color:#ff0000" text="forwards" >}}/{{< span style="color:#0000ff" text="backwards" >}} time propagation for the {{< span style="color:#ff0000" text="stable" >}}/{{< span style="color:#0000ff" text="unstable" >}} eigenspace by sampling a few points on the eigenspaces (text fields for the x- any y-coordinates might be of help).
 
-Considering a general system with equilibrium at $x_\*$, we can look at its linearization near $x_*$, with $A = Df (x_\*)$ the jacobian matrix. Again, we call the equilibrium point $x_\*$ a hyperbolic equilibrium point if $Df (x_\*)$ satisfies the condition above ($Re(\lambda_i)\neq 0$). In fact, so far in the demo we were looking at the linearization of another, non-linear, system. You can switch to that system by clicking {{< span id="generalText" style="cursor:pointer" text="\"General\"">}} radiobutton. Try checking how the trajectories change.
+Considering a general system with an equilibrium at $x_\*$, we can look at its linearization near $x_*$, with $A = Df (x_\*)$ the Jacobian matrix. Again, we call the equilibrium point $x_\*$ a hyperbolic equilibrium point if $Df (x_\*)$ satisfies the condition above ($Re(\lambda_i)\neq 0$). In fact, so far in the demo we were looking at the linearization of another non-linear system. You can switch to that system by clicking the {{< span id="generalText" style="cursor:pointer" text="\"General\"">}} radiobutton. Try checking how the trajectories change.
 
-Although the trajectories do change slightly, the general dymanics stay the same (see the "Equivalence" section). The higher order terms locally deform the geometry. The eigenspaces get "deformed" too. That suggests that similar structures, as in the linearization of the system, might be present for general system itself. They can be represented as graphs, or **manifolds**, over the eigenspaces and are called {{< span style="color:#ff0000" text="stable" >}} and {{< span style="color:#0000ff" text="unstable" >}} (local) manifolds ($W_{loc}^s$ and $W_{loc}^u$) respectively. Let us visualize them by clicking {{< span id="manifoldsText" style="cursor:pointer" text="\"Show Manifolds\"">}}. Notice that they indeed look like graphs over the respective eigenspaces and posses the same propeties, i.e. the manifolds are invariant and have the same modes of convergense as the eigenspaces.
+Although the trajectories do change slightly, the general dynamics stays the same (see the "Equivalence" section). The higher order terms locally deform the geometry. The eigenspaces get "deformed" too. That suggests that similar structures as in the linearization of the system might be present for general system itself. They can be represented as graphs or **manifolds** over the eigenspaces and are called {{< span style="color:#ff0000" text="stable" >}} and {{< span style="color:#0000ff" text="unstable" >}} (local) manifolds ($W_{loc}^s$ and $W_{loc}^u$), respectively. Let us visualize them by clicking {{< span id="manifoldsText" style="cursor:pointer" text="\"Show Manifolds\"">}}. Notice that they indeed look like graphs over the respective eigenspaces and posses the same properties, i.e., the manifolds are invariant and have the same modes of convergence as the eigenspaces.
 
-Same idea applies to the discrete systems, however the requirement for the jacobian to be "nice" is that it has no multipliers (eigenvalues) with me magnitude one ($|\lambda|\neq 1$).
+The same idea applies to the discrete systems; however, the requirement for the Jacobian to be "nice" is that it has no multipliers (eigenvalues) with magnitude one ($|\lambda|\neq 1$).
 
 ### Math Details
-The system we look at in the example is a continuous-time two dimentional system generated by the following ODE:
+The system we looked at in the example is a continuous-time two dimensional system generated by the following ODE:
 $$\begin{pmatrix} \dot x \newline \dot y \end{pmatrix} = \begin{pmatrix} x \newline -y + x^2 \end{pmatrix},$$
-with the equilibrium, $x_\*$, at the origin. The jacobian at the origin is the matrix $Df (\textbf{0})$:
+with the equilibrium, $x_\*$, at the origin. The Jacobian at the origin is the matrix $Df (\textbf{0})$:
 $$Df (\textbf{0}) = \begin{pmatrix}
 1 & 0\newline
 0 & -1
 \end{pmatrix}$$
-The eigenvalues of $Df (\textbf{0})$ are $\lambda_1 = 1$ and $\lambda_2 = -1$, with the corresponding eigenspaces $E_u = \begin{pmatrix} 1, 0 \end{pmatrix}^T$ (coincidentally x-axis) and $E_s = \begin{pmatrix} 0, 1 \end{pmatrix}^T$ (y-axis).
+The eigenvalues of $Df (\textbf{0})$ are $\lambda_1 = 1$ and $\lambda_2 = -1$, with the corresponding eigenspaces $E_u = \begin{pmatrix} 1, 0 \end{pmatrix}^T$ (which coincidentally matches the x-axis) and $E_s = \begin{pmatrix} 0, 1 \end{pmatrix}^T$ (y-axis).
 The solution of the ODE given by the linearized system is:
 $$\begin{pmatrix} x \newline y \end{pmatrix} = c_1 e^{\lambda_1 t} E_u + c_2 e^{\lambda_2 t} E_s,$$
 hence the observed dynamics.
 
-The manoifolds are given by the following sets:
+The manifolds are given by the following sets:
 $$W_{loc}^s(0) = E_s(0) = \set{ (x,y)\in\mathbb{R}^2: x=0 };$$
 $$W_{loc}^u(0) = \set{ (x,y)\in\mathbb{R}^2: y = \frac{1}{3}x^2 }.$$
 Notice that they are the graphs over the respective eigenspaces.
 
-The local manifolds can be extended to their globla counterparts under the flow:
+The local manifolds can be extended to their global counterparts under the flow:
 $$W^{s,u}(x_\*) = \bigcup_{t\in T}\phi_t(W_{loc}^{s,u}(x_\*)),$$
-what makes the "truly" invariant.
+what makes them "truly" invariant.
 
 
 {{< plotly2 id = "popOut">}}
