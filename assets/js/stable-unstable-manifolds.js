@@ -32,7 +32,7 @@ const wordColorMap = new Map([
 
 colorWords(wordColorMap);
 
-/////Functions for plots and coordinates/////
+///// Functions for plots and coordinates /////
 const LAYOUT = {
   xaxis: {range: [-10, 10]},
   yaxis: {range: [-10, 10]},
