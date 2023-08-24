@@ -8,4 +8,5 @@ cover:
     alt: ""
     caption: ""
 keywords: []
+bibFile: static/bibliography.json
 ---

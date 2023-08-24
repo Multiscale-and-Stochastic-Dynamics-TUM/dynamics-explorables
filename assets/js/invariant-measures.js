@@ -1,6 +1,28 @@
 import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
+
+const RED = getCSSColor('--red');
+const ORANGE = getCSSColor('--orange');
+const GREEN = getCSSColor('--green');
+const BLUE = getCSSColor('--blue');
+const PURPLE = getCSSColor('--purple');
+
+// Color all instances of words given by keys of colorMap into the corresponding
+// color.
+function colorWords(colorMap) {
+  for (const span of document.getElementsByTagName('span')) {
+    if (colorMap.has(span.innerHTML)) {
+      span.style.color = colorMap.get(span.innerHTML);
+    }
+  }
+}
+
+const wordColorMap =
+    new Map([['orange', ORANGE], ['purple', PURPLE], ['green', GREEN]]);
+
+colorWords(wordColorMap);
 
 // Number of points of the logistic map
 const NUM_POINTS = 10000;
@@ -10,36 +32,35 @@ const EPSILON = 1e-5;
 
 // Style of the plot
 const MAP_LINE_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 3
 };
 const INTERVAL_LINE_STYLE = {
-  color: 'orange',
+  color: ORANGE,
   width: 4
 };
 const INTERVAL_AREA_LINE_STYLE = {
-  color: 'orange',
+  color: ORANGE,
   width: 1
 };
 const PREIMAGE_LINE_STYLE = {
-  color: 'purple',
+  color: PURPLE,
   width: 4
 };
 const PREIMAGE_AREA_LINE_STYLE = {
-  color: 'purple',
+  color: PURPLE,
   width: 1
 };
 const MEASURE_LINE_STYLE = {
-  color: 'rgba(0, 255, 255, 0.1)',  // cyan color, needs to be this format for
-                                    // oppacity
+  color: GREEN,
   width: 1
 };
 const CURRENT_POINT_STYLE = {
-  color: 'Green',
+  color: GREEN,
   size: 7
 };
 const TRACKED_POINT_STYLE = {
-  color: 'Red',
+  color: RED,
   size: 7
 };
 
@@ -59,8 +80,11 @@ const LAYOUT = {
     title: 'y',
     range: [-0.1, 1.5],
   },
-  modebar: {remove: ['pan3d', 'resetCameraDefault3d']},
-  paper_bgcolor: '#ffffff00',
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 let GLOBAL_INTERVAL_DRAWED = false;
@@ -141,7 +165,6 @@ function getAnnotation(a, b, color, numFloatingPoint = 2, size = 18) {
     yref: 'y',
     text: computeMeasure(a, b, numFloatingPoint),
     showarrow: false,
-    bgcolor: 'white',
     opacity: 1.0,
     font: {color: color, size: size}
   };
@@ -206,6 +229,7 @@ let traceInvariantMeasure = {
   y: [0, 4 / 3, 4 / 3, 2 / 3, 2 / 3, 0],
   mode: 'lines',
   fill: 'toself',
+  fillcolor: `${GREEN}22`,
   line: MEASURE_LINE_STYLE,
   showlegend: false
 };
@@ -251,8 +275,8 @@ let plotDataArea = [
   preimageIntervalArea1, preimageIntervalArea2
 ];
 
-Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT);
-Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT);
+Plotly.newPlot(plotlyMap, plotDataMap, LAYOUT, CONFIG);
+Plotly.newPlot(plotlyArea, plotDataArea, LAYOUT, CONFIG);
 
 drawIntervalButton.addEventListener('click', () => {
   GLOBAL_INTERVAL_DRAWED = true;
@@ -326,11 +350,11 @@ measureButton.addEventListener('click', async () => {
     };
     Plotly.animate(plotlyArea, animationTraces, DEFAULT_TRANSITION);
     anns = [
-      getAnnotation(a, b, 'orange', 2),
-      getAnnotation(preimage[0][0], preimage[0][1], 'purple', 2)
+      getAnnotation(a, b, ORANGE, 2),
+      getAnnotation(preimage[0][0], preimage[0][1], PURPLE, 2)
     ];
     if (preimage.length == 2) {
-      anns.push(getAnnotation(preimage[1][0], preimage[1][1], 'purple', 2));
+      anns.push(getAnnotation(preimage[1][0], preimage[1][1], PURPLE, 2));
     };
 
     let layout = {annotations: anns};

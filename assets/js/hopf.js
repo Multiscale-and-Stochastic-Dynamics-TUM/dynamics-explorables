@@ -1,39 +1,46 @@
 import Plotly from 'plotly.js-dist-min';
 
 import {linspace} from './modules/data_structures/iterables';
+import {getCSSColor} from './modules/design/colors';
+
+const RED = getCSSColor('--red');
+const ORANGE = getCSSColor('--orange');
+const GREEN = getCSSColor('--green');
+const BLUE = getCSSColor('--blue');
+const PURPLE = getCSSColor('--purple');
 
 const NUM_POINTS = 1000;
 const STARTING_P = -1.3;
 
 // Style constants
 const STABLE_LINE_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 5
 };
 
 const UNSTABLE_LINE_STYLE = {
-  color: 'blue',
+  color: BLUE,
   width: 5,
   dash: 'dash'
 };
 
 const INTERSECTION_LINE_STYLE = {
-  color: 'orange',
+  color: ORANGE,
   width: 7
 };
 
 const INTERSECTION_MARKER_STYLE = {
-  color: 'orange',
+  color: ORANGE,
   size: 5
 };
 
 const EIGENVAL_MARKER = {
-  color: 'Purple',
+  color: PURPLE,
   size: 10
 };
 
 const SPIRAL_LINE_STYLE = {
-  color: 'green',
+  color: GREEN,
   with: 1
 };
 
@@ -72,8 +79,11 @@ const LAYOUT_3D = {
     },
     dragmode: 'orbit',
   },
-  modebar: {remove: ['pan3d']},
-  paper_bgcolor: '#ffffff00',
+};
+
+const CONFIG = {
+  displayModeBar: false,
+  responsive: true,
 };
 
 // Generate data for the 3D parabola of stability
@@ -142,8 +152,8 @@ var trace3Dcone = {
   x: xyzData[0],
   y: xyzData[1],
   z: xyzData[2],
-  opacity: 0.6,
-  color: 'blue',
+  opacity: 0.9,
+  color: BLUE,
   type: 'mesh3d'
 };
 
@@ -153,8 +163,8 @@ var traceStableLineEq = {
   y: [0, 0],
   z: [-15, 0],
   mode: 'lines',
-  opacity: 0.6,
-  color: 'blue',
+  opacity: 1,
+  color: BLUE,
   type: 'scatter3d',
   line: STABLE_LINE_STYLE,
   showlegend: false
@@ -165,8 +175,8 @@ var traceUnstableLineEq = {
   y: [0, 0],
   z: [0, 15],
   mode: 'lines',
-  opacity: 0.6,
-  color: 'blue',
+  opacity: 1,
+  color: BLUE,
   type: 'scatter3d',
   line: UNSTABLE_LINE_STYLE,
   showlegend: false
@@ -177,8 +187,8 @@ let traceCuttingPlane = {
   x: xyzDataPlane[0],
   y: xyzDataPlane[1],
   z: Array(xyzDataPlane[0].length).fill(STARTING_P),
-  opacity: 0.2,
-  color: 'red',
+  opacity: 0.3,
+  color: RED,
   type: 'mesh3d',
   showlegend: false
 };
@@ -208,7 +218,7 @@ var plotData = [
   trace3Dcone, traceStableLineEq, traceUnstableLineEq, traceCuttingPlane,
   traceIntersectionRing, traceIntersectionPoint
 ];
-Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D);
+Plotly.newPlot(plotlyDiv, plotData, LAYOUT_3D, CONFIG);
 
 // TODO Implement the two bottom plots
 var traceEigenvals = {
@@ -267,10 +277,7 @@ var layout = {
   annotations: [
     {
       text: 'Eigenvalues',
-      font: {
-        size: 16,
-        color: 'black',
-      },
+      font: {size: 16},
       showarrow: false,
       x: 0.,
       y: 1.,
@@ -281,10 +288,7 @@ var layout = {
     },
     {
       text: 'Stability',
-      font: {
-        size: 16,
-        color: 'black',
-      },
+      font: {size: 16},
       showarrow: false,
       x: 0.,
       y: 1.,
@@ -296,7 +300,7 @@ var layout = {
   ]
 };
 
-Plotly.newPlot(multiplotDiv, data, layout);
+Plotly.newPlot(multiplotDiv, data, layout, CONFIG);
 
 const parampSlider = document.getElementById('parampSlider');
 const parampLabel = document.getElementById('parampSliderLabel');

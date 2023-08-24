@@ -1,7 +1,7 @@
 baseURL = 'https://dynamics-explorables.netlify.app/'
 languageCode = 'en-us'
 title = 'Dynamics Explorables'
-theme = 'papermod'
+theme = ['papermod', 'hugo-cite']
 sectionPagesMenu = 'main'
 paginate = 12
 
