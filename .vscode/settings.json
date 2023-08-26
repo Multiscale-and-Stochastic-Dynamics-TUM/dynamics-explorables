@@ -1,0 +1,4 @@
+{
+    "livePreview.defaultPreviewPath": "/helloworld.html",
+    "debug.javascript.usePreview": false
+}

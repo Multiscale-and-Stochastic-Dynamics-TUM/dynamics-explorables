@@ -25,6 +25,16 @@ input[type="button"] {
     transition: 0.4s;
 }
 
+input[type="radio"] {
+    margin: 3px 3px 0px 5px;
+}
+
+input[type="checkbox"] {
+    border-radius: 0;
+    margin: 3px 3px 0px 5px;
+}
+
+
 a button[disabled],
 button[disabled],
 [role="button"][aria-disabled="true"],
@@ -172,4 +182,47 @@ input {
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
+}
+
+
+
+
+.action {
+    position: fixed;
+    bottom: 60px;
+    left: 30px;
+    width: 42px;
+    height: 42px;
+    z-index: 99;
+}
+
+.action button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 30px;
+    line-height: 0;
+    padding: 0;
+    margin: 0;
+    opacity: 1;
+}
+
+.action.active button {
+    transform: rotate(-135deg);
+    border-radius: 50%;
+}
+
+.action .openable {
+    display: none;
+    transition: 0.3s;
+    border: 1px solid var(--secondary);
+}
+
+.action.active .openable {
+    position: absolute;
+    bottom: 50px;
+    display: grid;
+    transition: 0.3s;
 }
